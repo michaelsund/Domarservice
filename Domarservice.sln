@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domarservice.DAL", "Domarservice.DAL\Domarservice.DAL.csproj", "{649F0EC5-DC81-445C-A169-2C07843E8437}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domarservice.API", "Domarservice.API\Domarservice.API.csproj", "{5E28C2FB-0E18-41F6-937E-C153851FF4B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domarservice.BLL", "Domarservice.BLL\Domarservice.BLL.csproj", "{88D11D1C-1290-49C9-804F-CB0AE633EF06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{649F0EC5-DC81-445C-A169-2C07843E8437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{649F0EC5-DC81-445C-A169-2C07843E8437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{649F0EC5-DC81-445C-A169-2C07843E8437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{649F0EC5-DC81-445C-A169-2C07843E8437}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070274F2-9957-4F96-9943-97CFA826CB0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070274F2-9957-4F96-9943-97CFA826CB0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070274F2-9957-4F96-9943-97CFA826CB0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070274F2-9957-4F96-9943-97CFA826CB0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E28C2FB-0E18-41F6-937E-C153851FF4B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E28C2FB-0E18-41F6-937E-C153851FF4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E28C2FB-0E18-41F6-937E-C153851FF4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E28C2FB-0E18-41F6-937E-C153851FF4B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88D11D1C-1290-49C9-804F-CB0AE633EF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88D11D1C-1290-49C9-804F-CB0AE633EF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88D11D1C-1290-49C9-804F-CB0AE633EF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88D11D1C-1290-49C9-804F-CB0AE633EF06}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
