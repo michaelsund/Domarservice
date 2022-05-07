@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/Domarservice.API/Domarservice.API.csproj",
+        "${workspaceFolder}/Domarservice.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/Domarservice.API/Domarservice.API.csproj",
+        "${workspaceFolder}/Domarservice.API.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -33,7 +33,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/Domarservice.API/Domarservice.API.csproj"
+        "${workspaceFolder}/Domarservice.API.csproj"
       ],
       "problemMatcher": "$msCompile"
     }

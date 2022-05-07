@@ -23,10 +23,14 @@ namespace Domarservice.Controllers
         [HttpGet]
         public string Get()
         {
-            // var data = _context.Companies.ToList();
-            new CreateAllAndTest(_context).RunCreate();
-            
-            return "yes";
+            // new DoTest(_context).RunTest1();
+            // new DoTest(_context).RunTest2();
+            // new DoTest(_context).RunTest3();
+            // new DoTest(_context).RunTest4();
+            // new DoTest(_context).RunTest5();
+            new DoTest(_context).RunTest6();
+
+            return "yes";            
         }
     }
 }

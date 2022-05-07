@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Domarservice.Migrations
 {
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,17 +46,23 @@ namespace Domarservice.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AvailableAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Booked = table.Column<bool>(type: "boolean", nullable: false),
-                    ChosenRequest = table.Column<int>(type: "integer", nullable: false),
-                    RefereeId = table.Column<int>(type: "integer", nullable: true)
+                    ClaimedByCompanyId = table.Column<int>(type: "integer", nullable: true),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Schedules_Companies_ClaimedByCompanyId",
+                        column: x => x.ClaimedByCompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Schedules_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,33 +72,42 @@ namespace Domarservice.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Message = table.Column<string>(type: "text", nullable: true),
-                    RequestingCompanyId = table.Column<int>(type: "integer", nullable: true),
-                    ScheduleId = table.Column<int>(type: "integer", nullable: true)
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    ScheduleId = table.Column<int>(type: "integer", nullable: false),
+                    Accepted = table.Column<bool>(type: "boolean", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BookingRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BookingRequests_Companies_RequestingCompanyId",
-                        column: x => x.RequestingCompanyId,
+                        name: "FK_BookingRequests_Companies_CompanyId",
+                        column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BookingRequests_Schedules_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "Schedules",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookingRequests_RequestingCompanyId",
+                name: "IX_BookingRequests_CompanyId",
                 table: "BookingRequests",
-                column: "RequestingCompanyId");
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookingRequests_ScheduleId",
                 table: "BookingRequests",
                 column: "ScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Schedules_ClaimedByCompanyId",
+                table: "Schedules",
+                column: "ClaimedByCompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedules_RefereeId",
@@ -106,10 +121,10 @@ namespace Domarservice.Migrations
                 name: "BookingRequests");
 
             migrationBuilder.DropTable(
-                name: "Companies");
+                name: "Schedules");
 
             migrationBuilder.DropTable(
-                name: "Schedules");
+                name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "Referees");

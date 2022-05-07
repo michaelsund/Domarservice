@@ -3,7 +3,6 @@ using System;
 using Domarservice.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,10 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220505071735_Init")]
-    partial class Init
+    partial class DomarserviceContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,18 +30,24 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
-                    b.Property<int?>("RequestingCompanyId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("ScheduleId")
+                    b.Property<int>("ScheduleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RequestingCompanyId");
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ScheduleId");
 
@@ -102,13 +106,15 @@ namespace Domarservice.Migrations
                     b.Property<bool>("Booked")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ChosenRequest")
+                    b.Property<int?>("ClaimedByCompanyId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RefereeId")
+                    b.Property<int>("RefereeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClaimedByCompanyId");
 
                     b.HasIndex("RefereeId");
 
@@ -118,31 +124,52 @@ namespace Domarservice.Migrations
             modelBuilder.Entity("Domarservice.DAL.BookingRequest", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", "RequestingCompany")
-                        .WithMany()
-                        .HasForeignKey("RequestingCompanyId");
+                        .WithMany("BookingRequests")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Domarservice.DAL.Schedule", null)
-                        .WithMany("Requests")
-                        .HasForeignKey("ScheduleId");
+                    b.HasOne("Domarservice.DAL.Schedule", "Schedule")
+                        .WithMany("BookingRequests")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("RequestingCompany");
+
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
-                    b.HasOne("Domarservice.DAL.Referee", null)
-                        .WithMany("ScheduleList")
-                        .HasForeignKey("RefereeId");
+                    b.HasOne("Domarservice.DAL.Company", "ClaimedByCompany")
+                        .WithMany()
+                        .HasForeignKey("ClaimedByCompanyId");
+
+                    b.HasOne("Domarservice.DAL.Referee", "Referee")
+                        .WithMany("Schedules")
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClaimedByCompany");
+
+                    b.Navigation("Referee");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.Company", b =>
+                {
+                    b.Navigation("BookingRequests");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
                 {
-                    b.Navigation("ScheduleList");
+                    b.Navigation("Schedules");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
-                    b.Navigation("Requests");
+                    b.Navigation("BookingRequests");
                 });
 #pragma warning restore 612, 618
         }
