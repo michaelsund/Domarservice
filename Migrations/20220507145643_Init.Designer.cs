@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220507085229_Initial")]
-    partial class Initial
+    [Migration("20220507145643_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -123,6 +123,30 @@ namespace Domarservice.Migrations
                     b.ToTable("Schedules");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.Sport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RefereeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SportType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefereeId");
+
+                    b.ToTable("Sports");
+                });
+
             modelBuilder.Entity("Domarservice.DAL.BookingRequest", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", "RequestingCompany")
@@ -149,12 +173,23 @@ namespace Domarservice.Migrations
                         .HasForeignKey("ClaimedByCompanyId");
 
                     b.HasOne("Domarservice.DAL.Referee", "Referee")
-                        .WithMany("Schedules")
+                        .WithMany("Schedule")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ClaimedByCompany");
+
+                    b.Navigation("Referee");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.Sport", b =>
+                {
+                    b.HasOne("Domarservice.DAL.Referee", "Referee")
+                        .WithMany("Sport")
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Referee");
                 });
@@ -166,7 +201,9 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
                 {
-                    b.Navigation("Schedules");
+                    b.Navigation("Schedule");
+
+                    b.Navigation("Sport");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>

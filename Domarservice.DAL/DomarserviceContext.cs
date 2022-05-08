@@ -14,6 +14,8 @@ namespace Domarservice.DAL
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<BookingRequest> BookingRequests { get; set; }
 
+    public DbSet<Sport> Sports { get; set; }
+
   }
 
   public class Referee
@@ -21,7 +23,8 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Surname { get; set; }
     public string Lastname { get; set; }
-    public List<Schedule> Schedules { get; set; }
+    public List<Schedule> Schedule { get; set; }
+    public List<Sport> Sport { get; set; }
   }
 
   public class Schedule
@@ -43,6 +46,31 @@ namespace Domarservice.DAL
     public List<BookingRequest> BookingRequests { get; set; }
   }
 
+  public enum SportType
+  {
+    Hockey,
+    Fotboll,
+    Innebandy
+  }
+
+  public enum RefereeType
+  {
+    Linjeman,
+    Hudvuddomare
+  }
+
+  public class Sport
+  {
+    public int Id { get; set; }
+    public RefereeType RefereeType { get; set; }
+    public SportType SportType { get; set; }
+    public int RefereeId { get; set; }
+    public Referee Referee { get; set; }
+  }
+
+
+
+
   public class BookingRequest
   {
     public int Id { get; set; }
@@ -53,5 +81,11 @@ namespace Domarservice.DAL
     public Schedule Schedule { get; set; }
     public bool Accepted { get; set; }
     public DateTime RespondedAt { get; set; }
+  }
+
+  public class County
+  {
+    public int Id { get; set; }
+    public string Name { get; set; }
   }
 }

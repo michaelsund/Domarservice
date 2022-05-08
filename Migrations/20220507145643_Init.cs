@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Domarservice.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -66,6 +66,27 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RefereeType = table.Column<int>(type: "integer", nullable: false),
+                    SportType = table.Column<int>(type: "integer", nullable: false),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sports_Referees_RefereeId",
+                        column: x => x.RefereeId,
+                        principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingRequests",
                 columns: table => new
                 {
@@ -113,12 +134,20 @@ namespace Domarservice.Migrations
                 name: "IX_Schedules_RefereeId",
                 table: "Schedules",
                 column: "RefereeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sports_RefereeId",
+                table: "Sports",
+                column: "RefereeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "BookingRequests");
+
+            migrationBuilder.DropTable(
+                name: "Sports");
 
             migrationBuilder.DropTable(
                 name: "Schedules");

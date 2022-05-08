@@ -11,23 +11,23 @@ namespace Domarservice.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GetBookingRequestController : ControllerBase
+    public class GetScheduleController : ControllerBase
     {
         private readonly DomarserviceContext _context;
 
-        public GetBookingRequestController(DomarserviceContext context)
+        public GetScheduleController(DomarserviceContext context)
         {
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("{id:int}")]
+        public IActionResult Get(int id)
         {
-            var r = new DoTest(_context).RunTest6();
-            if (r != null) {
+            var r = new DoTest(_context).GetSchedules(id);
+            if (r.Count > 0) {
               return Ok(r);
             } else {
-              return Problem("Could not find the BookingRequest.");
+              return Problem("Could not find any schedule for this Referee.");
             }
         }
     }

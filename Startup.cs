@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Domarservice.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -31,14 +32,16 @@ namespace Domarservice.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            // services.AddControllers();
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "domarservice", Version = "v1" });
             });
             services.AddDbContext<DomarserviceContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-
+            services.AddScoped<IRefereeRepository, RefereeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

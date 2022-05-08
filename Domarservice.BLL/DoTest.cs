@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Domarservice.DAL;
 
@@ -12,78 +13,63 @@ namespace Domarservice.BLL
     {
       _context = context;
     }
-    public bool RunTest1()
+    public void AddReferee(string surname, string lastname)
     {
-      try
-      {
-        _context.Referees.Add(new Referee()
-        {
-          Lastname = "Karlsson",
-          Surname = "Kalle",
-        });
-        _context.SaveChanges();
-      }
-      catch (Exception e)
-      {
-        System.Console.WriteLine("Uh oh");
-        throw;
-      }
 
-      return true;
+      var sports = new List<Sport>();
+      sports.Add(new Sport()
+      {
+        RefereeType = RefereeType.Hudvuddomare,
+        SportType = SportType.Fotboll,
+      });
+      sports.Add(new Sport()
+      {
+        RefereeType = RefereeType.Linjeman,
+        SportType = SportType.Fotboll,
+      });
+
+      _context.Referees.Add(new Referee()
+      {
+        Lastname = "Karlsson",
+        Surname = "Kalle",
+        Sport = sports
+      });
+      _context.SaveChanges();
     }
-    public bool RunTest2()
+    public void AddScheduleDate(int id)
     {
-      Referee referee = _context.Referees.Where(x => x.Surname == "Kalle").FirstOrDefault();
+      Referee referee = _context.Referees.Where(x => x.Id == id).FirstOrDefault();
       if (referee != null)
       {
-        try
+        var s = new Schedule()
         {
-          var s = new Schedule()
-          {
-            RefereeId = referee.Id,
-            Referee = referee,
-            AvailableAt = DateTime.UtcNow,
-            Booked = false,
-          };
-          _context.Schedules.Add(s);
-          _context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-          System.Console.WriteLine("Uh oh");
-          throw;
-        }
+          RefereeId = referee.Id,
+          Referee = referee,
+          AvailableAt = DateTime.UtcNow,
+          Booked = false,
+        };
+        _context.Schedules.Add(s);
+        _context.SaveChanges();
       }
-
-      return true;
     }
 
-    public bool RunTest3()
-    {
-      // Kalles schedules
-      var s = _context.Schedules.Where(x => x.Referee.Surname == "Kalle").ToList();
-
-      return true;
-    }
-
-    public bool RunTest4()
+    public void AddCompanyAndScheduleFirstReferee(string name, int y)
     {
       _context.Companies.Add(new Company()
       {
-        Name = "Smygehuks IK",
-        Sport = "Hockey",
+        Name = name,
       });
       _context.SaveChanges();
 
-      var c = _context.Companies.Where(x => x.Name == "Smygehuks IK").FirstOrDefault();
-      var s = _context.Schedules.Where(x => x.Id == 1).FirstOrDefault();
+      var c = _context.Companies.Where(x => x.Id == y).FirstOrDefault();
+      var s = _context.Schedules.Where(x => x.Id == y).FirstOrDefault();
 
       if (c != null && s != null)
       {
         _context.BookingRequests.Add(new BookingRequest()
         {
           CompanyId = c.Id,
-          Message = "Kan du komma på vår match Kalle?",
+          Message = "Kan du komma på vår match?",
           RequestingCompany = c,
           Schedule = s,
           ScheduleId = s.Id
@@ -93,16 +79,13 @@ namespace Domarservice.BLL
       {
         System.Console.WriteLine("Company or Schedule not found by ID!");
       }
-
       _context.SaveChanges();
-
-      return true;
     }
 
-    public bool RunTest5()
+    public bool RespondYes(int y)
     {
-      var s = _context.Schedules.Where(x => x.Id == 1).FirstOrDefault();
-      var r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();
+      var s = _context.Schedules.Where(x => x.Id == y).FirstOrDefault();
+      var r = _context.BookingRequests.Where(x => x.Id == y).FirstOrDefault();
 
       if (s != null)
       {
@@ -116,20 +99,62 @@ namespace Domarservice.BLL
       return true;
     }
 
-    public BookingRequest RunTest6()
+    // public BookingRequest RunTest6()
+    // {
+    //   var r = new BookingRequest();
+    //   try
+    //   {
+    //     r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();
+    //   }
+    //   catch (System.Exception)
+    //   {
+    //     throw;
+    //   }
+
+    //   return r;
+    // }
+
+    public List<Schedule> GetSchedules(int id)
     {
-      var r = new BookingRequest();
-      try
-      {
-        r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();      
-      }
-      catch (System.Exception)
-      {
-        throw;
-      }
+      var schedulesForReferee = _context.Schedules
+        .AsNoTracking()
+        .Include(x => x.ClaimedByCompany)
+        .Include(x => x.Referee)
+        .Include(x => x.BookingRequests)
+        .Where(x => x.RefereeId == id).ToList();
+      // var schedulesForReferee = _context.Schedules
+      //   .Select(schedule => new {
+      //     schedule = schedule,
+      //     claimedByCompany = schedule.ClaimedByCompany
+      //   }).ToList();
 
-      return r;
+      return schedulesForReferee;
     }
-  }
 
+    public Referee GetReferee(int id)
+    {
+      var referee = _context.Referees
+        .AsNoTracking()
+        .Include(x => x.Schedule)
+        .Include(x => x.Sport)
+        .Where(x => x.Id == id).FirstOrDefault();
+
+      return referee;
+    }
+
+    // public BookingRequest RunTest7()
+    // {
+    //   var r = new BookingRequest();
+    //   try
+    //   {
+    //     r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();      
+    //   }
+    //   catch (System.Exception)
+    //   {
+    //     throw;
+    //   }
+
+    //   return r;
+    // }
+  }
 }
