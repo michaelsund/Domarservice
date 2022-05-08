@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Xml.Serialization;
+using Domarservice.Models;
 
 namespace Domarservice.DAL
 {
@@ -16,17 +17,17 @@ namespace Domarservice.DAL
       _context = context;
     }
 
-    public Referee GetRefeereById(int id)
+    public RefereeDto GetRefeereById(int id)
     {
-      var referee = new Referee();
-      try
-      {
-        referee = _context.Referees.Where(x => x.Id == id).FirstOrDefault();
-      }
-      catch (System.Exception)
-      {
-        throw;
-      }
+      var referee = _context.Referees
+      .Where(x => x.Id == id)
+      .Select(x => new RefereeDto()
+        {
+          Id = x.Id,
+          Surname = x.Surname,
+          Lastname = x.Lastname
+        }
+      ).SingleOrDefault();
       return referee;
     }
   }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Domarservice.Models;
 
 namespace Domarservice.DAL
 {
     public interface IRefereeRepository
     {
-        Referee GetRefeereById(int id);
+        RefereeDto GetRefeereById(int id);
     }
 }

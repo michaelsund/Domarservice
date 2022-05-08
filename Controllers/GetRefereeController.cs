@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Domarservice.DAL;
 using Domarservice.BLL;
+using Domarservice.Models;
 
 namespace Domarservice.Controllers
 {
@@ -18,10 +19,15 @@ namespace Domarservice.Controllers
     {
       _refereeRepository = refereRepository;
     }
+
     [HttpGet("{id:int}")]
-    public Referee Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-      return _refereeRepository.GetRefeereById(id);
+      var referee = _refereeRepository.GetRefeereById(id);
+      if (referee == null) {
+        return NotFound("Domaren hittades inte.");
+      }
+      return Ok(referee);
     }
   }
 }
