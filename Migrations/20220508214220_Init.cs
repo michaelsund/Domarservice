@@ -39,6 +39,26 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Counties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false),
+                    CountyName = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Counties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Counties_Referees_RefereeId",
+                        column: x => x.RefereeId,
+                        principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
@@ -126,6 +146,11 @@ namespace Domarservice.Migrations
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Counties_RefereeId",
+                table: "Counties",
+                column: "RefereeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Schedules_ClaimedByCompanyId",
                 table: "Schedules",
                 column: "ClaimedByCompanyId");
@@ -145,6 +170,9 @@ namespace Domarservice.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BookingRequests");
+
+            migrationBuilder.DropTable(
+                name: "Counties");
 
             migrationBuilder.DropTable(
                 name: "Sports");

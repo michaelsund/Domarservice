@@ -9,5 +9,6 @@ namespace Domarservice.DAL
     public interface IRefereeRepository
     {
         RefereeDto GetRefeereById(int id);
+        List<Referee> GetAllReferees();
     }
 }

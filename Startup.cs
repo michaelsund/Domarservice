@@ -16,6 +16,7 @@ using Domarservice.DAL;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Domarservice.BLL;
+using AutoMapper;
 
 namespace Domarservice.API
 {
@@ -42,6 +43,13 @@ namespace Domarservice.API
             services.AddDbContext<DomarserviceContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IRefereeRepository, RefereeRepository>();
+            var mapperConfig = new MapperConfiguration(mc =>
+              {
+                  mc.AddProfile(new AutoMapperProfile());
+              });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

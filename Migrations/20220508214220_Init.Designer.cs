@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220507145643_Init")]
+    [Migration("20220508214220_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,27 @@ namespace Domarservice.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.County", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CountyName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RefereeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefereeId");
+
+                    b.ToTable("Counties");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
@@ -166,6 +187,15 @@ namespace Domarservice.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.County", b =>
+                {
+                    b.HasOne("Domarservice.DAL.Referee", null)
+                        .WithMany("Counties")
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", "ClaimedByCompany")
@@ -173,7 +203,7 @@ namespace Domarservice.Migrations
                         .HasForeignKey("ClaimedByCompanyId");
 
                     b.HasOne("Domarservice.DAL.Referee", "Referee")
-                        .WithMany("Schedule")
+                        .WithMany("Schedules")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -185,13 +215,11 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Sport", b =>
                 {
-                    b.HasOne("Domarservice.DAL.Referee", "Referee")
-                        .WithMany("Sport")
+                    b.HasOne("Domarservice.DAL.Referee", null)
+                        .WithMany("Sports")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Referee");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Company", b =>
@@ -201,9 +229,11 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
                 {
-                    b.Navigation("Schedule");
+                    b.Navigation("Counties");
 
-                    b.Navigation("Sport");
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Sports");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>

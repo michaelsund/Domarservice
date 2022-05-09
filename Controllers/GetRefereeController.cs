@@ -29,5 +29,12 @@ namespace Domarservice.Controllers
       }
       return Ok(referee);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+      var referees = _refereeRepository.GetAllReferees();
+      return Ok(referees);
+    }
   }
 }

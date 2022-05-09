@@ -32,7 +32,7 @@ namespace Domarservice.BLL
       {
         Lastname = "Karlsson",
         Surname = "Kalle",
-        Sport = sports
+        Sports = sports
       });
       _context.SaveChanges();
     }
@@ -99,20 +99,20 @@ namespace Domarservice.BLL
       return true;
     }
 
-    // public BookingRequest RunTest6()
-    // {
-    //   var r = new BookingRequest();
-    //   try
-    //   {
-    //     r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();
-    //   }
-    //   catch (System.Exception)
-    //   {
-    //     throw;
-    //   }
+    public bool AddCounty(int y)
+    {
+      Referee referee = _context.Referees.Where(x => x.Id == y).FirstOrDefault();
+      var counties = new List<County>() {
+        new County() { RefereeId = y, CountyName = CountyType.Blekinge },
+        new County() { RefereeId = y, CountyName = CountyType.Halland },
+      };
+      if (referee != null) {
+        referee.Counties = counties;
+        _context.SaveChanges();
+      }
 
-    //   return r;
-    // }
+      return true;
+    }
 
     public List<Schedule> GetSchedules(int id)
     {
@@ -135,26 +135,12 @@ namespace Domarservice.BLL
     {
       var referee = _context.Referees
         .AsNoTracking()
-        .Include(x => x.Schedule)
-        .Include(x => x.Sport)
+        .Include(x => x.Schedules)
+        .Include(x => x.Sports)
+        .Include(x => x.Counties)
         .Where(x => x.Id == id).FirstOrDefault();
 
       return referee;
     }
-
-    // public BookingRequest RunTest7()
-    // {
-    //   var r = new BookingRequest();
-    //   try
-    //   {
-    //     r = _context.BookingRequests.Where(x => x.Id == 1).FirstOrDefault();      
-    //   }
-    //   catch (System.Exception)
-    //   {
-    //     throw;
-    //   }
-
-    //   return r;
-    // }
   }
 }
