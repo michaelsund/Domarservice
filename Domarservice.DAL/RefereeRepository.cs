@@ -30,23 +30,13 @@ namespace Domarservice.DAL
     {
       Referee referee = _context.Referees
         .Include(x => x.Sports)
+        .Include(x => x.Countys)
+        .Include(x => x.Schedules)
+          .ThenInclude(y => y.ClaimedByCompany)
+          .ThenInclude(y => y.BookingRequests)
         .FirstOrDefault(x => x.Id == id);
       var model = _mapper.Map<RefereeDto>(referee);
 
-      // var referee = _context.Referees
-      // .Where(x => x.Id == id)
-      // .Select(x => new RefereeDto()
-      //   {
-      //     Id = x.Id,
-      //     Surname = x.Surname,
-      //     Lastname = x.Lastname,
-      //     Sports = x.Sports.Select(s => new SportDto() {
-      //       RefereeType = s.RefereeType,
-      //       SportType = s.SportType,
-      //     }).ToList()
-      //   }
-      // )
-      // .SingleOrDefault();
       return model;
     }
   }

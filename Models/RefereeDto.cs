@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Domarservice.DAL;
 
 namespace Domarservice.Models
 {
@@ -8,8 +7,8 @@ namespace Domarservice.Models
   {
     public string Surname { get; set; }
     public string Lastname { get; set; }
-    public List<Sport> Sports { get; set; }
-    // public List<Schedule> Schedules { get; set; }
-    // public List<County> Counties { get; set; }
+    public List<SportDto> Sports { get; set; }
+    public List<ScheduleDto> Schedules { get; set; }
+    public List<CountyDto> Countys { get; set; }
   }
 }

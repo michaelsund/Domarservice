@@ -15,7 +15,7 @@ namespace Domarservice.DAL
     public DbSet<BookingRequest> BookingRequests { get; set; }
 
     public DbSet<Sport> Sports { get; set; }
-    public DbSet<County> Counties { get; set; }
+    public DbSet<County> Countys { get; set; }
   }
 
   public class Referee
@@ -23,9 +23,9 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Surname { get; set; }
     public string Lastname { get; set; }
-    public virtual List<Schedule> Schedules { get; set; }
-    public virtual List<Sport> Sports { get; set; }
-    public virtual List<County> Counties { get; set; }
+    public List<Schedule> Schedules { get; set; }
+    public List<Sport> Sports { get; set; }
+    public List<County> Countys { get; set; }
   }
 
   public class Schedule
@@ -33,18 +33,17 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public DateTime AvailableAt { get; set; }
     public bool Booked { get; set; }
-    public virtual Company ClaimedByCompany { get; set; }
+    public Company ClaimedByCompany { get; set; }
     public int RefereeId { get; set; }
-    public virtual Referee Referee { get; set; }
-    public virtual List<BookingRequest> BookingRequests { get; set; }
+    public Referee Referee { get; set; }
+    public List<BookingRequest> BookingRequests { get; set; }
   }
 
   public class Company
   {
     public int Id { get; set; }
     public string Name { get; set; }
-    public string Sport { get; set; }
-    public virtual List<BookingRequest> BookingRequests { get; set; }
+    public List<BookingRequest> BookingRequests { get; set; }
   }
 
   public enum SportType
@@ -73,44 +72,43 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Message { get; set; }
     public int CompanyId { get; set; }
-    public virtual Company RequestingCompany { get; set; }
+    public Company RequestingCompany { get; set; }
     public int ScheduleId { get; set; }
-    public virtual Schedule Schedule { get; set; }
+    public Schedule Schedule { get; set; }
     public bool Accepted { get; set; }
     public DateTime RespondedAt { get; set; }
   }
 
-  public class CountyType
+  public enum CountyType
   {
-    public int Id { get; set; }
-    public static string Norrbotten = "Norrbotten";
-    public static string Vasterbotten = "Västerbotten";
-    public static string Jamtland = "Jämtland";
-    public static string Vasternorrland = "Västernorrland";
-    public static string Dalarna = "Dalarna";
-    public static string Gavleborg = "Gävleborg";
-    public static string Varmalnd = "Värmland";
-    public static string Orebro = "Örebro";
-    public static string Vastmanland = "Västmanland";
-    public static string Uppsala = "Uppsala";
-    public static string Stockholm = "Stockholm";
-    public static string Sodermanland = "Södermanland";
-    public static string Vastragotaland = "Västra götaland";
-    public static string Ostergotland = "Öster götaland";
-    public static string Jonkoping = "Jönköping";
-    public static string Kalmar = "Kalmar";
-    public static string Kronoberg = "Kronoberg";
-    public static string Halland = "Halland";
-    public static string Skane = "Skåne";
-    public static string Blekinge = "Blekinge";
-    public static string Gotland = "Gotland";
+    Norrbotten,
+    Vasterbotten,
+    Jamtland,
+    Vasternorrland,
+    Dalarna,
+    Gavleborg,
+    Varmland,
+    Orebro,
+    Vastmanland,
+    Uppsala,
+    Stockholm,
+    Sodermanland,
+    Vastragotaland,
+    Ostergotland,
+    Jonkoping,
+    Kalmar,
+    Kronoberg,
+    Halland,
+    Skane,
+    Blekinge,
+    Gotland,
   }
 
-  // [Index(IsUnique = true)]
   public class County
   {
     public int Id { get; set; }
+    public CountyType CountyType { get; set; }
     public int RefereeId { get; set; }
-    public string CountyName { get; set; }
+
   }
 }

@@ -47,6 +47,7 @@ namespace Domarservice.API
               {
                   mc.AddProfile(new AutoMapperProfile());
               });
+            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);

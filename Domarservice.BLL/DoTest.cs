@@ -102,12 +102,12 @@ namespace Domarservice.BLL
     public bool AddCounty(int y)
     {
       Referee referee = _context.Referees.Where(x => x.Id == y).FirstOrDefault();
-      var counties = new List<County>() {
-        new County() { RefereeId = y, CountyName = CountyType.Blekinge },
-        new County() { RefereeId = y, CountyName = CountyType.Halland },
+      var countys = new List<County>() {
+        new County() { RefereeId = y, CountyType = CountyType.Orebro },
+        new County() { RefereeId = y, CountyType = CountyType.Varmland },
       };
       if (referee != null) {
-        referee.Counties = counties;
+        referee.Countys = countys;
         _context.SaveChanges();
       }
 
@@ -137,7 +137,7 @@ namespace Domarservice.BLL
         .AsNoTracking()
         .Include(x => x.Schedules)
         .Include(x => x.Sports)
-        .Include(x => x.Counties)
+        .Include(x => x.Countys)
         .Where(x => x.Id == id).FirstOrDefault();
 
       return referee;

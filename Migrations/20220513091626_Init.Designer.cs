@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220508214220_Init")]
+    [Migration("20220513091626_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,9 +67,6 @@ namespace Domarservice.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Sport")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
@@ -83,8 +80,8 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CountyName")
-                        .HasColumnType("text");
+                    b.Property<int>("CountyType")
+                        .HasColumnType("integer");
 
                     b.Property<int>("RefereeId")
                         .HasColumnType("integer");
@@ -93,7 +90,7 @@ namespace Domarservice.Migrations
 
                     b.HasIndex("RefereeId");
 
-                    b.ToTable("Counties");
+                    b.ToTable("Countys");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
@@ -190,7 +187,7 @@ namespace Domarservice.Migrations
             modelBuilder.Entity("Domarservice.DAL.County", b =>
                 {
                     b.HasOne("Domarservice.DAL.Referee", null)
-                        .WithMany("Counties")
+                        .WithMany("Countys")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -229,7 +226,7 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
                 {
-                    b.Navigation("Counties");
+                    b.Navigation("Countys");
 
                     b.Navigation("Schedules");
 

@@ -16,8 +16,7 @@ namespace Domarservice.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Sport = table.Column<string>(type: "text", nullable: true)
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,19 +38,19 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Counties",
+                name: "Countys",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RefereeId = table.Column<int>(type: "integer", nullable: false),
-                    CountyName = table.Column<string>(type: "text", nullable: true)
+                    CountyType = table.Column<int>(type: "integer", nullable: false),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Counties", x => x.Id);
+                    table.PrimaryKey("PK_Countys", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Counties_Referees_RefereeId",
+                        name: "FK_Countys_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
                         principalColumn: "Id",
@@ -146,8 +145,8 @@ namespace Domarservice.Migrations
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Counties_RefereeId",
-                table: "Counties",
+                name: "IX_Countys_RefereeId",
+                table: "Countys",
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
@@ -172,7 +171,7 @@ namespace Domarservice.Migrations
                 name: "BookingRequests");
 
             migrationBuilder.DropTable(
-                name: "Counties");
+                name: "Countys");
 
             migrationBuilder.DropTable(
                 name: "Sports");
