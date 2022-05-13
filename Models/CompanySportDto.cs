@@ -3,9 +3,8 @@ using Domarservice.DAL;
 
 namespace Domarservice.Models
 {
-  public class SportDto
+  public class CompanySportDto
   {
-    public RefereeType RefereeType { get; set; }
     public SportType SportType { get; set; }
   }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220513091626_Init")]
+    [Migration("20220513201237_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,27 @@ namespace Domarservice.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.CompanySport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SportType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("CompanySports");
+                });
+
             modelBuilder.Entity("Domarservice.DAL.County", b =>
                 {
                     b.Property<int>("Id")
@@ -112,6 +133,30 @@ namespace Domarservice.Migrations
                     b.ToTable("Referees");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.RefereeSport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RefereeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SportType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefereeId");
+
+                    b.ToTable("RefereeSports");
+                });
+
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
                     b.Property<int>("Id")
@@ -141,30 +186,6 @@ namespace Domarservice.Migrations
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("Domarservice.DAL.Sport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RefereeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RefereeType")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SportType")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RefereeId");
-
-                    b.ToTable("Sports");
-                });
-
             modelBuilder.Entity("Domarservice.DAL.BookingRequest", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", "RequestingCompany")
@@ -184,10 +205,26 @@ namespace Domarservice.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.CompanySport", b =>
+                {
+                    b.HasOne("Domarservice.DAL.Company", null)
+                        .WithMany("Sports")
+                        .HasForeignKey("CompanyId");
+                });
+
             modelBuilder.Entity("Domarservice.DAL.County", b =>
                 {
                     b.HasOne("Domarservice.DAL.Referee", null)
                         .WithMany("Countys")
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.RefereeSport", b =>
+                {
+                    b.HasOne("Domarservice.DAL.Referee", null)
+                        .WithMany("Sports")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -210,18 +247,11 @@ namespace Domarservice.Migrations
                     b.Navigation("Referee");
                 });
 
-            modelBuilder.Entity("Domarservice.DAL.Sport", b =>
-                {
-                    b.HasOne("Domarservice.DAL.Referee", null)
-                        .WithMany("Sports")
-                        .HasForeignKey("RefereeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domarservice.DAL.Company", b =>
                 {
                     b.Navigation("BookingRequests");
+
+                    b.Navigation("Sports");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>

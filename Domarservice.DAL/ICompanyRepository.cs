@@ -6,10 +6,10 @@ using Domarservice.Models;
 
 namespace Domarservice.DAL
 {
-  public interface IRefereeRepository
+  public interface ICompanyRepository
   {
-    RefereeDto GetRefeereById(int id);
-    // List<Referee> GetAllReferees();
-    bool DeleteRefereeById(int id);
+    CompanyDto GetCompanyById(int id);
+    // List<Company> GetAllCompanies();
+    bool DeleteCompanyById(int id);
   }
 }

@@ -15,24 +15,14 @@ namespace Domarservice.BLL
     }
     public void AddReferee(string surname, string lastname)
     {
-
-      var sports = new List<Sport>();
-      sports.Add(new Sport()
-      {
-        RefereeType = RefereeType.Hudvuddomare,
-        SportType = SportType.Fotboll,
-      });
-      sports.Add(new Sport()
-      {
-        RefereeType = RefereeType.Linjeman,
-        SportType = SportType.Fotboll,
-      });
-
       _context.Referees.Add(new Referee()
       {
         Lastname = "Karlsson",
         Surname = "Kalle",
-        Sports = sports
+        Sports = new List<RefereeSport>() {
+          new RefereeSport() { SportType = SportType.Fotboll, RefereeType = RefereeType.Hudvuddomare },
+          new RefereeSport() { SportType = SportType.Ishockey, RefereeType = RefereeType.Linjeman },
+        }
       });
       _context.SaveChanges();
     }
@@ -58,6 +48,10 @@ namespace Domarservice.BLL
       _context.Companies.Add(new Company()
       {
         Name = name,
+        Sports = new List<CompanySport>() {
+          new CompanySport() { SportType = SportType.Fotboll },
+          new CompanySport() { SportType = SportType.Ishockey },
+        }
       });
       _context.SaveChanges();
 
@@ -112,35 +106,6 @@ namespace Domarservice.BLL
       }
 
       return true;
-    }
-
-    public List<Schedule> GetSchedules(int id)
-    {
-      var schedulesForReferee = _context.Schedules
-        .AsNoTracking()
-        .Include(x => x.ClaimedByCompany)
-        .Include(x => x.Referee)
-        .Include(x => x.BookingRequests)
-        .Where(x => x.RefereeId == id).ToList();
-      // var schedulesForReferee = _context.Schedules
-      //   .Select(schedule => new {
-      //     schedule = schedule,
-      //     claimedByCompany = schedule.ClaimedByCompany
-      //   }).ToList();
-
-      return schedulesForReferee;
-    }
-
-    public Referee GetReferee(int id)
-    {
-      var referee = _context.Referees
-        .AsNoTracking()
-        .Include(x => x.Schedules)
-        .Include(x => x.Sports)
-        .Include(x => x.Countys)
-        .Where(x => x.Id == id).FirstOrDefault();
-
-      return referee;
     }
   }
 }

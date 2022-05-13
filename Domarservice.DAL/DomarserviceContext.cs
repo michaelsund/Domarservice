@@ -14,7 +14,9 @@ namespace Domarservice.DAL
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<BookingRequest> BookingRequests { get; set; }
 
-    public DbSet<Sport> Sports { get; set; }
+    public DbSet<CompanySport> CompanySports { get; set; }
+    public DbSet<RefereeSport> RefereeSports { get; set; }
+
     public DbSet<County> Countys { get; set; }
   }
 
@@ -24,7 +26,7 @@ namespace Domarservice.DAL
     public string Surname { get; set; }
     public string Lastname { get; set; }
     public List<Schedule> Schedules { get; set; }
-    public List<Sport> Sports { get; set; }
+    public List<RefereeSport> Sports { get; set; }
     public List<County> Countys { get; set; }
   }
 
@@ -43,12 +45,13 @@ namespace Domarservice.DAL
   {
     public int Id { get; set; }
     public string Name { get; set; }
+    public List<CompanySport> Sports { get; set; }
     public List<BookingRequest> BookingRequests { get; set; }
   }
 
   public enum SportType
   {
-    Hockey,
+    Ishockey,
     Fotboll,
     Innebandy
   }
@@ -59,12 +62,18 @@ namespace Domarservice.DAL
     Hudvuddomare
   }
 
-  public class Sport
+  public class RefereeSport
   {
     public int Id { get; set; }
     public RefereeType RefereeType { get; set; }
     public SportType SportType { get; set; }
     public int RefereeId { get; set; }
+  }
+
+  public class CompanySport
+  {
+    public int Id { get; set; }
+    public SportType SportType { get; set; }
   }
 
   public class BookingRequest

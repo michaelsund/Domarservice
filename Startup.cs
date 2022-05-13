@@ -44,6 +44,7 @@ namespace Domarservice.API
           options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
       services.AddScoped<IRefereeRepository, RefereeRepository>();
       services.AddScoped<IScheduleRepository, ScheduleRepository>();
+      services.AddScoped<ICompanyRepository, CompanyRepository>();
       var mapperConfig = new MapperConfiguration(mc =>
         {
           mc.AddProfile(new AutoMapperProfile());

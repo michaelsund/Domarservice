@@ -19,12 +19,12 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    // Not using DTO for test.
-    public List<Referee> GetAllReferees()
-    {
-      var referees = _context.Referees.ToList();
-      return referees;
-    }
+    // public List<Referee> GetAllReferees()
+    // {
+    //   var referees = _context.Referees.ToList();
+    //   var model = _mapper.Map<RefereeDto>(referees);
+    //   return model;
+    // }
 
     public RefereeDto GetRefeereById(int id)
     {
@@ -38,6 +38,18 @@ namespace Domarservice.DAL
       var model = _mapper.Map<RefereeDto>(referee);
 
       return model;
+    }
+
+    public bool DeleteRefereeById(int id)
+    {
+      Referee referee = _context.Referees.FirstOrDefault(x => x.Id == id);
+      if (referee != null)
+      {
+        _context.Remove(referee);
+        _context.SaveChanges();
+        return true;
+      }
+      return false;
     }
   }
 }

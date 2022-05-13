@@ -38,6 +38,25 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompanySports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SportType = table.Column<int>(type: "integer", nullable: false),
+                    CompanyId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanySports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanySports_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Countys",
                 columns: table => new
                 {
@@ -51,6 +70,27 @@ namespace Domarservice.Migrations
                     table.PrimaryKey("PK_Countys", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Countys_Referees_RefereeId",
+                        column: x => x.RefereeId,
+                        principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefereeSports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RefereeType = table.Column<int>(type: "integer", nullable: false),
+                    SportType = table.Column<int>(type: "integer", nullable: false),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefereeSports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefereeSports_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
                         principalColumn: "Id",
@@ -78,27 +118,6 @@ namespace Domarservice.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Schedules_Referees_RefereeId",
-                        column: x => x.RefereeId,
-                        principalTable: "Referees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sports",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RefereeType = table.Column<int>(type: "integer", nullable: false),
-                    SportType = table.Column<int>(type: "integer", nullable: false),
-                    RefereeId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sports", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Sports_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
                         principalColumn: "Id",
@@ -145,8 +164,18 @@ namespace Domarservice.Migrations
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompanySports_CompanyId",
+                table: "CompanySports",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Countys_RefereeId",
                 table: "Countys",
+                column: "RefereeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefereeSports_RefereeId",
+                table: "RefereeSports",
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
@@ -158,11 +187,6 @@ namespace Domarservice.Migrations
                 name: "IX_Schedules_RefereeId",
                 table: "Schedules",
                 column: "RefereeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sports_RefereeId",
-                table: "Sports",
-                column: "RefereeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -171,10 +195,13 @@ namespace Domarservice.Migrations
                 name: "BookingRequests");
 
             migrationBuilder.DropTable(
+                name: "CompanySports");
+
+            migrationBuilder.DropTable(
                 name: "Countys");
 
             migrationBuilder.DropTable(
-                name: "Sports");
+                name: "RefereeSports");
 
             migrationBuilder.DropTable(
                 name: "Schedules");
