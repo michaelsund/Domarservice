@@ -12,10 +12,10 @@ namespace Domarservice.Controllers
 {
   [ApiController]
   [Route("[controller]")]
-  public class GetRefereeController : ControllerBase
+  public class RefereeController : ControllerBase
   {
     private readonly IRefereeRepository _refereeRepository;
-    public GetRefereeController(IRefereeRepository refereRepository)
+    public RefereeController(IRefereeRepository refereRepository)
     {
       _refereeRepository = refereRepository;
     }

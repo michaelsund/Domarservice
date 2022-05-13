@@ -20,59 +20,60 @@ using AutoMapper;
 
 namespace Domarservice.API
 {
-    public class Startup
+  public class Startup
+  {
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-
-            // services.AddControllers();
-            services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "domarservice", Version = "v1" });
-            });
-            services.AddDbContext<DomarserviceContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<IRefereeRepository, RefereeRepository>();
-            var mapperConfig = new MapperConfiguration(mc =>
-              {
-                  mc.AddProfile(new AutoMapperProfile());
-              });
-            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-            IMapper mapper = mapperConfig.CreateMapper();
-            services.AddSingleton(mapper);
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "domarservice v1"));
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
+      Configuration = configuration;
     }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+
+      // services.AddControllers();
+      services.AddControllers().AddJsonOptions(x =>
+          x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "domarservice", Version = "v1" });
+      });
+      services.AddDbContext<DomarserviceContext>(options =>
+          options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+      services.AddScoped<IRefereeRepository, RefereeRepository>();
+      services.AddScoped<IScheduleRepository, ScheduleRepository>();
+      var mapperConfig = new MapperConfiguration(mc =>
+        {
+          mc.AddProfile(new AutoMapperProfile());
+        });
+      // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+      IMapper mapper = mapperConfig.CreateMapper();
+      services.AddSingleton(mapper);
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "domarservice v1"));
+      }
+
+      app.UseHttpsRedirection();
+
+      app.UseRouting();
+
+      app.UseAuthorization();
+
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapControllers();
+      });
+    }
+  }
 }

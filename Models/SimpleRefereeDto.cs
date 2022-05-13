@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Domarservice.DAL;
 
 namespace Domarservice.Models
 {
-  public class CompanyDto
+  public class SimpleRefereeDto
   {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Surname { get; set; }
+    public string Lastname { get; set; }
   }
 }
