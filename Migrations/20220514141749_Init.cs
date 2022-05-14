@@ -38,13 +38,37 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompanyEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Location = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SportType = table.Column<int>(type: "integer", nullable: false),
+                    RefereeTypes = table.Column<int[]>(type: "integer[]", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyEvents_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CompanySports",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SportType = table.Column<int>(type: "integer", nullable: false),
-                    CompanyId = table.Column<int>(type: "integer", nullable: true)
+                    CompanyId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +77,8 @@ namespace Domarservice.Migrations
                         name: "FK_CompanySports_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -104,18 +129,11 @@ namespace Domarservice.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AvailableAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Booked = table.Column<bool>(type: "boolean", nullable: false),
-                    ClaimedByCompanyId = table.Column<int>(type: "integer", nullable: true),
                     RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Schedules_Companies_ClaimedByCompanyId",
-                        column: x => x.ClaimedByCompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Schedules_Referees_RefereeId",
                         column: x => x.RefereeId,
@@ -125,12 +143,38 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BookingRequests",
+                name: "BookingRequestsByReferee",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Message = table.Column<string>(type: "text", nullable: true),
+                    RefereeId = table.Column<int>(type: "integer", nullable: false),
+                    RefereeType = table.Column<int>(type: "integer", nullable: false),
+                    CompanyEventId = table.Column<int>(type: "integer", nullable: false),
+                    Accepted = table.Column<bool>(type: "boolean", nullable: false),
+                    AppliedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingRequestsByReferee", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingRequestsByReferee_CompanyEvents_CompanyEventId",
+                        column: x => x.CompanyEventId,
+                        principalTable: "CompanyEvents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingRequestsByCompany",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    SportType = table.Column<int>(type: "integer", nullable: false),
+                    RefereeType = table.Column<int>(type: "integer", nullable: false),
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
                     ScheduleId = table.Column<int>(type: "integer", nullable: false),
                     Accepted = table.Column<bool>(type: "boolean", nullable: false),
@@ -138,15 +182,15 @@ namespace Domarservice.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BookingRequests", x => x.Id);
+                    table.PrimaryKey("PK_BookingRequestsByCompany", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BookingRequests_Companies_CompanyId",
+                        name: "FK_BookingRequestsByCompany_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BookingRequests_Schedules_ScheduleId",
+                        name: "FK_BookingRequestsByCompany_Schedules_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "Schedules",
                         principalColumn: "Id",
@@ -154,14 +198,24 @@ namespace Domarservice.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookingRequests_CompanyId",
-                table: "BookingRequests",
+                name: "IX_BookingRequestsByCompany_CompanyId",
+                table: "BookingRequestsByCompany",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookingRequests_ScheduleId",
-                table: "BookingRequests",
+                name: "IX_BookingRequestsByCompany_ScheduleId",
+                table: "BookingRequestsByCompany",
                 column: "ScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingRequestsByReferee_CompanyEventId",
+                table: "BookingRequestsByReferee",
+                column: "CompanyEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyEvents_CompanyId",
+                table: "CompanyEvents",
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanySports_CompanyId",
@@ -179,11 +233,6 @@ namespace Domarservice.Migrations
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_ClaimedByCompanyId",
-                table: "Schedules",
-                column: "ClaimedByCompanyId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Schedules_RefereeId",
                 table: "Schedules",
                 column: "RefereeId");
@@ -192,7 +241,10 @@ namespace Domarservice.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BookingRequests");
+                name: "BookingRequestsByCompany");
+
+            migrationBuilder.DropTable(
+                name: "BookingRequestsByReferee");
 
             migrationBuilder.DropTable(
                 name: "CompanySports");
@@ -207,10 +259,13 @@ namespace Domarservice.Migrations
                 name: "Schedules");
 
             migrationBuilder.DropTable(
-                name: "Companies");
+                name: "CompanyEvents");
 
             migrationBuilder.DropTable(
                 name: "Referees");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
         }
     }
 }

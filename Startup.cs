@@ -45,6 +45,7 @@ namespace Domarservice.API
       services.AddScoped<IRefereeRepository, RefereeRepository>();
       services.AddScoped<IScheduleRepository, ScheduleRepository>();
       services.AddScoped<ICompanyRepository, CompanyRepository>();
+      services.AddScoped<ICompanyEventRepository, CompanyEventRepository>();
       var mapperConfig = new MapperConfiguration(mc =>
         {
           mc.AddProfile(new AutoMapperProfile());

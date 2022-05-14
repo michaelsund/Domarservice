@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 using Domarservice.DAL;
 using Domarservice.BLL;
 using Domarservice.Models;
@@ -24,10 +25,22 @@ namespace Domarservice.Controllers
     public IActionResult Get(int id)
     {
       var schedule = _scheduleRepository.GetScheduleById(id);
-      if (schedule == null) {
+      if (schedule == null)
+      {
         return NotFound("Schemat för domaren hittades inte.");
       }
       return Ok(schedule);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+      bool deleteResult = _scheduleRepository.DeleteScheduleById(id);
+      if (!deleteResult)
+      {
+        return StatusCode(StatusCodes.Status400BadRequest, "Schemaposten kunde inte tas bort.");
+      }
+      return Ok();
     }
   }
 }

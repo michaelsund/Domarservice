@@ -23,13 +23,14 @@ namespace Domarservice.Controllers
         [HttpGet]
         public string Get()
         {
-            // Create 99 Referees with one schedule item, create a company that reserves that slot.
             for (int i = 1; i < 10; i++)
             {
                 System.Console.WriteLine("Starting new insert round...");
                 new DoTest(_context).AddReferee("Kalle " + i, "Karlsson");
                 new DoTest(_context).AddScheduleDate(i);
                 new DoTest(_context).AddCompanyAndScheduleFirstReferee("Smygehuk " + i, i);
+                new DoTest(_context).AddEventForCompany("Smygehuk matchen " + i, i);
+                new DoTest(_context).AddRefereeForEvent("Jag dömmer gärna som huvuddomare! " + i, i);
                 new DoTest(_context).RespondYes(i);
                 new DoTest(_context).AddCounty(i);
             }    

@@ -19,21 +19,14 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    // public List<Referee> GetAllReferees()
-    // {
-    //   var referees = _context.Referees.ToList();
-    //   var model = _mapper.Map<RefereeDto>(referees);
-    //   return model;
-    // }
-
     public RefereeDto GetRefeereById(int id)
     {
       Referee referee = _context.Referees
         .Include(x => x.Sports)
         .Include(x => x.Countys)
         .Include(x => x.Schedules)
-          .ThenInclude(y => y.ClaimedByCompany)
-          .ThenInclude(y => y.BookingRequests)
+          .ThenInclude(y => y.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
         .FirstOrDefault(x => x.Id == id);
       var model = _mapper.Map<RefereeDto>(referee);
 

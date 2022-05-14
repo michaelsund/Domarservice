@@ -36,7 +36,6 @@ namespace Domarservice.BLL
           RefereeId = referee.Id,
           Referee = referee,
           AvailableAt = DateTime.UtcNow,
-          Booked = false,
         };
         _context.Schedules.Add(s);
         _context.SaveChanges();
@@ -60,10 +59,12 @@ namespace Domarservice.BLL
 
       if (c != null && s != null)
       {
-        _context.BookingRequests.Add(new BookingRequest()
+        _context.BookingRequestsByCompany.Add(new BookingRequestByCompany()
         {
           CompanyId = c.Id,
           Message = "Kan du komma på vår match?",
+          RefereeType = RefereeType.Hudvuddomare,
+          SportType = SportType.Fotboll,
           RequestingCompany = c,
           Schedule = s,
           ScheduleId = s.Id
@@ -76,17 +77,42 @@ namespace Domarservice.BLL
       _context.SaveChanges();
     }
 
+    public void AddEventForCompany(string name, int y)
+    {
+      _context.CompanyEvents.Add(new CompanyEvent()
+      {
+        Name = name,
+        Date = DateTime.UtcNow,
+        Location = "Ölands jumpasal",
+        CompanyId = y,
+        RefereeTypes = new List<RefereeType>() {
+          RefereeType.Hudvuddomare,
+          RefereeType.Linjeman,
+          RefereeType.Linjeman,
+        }
+      });
+      _context.SaveChanges();
+    }
+
+    public void AddRefereeForEvent(string message, int y)
+    {
+      _context.BookingRequestsByReferee.Add(new BookingRequestByReferee() {
+        CompanyEventId = y,
+        RefereeId = y,
+        Message = message,
+        AppliedAt = DateTime.UtcNow,
+      });
+    }
+
     public bool RespondYes(int y)
     {
       var s = _context.Schedules.Where(x => x.Id == y).FirstOrDefault();
-      var r = _context.BookingRequests.Where(x => x.Id == y).FirstOrDefault();
+      var r = _context.BookingRequestsByCompany.Where(x => x.Id == y).FirstOrDefault();
 
-      if (s != null)
+      if (s != null && r != null)
       {
-        s.Booked = true;
         r.Accepted = true;
         r.RespondedAt = DateTime.UtcNow;
-        s.ClaimedByCompany = r.RequestingCompany;
         _context.SaveChanges();
       }
 
@@ -100,7 +126,8 @@ namespace Domarservice.BLL
         new County() { RefereeId = y, CountyType = CountyType.Orebro },
         new County() { RefereeId = y, CountyType = CountyType.Varmland },
       };
-      if (referee != null) {
+      if (referee != null)
+      {
         referee.Countys = countys;
         _context.SaveChanges();
       }

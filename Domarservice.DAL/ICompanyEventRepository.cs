@@ -6,9 +6,9 @@ using Domarservice.Models;
 
 namespace Domarservice.DAL
 {
-    public interface IScheduleRepository
+    public interface ICompanyEventRepository
     {
-        ScheduleDto GetScheduleById(int id);
-        bool DeleteScheduleById(int id);
+        Task<CompanyEventDto> GetCompanyEventById(int id);
+        Task<bool> DeleteCompanyEventById(int id);
     }
 }

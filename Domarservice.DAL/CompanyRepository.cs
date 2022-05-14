@@ -19,17 +19,22 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    // public List<Company> GetallCompanies()
-    // {
-    //   var companies = _context.Companies.ToList();
-    //   var model = _mapper.Map<CompanyDto>(companies);
-    //   return model;
-    // }
+    public SimpleCompanyDto GetSimpleCompanyById(int id)
+    {
+      Company company = _context.Companies
+        .Include(x => x.Sports)
+        .FirstOrDefault(x => x.Id == id);
+      var model = _mapper.Map<SimpleCompanyDto>(company);
+
+      return model;
+    }
 
     public CompanyDto GetCompanyById(int id)
     {
       Company company = _context.Companies
         .Include(x => x.Sports)
+        .Include(x => x.CompanyEvents)
+          .ThenInclude(y => y.BookingRequestByReferees)
         .FirstOrDefault(x => x.Id == id);
       var model = _mapper.Map<CompanyDto>(company);
 

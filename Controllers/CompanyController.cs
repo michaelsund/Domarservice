@@ -24,7 +24,7 @@ namespace Domarservice.Controllers
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-      var company = _companyRepository.GetCompanyById(id);
+      var company = _companyRepository.GetSimpleCompanyById(id);
       if (company == null)
       {
         return NotFound("Föreningen hittades inte.");

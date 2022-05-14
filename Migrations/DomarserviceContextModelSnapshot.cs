@@ -22,7 +22,7 @@ namespace Domarservice.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domarservice.DAL.BookingRequest", b =>
+            modelBuilder.Entity("Domarservice.DAL.BookingRequestByCompany", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,10 +39,16 @@ namespace Domarservice.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
+                    b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("RespondedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ScheduleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SportType")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -51,7 +57,40 @@ namespace Domarservice.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("BookingRequests");
+                    b.ToTable("BookingRequestsByCompany");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.BookingRequestByReferee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("AppliedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CompanyEventId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RefereeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyEventId");
+
+                    b.ToTable("BookingRequestsByReferee");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Company", b =>
@@ -70,6 +109,39 @@ namespace Domarservice.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int[]>("RefereeTypes")
+                        .HasColumnType("integer[]");
+
+                    b.Property<int>("SportType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("CompanyEvents");
+                });
+
             modelBuilder.Entity("Domarservice.DAL.CompanySport", b =>
                 {
                     b.Property<int>("Id")
@@ -78,7 +150,7 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<int>("SportType")
@@ -166,34 +238,26 @@ namespace Domarservice.Migrations
                     b.Property<DateTime>("AvailableAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("Booked")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("ClaimedByCompanyId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("RefereeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClaimedByCompanyId");
 
                     b.HasIndex("RefereeId");
 
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("Domarservice.DAL.BookingRequest", b =>
+            modelBuilder.Entity("Domarservice.DAL.BookingRequestByCompany", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", "RequestingCompany")
-                        .WithMany("BookingRequests")
+                        .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domarservice.DAL.Schedule", "Schedule")
-                        .WithMany("BookingRequests")
+                        .WithMany("BookingRequestByCompanys")
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -203,11 +267,33 @@ namespace Domarservice.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.BookingRequestByReferee", b =>
+                {
+                    b.HasOne("Domarservice.DAL.CompanyEvent", "CompanyEvent")
+                        .WithMany("BookingRequestByReferees")
+                        .HasForeignKey("CompanyEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyEvent");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>
+                {
+                    b.HasOne("Domarservice.DAL.Company", null)
+                        .WithMany("CompanyEvents")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domarservice.DAL.CompanySport", b =>
                 {
                     b.HasOne("Domarservice.DAL.Company", null)
                         .WithMany("Sports")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domarservice.DAL.County", b =>
@@ -230,26 +316,25 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
-                    b.HasOne("Domarservice.DAL.Company", "ClaimedByCompany")
-                        .WithMany()
-                        .HasForeignKey("ClaimedByCompanyId");
-
                     b.HasOne("Domarservice.DAL.Referee", "Referee")
                         .WithMany("Schedules")
                         .HasForeignKey("RefereeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClaimedByCompany");
-
                     b.Navigation("Referee");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Company", b =>
                 {
-                    b.Navigation("BookingRequests");
+                    b.Navigation("CompanyEvents");
 
                     b.Navigation("Sports");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>
+                {
+                    b.Navigation("BookingRequestByReferees");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>
@@ -263,7 +348,7 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
-                    b.Navigation("BookingRequests");
+                    b.Navigation("BookingRequestByCompanys");
                 });
 #pragma warning restore 612, 618
         }

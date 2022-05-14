@@ -23,13 +23,24 @@ namespace Domarservice.DAL
     {
       Schedule schedule = _context.Schedules
         .Include(x => x.Referee)
-        .Include(x => x.ClaimedByCompany)
-          .ThenInclude(x => x.Sports)
-        .Include(x => x.BookingRequests)
+        .Include(x => x.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
         .FirstOrDefault(x => x.Id == id);
       var model = _mapper.Map<ScheduleDto>(schedule);
 
       return model;
+    }
+
+    public bool DeleteScheduleById(int id)
+    {
+      Schedule schedule = _context.Schedules.FirstOrDefault(x => x.Id == id);
+      if (schedule != null)
+      {
+        _context.Remove(schedule);
+        _context.SaveChanges();
+        return true;
+      }
+      return false;
     }
   }
 }

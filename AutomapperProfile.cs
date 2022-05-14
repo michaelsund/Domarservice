@@ -15,9 +15,12 @@ namespace Domarservice
       CreateMap<CompanySport, CompanySportDto>();
       CreateMap<Schedule, ScheduleDto>();
       CreateMap<Company, CompanyDto>();
+      CreateMap<Company, SimpleCompanyDto>();
+      CreateMap<CompanyEvent, CompanyEventDto>();
       CreateMap<Referee, RefereeDto>();
       CreateMap<Referee, SimpleRefereeDto>();
-      CreateMap<BookingRequest, BookingRequestDto>();
+      CreateMap<BookingRequestByReferee, BookingRequestByRefereeDto>();
+      CreateMap<BookingRequestByCompany, BookingRequestByCompanyDto>();
         // .ForMember(t => t.Sports, options => options.MapFrom(source => source.Sports))
         // .ForMember(t => t.Schedules, options => options.MapFrom(source => source.Schedules))
         // .ForMember(t => t.Countys, options => options.MapFrom(source => source.Countys));
