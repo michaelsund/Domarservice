@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220514141749_Init")]
+    [Migration("20220519160433_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,9 @@ namespace Domarservice.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestingCompanyEventId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("RespondedAt")

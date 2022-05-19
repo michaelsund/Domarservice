@@ -177,6 +177,7 @@ namespace Domarservice.Migrations
                     RefereeType = table.Column<int>(type: "integer", nullable: false),
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
                     ScheduleId = table.Column<int>(type: "integer", nullable: false),
+                    RequestingCompanyEventId = table.Column<int>(type: "integer", nullable: false),
                     Accepted = table.Column<bool>(type: "boolean", nullable: false),
                     RespondedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

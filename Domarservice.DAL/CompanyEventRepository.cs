@@ -36,6 +36,7 @@ namespace Domarservice.DAL
 
     public async Task<bool> DeleteCompanyEventById(int id)
     {
+      // TODO: Also needs to unset the RequestingCompanyEventId key to 0 on BookingRequestByCompany if there is any.
       try
       {
         CompanyEvent companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == id);

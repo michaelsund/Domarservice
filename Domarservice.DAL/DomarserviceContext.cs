@@ -99,6 +99,8 @@ namespace Domarservice.DAL
     public Company RequestingCompany { get; set; }
     public int ScheduleId { get; set; }
     public Schedule Schedule { get; set; }
+    // No relation, is set when a company books a referee and have a match via CompanyEvent.
+    public int RequestingCompanyEventId { get; set; }
     public bool Accepted { get; set; }
     public DateTime RespondedAt { get; set; }
   }

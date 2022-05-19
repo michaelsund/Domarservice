@@ -42,6 +42,9 @@ namespace Domarservice.Migrations
                     b.Property<int>("RefereeType")
                         .HasColumnType("integer");
 
+                    b.Property<int>("RequestingCompanyEventId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("RespondedAt")
                         .HasColumnType("timestamp with time zone");
 
