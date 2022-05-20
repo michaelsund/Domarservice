@@ -19,38 +19,57 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    public SimpleCompanyDto GetSimpleCompanyById(int id)
+    public async Task<SimpleCompanyDto> GetSimpleCompanyById(int id)
     {
-      Company company = _context.Companies
-        .Include(x => x.Sports)
-        .FirstOrDefault(x => x.Id == id);
-      var model = _mapper.Map<SimpleCompanyDto>(company);
-
-      return model;
-    }
-
-    public CompanyDto GetCompanyById(int id)
-    {
-      Company company = _context.Companies
-        .Include(x => x.Sports)
-        .Include(x => x.CompanyEvents)
-          .ThenInclude(y => y.BookingRequestByReferees)
-        .FirstOrDefault(x => x.Id == id);
-      var model = _mapper.Map<CompanyDto>(company);
-
-      return model;
-    }
-
-    public bool DeleteCompanyById(int id)
-    {
-      Company company = _context.Companies.FirstOrDefault(x => x.Id == id);
-      if (company != null)
+      try
       {
-        _context.Remove(company);
-        _context.SaveChanges();
-        return true;
+        Company company = await _context.Companies
+       .Include(x => x.Sports)
+       .FirstOrDefaultAsync(x => x.Id == id);
+        return _mapper.Map<SimpleCompanyDto>(company);
+
       }
-      return false;
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
+
+    public async Task<CompanyDto> GetCompanyById(int id)
+    {
+      try
+      {
+        Company company = await _context.Companies
+       .Include(x => x.Sports)
+       .Include(x => x.CompanyEvents)
+         .ThenInclude(y => y.BookingRequestByReferees)
+       .FirstOrDefaultAsync(x => x.Id == id);
+        return _mapper.Map<CompanyDto>(company);
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
+
+    public async Task<bool> DeleteCompanyById(int id)
+    {
+      try
+      {
+        Company company = await _context.Companies.FirstOrDefaultAsync(x => x.Id == id);
+        if (company != null)
+        {
+          _context.Remove(company);
+          await _context.SaveChangesAsync();
+          return true;
+        }
+        return false;
+      }
+      catch (System.Exception)
+      {
+
+        throw;
+      }
     }
   }
 }

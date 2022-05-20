@@ -24,7 +24,7 @@ namespace Domarservice.Controllers
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-      var referee = _refereeRepository.GetRefeereById(id);
+      var referee = await _refereeRepository.GetRefeereById(id);
       if (referee == null)
       {
         return NotFound("Domaren hittades inte.");
@@ -35,7 +35,7 @@ namespace Domarservice.Controllers
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-      bool deleteResult = _refereeRepository.DeleteRefereeById(id);
+      bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
       if (!deleteResult)
       {
         return StatusCode(StatusCodes.Status400BadRequest, "Domaren kunde inte tas bort.");

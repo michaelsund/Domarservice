@@ -8,8 +8,8 @@ namespace Domarservice.DAL
 {
   public interface IRefereeRepository
   {
-    RefereeDto GetRefeereById(int id);
+    Task<RefereeDto> GetRefeereById(int id);
     // List<Referee> GetAllReferees();
-    bool DeleteRefereeById(int id);
+    Task<bool> DeleteRefereeById(int id);
   }
 }

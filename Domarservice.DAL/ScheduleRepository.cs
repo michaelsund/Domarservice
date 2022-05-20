@@ -19,25 +19,31 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    public ScheduleDto GetScheduleById(int id)
+    public async Task<ScheduleDto> GetScheduleById(int id)
     {
-      Schedule schedule = _context.Schedules
-        .Include(x => x.Referee)
-        .Include(x => x.BookingRequestByCompanys)
-          .ThenInclude(y => y.RequestingCompany)
-        .FirstOrDefault(x => x.Id == id);
-      var model = _mapper.Map<ScheduleDto>(schedule);
+      try
+      {
+        Schedule schedule = await _context.Schedules
+          .Include(x => x.Referee)
+          .Include(x => x.BookingRequestByCompanys)
+            .ThenInclude(y => y.RequestingCompany)
+          .FirstOrDefaultAsync(x => x.Id == id);
+        return _mapper.Map<ScheduleDto>(schedule);
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
 
-      return model;
     }
 
-    public bool DeleteScheduleById(int id)
+    public async Task<bool> DeleteScheduleById(int id)
     {
-      Schedule schedule = _context.Schedules.FirstOrDefault(x => x.Id == id);
+      Schedule schedule = await _context.Schedules.FirstOrDefaultAsync(x => x.Id == id);
       if (schedule != null)
       {
         _context.Remove(schedule);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return true;
       }
       return false;

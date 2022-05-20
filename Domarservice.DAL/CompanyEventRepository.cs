@@ -40,8 +40,17 @@ namespace Domarservice.DAL
       try
       {
         CompanyEvent companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == id);
+        var companyEventId = companyEvent.Id;
         if (companyEvent != null)
         {
+          // Also set requestingCompanyEventId to 0 if any BookingRequestByCompanys has this id.
+          // So that it doesnt refer to a non existing companyevent.
+          List<BookingRequestByCompany> companyRequests = await _context.BookingRequestsByCompany.Where(x => x.RequestingCompanyEventId == companyEventId).ToListAsync(); 
+          foreach (var r in companyRequests)
+          {
+            r.RequestingCompanyEventId = 0;
+          }
+
           _context.Remove(companyEvent);
           await _context.SaveChangesAsync();
           return true;

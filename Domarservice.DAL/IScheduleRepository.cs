@@ -8,7 +8,7 @@ namespace Domarservice.DAL
 {
     public interface IScheduleRepository
     {
-        ScheduleDto GetScheduleById(int id);
-        bool DeleteScheduleById(int id);
+        Task<ScheduleDto> GetScheduleById(int id);
+        Task<bool> DeleteScheduleById(int id);
     }
 }

@@ -22,9 +22,9 @@ namespace Domarservice.Controllers
     }
 
     [HttpGet("{id:int}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-      var schedule = _scheduleRepository.GetScheduleById(id);
+      var schedule = await _scheduleRepository.GetScheduleById(id);
       if (schedule == null)
       {
         return NotFound("Schemat för domaren hittades inte.");
@@ -35,7 +35,7 @@ namespace Domarservice.Controllers
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-      bool deleteResult = _scheduleRepository.DeleteScheduleById(id);
+      bool deleteResult = await _scheduleRepository.DeleteScheduleById(id);
       if (!deleteResult)
       {
         return StatusCode(StatusCodes.Status400BadRequest, "Schemaposten kunde inte tas bort.");

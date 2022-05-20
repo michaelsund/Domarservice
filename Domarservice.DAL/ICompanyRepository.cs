@@ -8,9 +8,9 @@ namespace Domarservice.DAL
 {
   public interface ICompanyRepository
   {
-    SimpleCompanyDto GetSimpleCompanyById(int id);
-    CompanyDto GetCompanyById(int id);
+    Task<SimpleCompanyDto> GetSimpleCompanyById(int id);
+    Task<CompanyDto> GetCompanyById(int id);
     // List<Company> GetAllCompanies();
-    bool DeleteCompanyById(int id);
+    Task<bool> DeleteCompanyById(int id);
   }
 }
