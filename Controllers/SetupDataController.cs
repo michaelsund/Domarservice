@@ -14,15 +14,18 @@ namespace Domarservice.Controllers
   public class SetupDataController : ControllerBase
   {
     private readonly DomarserviceContext _context;
+    private readonly ILogger _logger;
 
-    public SetupDataController(DomarserviceContext context)
+    public SetupDataController(DomarserviceContext context, ILogger<SetupDataController> logger)
     {
       _context = context;
+      _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
+      _logger.LogInformation("Seeding testdata to db in SetupDataController.");
       try
       {
         for (int i = 1; i < 10; i++)
