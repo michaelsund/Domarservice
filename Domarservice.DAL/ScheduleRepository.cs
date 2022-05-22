@@ -21,20 +21,12 @@ namespace Domarservice.DAL
 
     public async Task<ScheduleDto> GetScheduleById(int id)
     {
-      try
-      {
-        Schedule schedule = await _context.Schedules
-          .Include(x => x.Referee)
-          .Include(x => x.BookingRequestByCompanys)
-            .ThenInclude(y => y.RequestingCompany)
-          .FirstOrDefaultAsync(x => x.Id == id);
-        return _mapper.Map<ScheduleDto>(schedule);
-      }
-      catch (Exception ex)
-      {
-        throw ex;
-      }
-
+      Schedule schedule = await _context.Schedules
+        .Include(x => x.Referee)
+        .Include(x => x.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
+        .FirstOrDefaultAsync(x => x.Id == id);
+      return _mapper.Map<ScheduleDto>(schedule);
     }
 
     public async Task<bool> DeleteScheduleById(int id)

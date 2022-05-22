@@ -24,23 +24,37 @@ namespace Domarservice.Controllers
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-      var company = await _companyRepository.GetSimpleCompanyById(id);
-      if (company == null)
+      try
       {
-        return NotFound("Föreningen hittades inte.");
+        var company = await _companyRepository.GetSimpleCompanyById(id);
+        if (company == null)
+        {
+          return NotFound("Föreningen hittades inte.");
+        }
+        return Ok(company);
       }
-      return Ok(company);
+      catch (Exception e)
+      {
+        return StatusCode(500);
+      }
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-      bool deleteResult = await _companyRepository.DeleteCompanyById(id);
-      if (!deleteResult)
+      try
       {
-        return StatusCode(StatusCodes.Status400BadRequest, "Föreningen kunde inte tas bort.");
+        bool deleteResult = await _companyRepository.DeleteCompanyById(id);
+        if (!deleteResult)
+        {
+          return StatusCode(StatusCodes.Status400BadRequest, "Föreningen kunde inte tas bort.");
+        }
+        return Ok();
       }
-      return Ok();
+      catch (Exception e)
+      {
+        return StatusCode(500);
+      }
     }
   }
 }

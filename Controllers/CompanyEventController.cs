@@ -55,7 +55,6 @@ namespace Domarservice.Controllers
       {
         return StatusCode(500);
       }
-
     }
   }
 }

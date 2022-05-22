@@ -21,42 +21,26 @@ namespace Domarservice.DAL
 
     public async Task<RefereeDto> GetRefeereById(int id)
     {
-      try
-      {
-        Referee referee = await _context.Referees
-       .Include(x => x.Sports)
-       .Include(x => x.Countys)
-       .Include(x => x.Schedules)
-         .ThenInclude(y => y.BookingRequestByCompanys)
-         .ThenInclude(y => y.RequestingCompany)
-       .FirstOrDefaultAsync(x => x.Id == id);
-        return _mapper.Map<RefereeDto>(referee);
-      }
-      catch (Exception ex)
-      {
-        throw ex;
-      }
-
+      Referee referee = await _context.Referees
+     .Include(x => x.Sports)
+     .Include(x => x.Countys)
+     .Include(x => x.Schedules)
+       .ThenInclude(y => y.BookingRequestByCompanys)
+       .ThenInclude(y => y.RequestingCompany)
+     .FirstOrDefaultAsync(x => x.Id == id);
+      return _mapper.Map<RefereeDto>(referee);
     }
 
     public async Task<bool> DeleteRefereeById(int id)
     {
-      try
+      Referee referee = await _context.Referees.FirstOrDefaultAsync(x => x.Id == id);
+      if (referee != null)
       {
-        Referee referee = await _context.Referees.FirstOrDefaultAsync(x => x.Id == id);
-        if (referee != null)
-        {
-          _context.Remove(referee);
-          _context.SaveChanges();
-          return true;
-        }
-        return false;
+        _context.Remove(referee);
+        _context.SaveChanges();
+        return true;
       }
-      catch (Exception ex)
-      {
-        throw ex;
-      }
-
+      return false;
     }
   }
 }
