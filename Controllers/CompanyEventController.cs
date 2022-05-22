@@ -21,26 +21,41 @@ namespace Domarservice.Controllers
       _companyEventRepository = companyEventRepository;
     }
 
-   [HttpGet("{id:int}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-      var companyEvent = await _companyEventRepository.GetCompanyEventById(id);
-      if (companyEvent == null)
+      try
       {
-        return NotFound("Matchen hittades inte.");
+        var companyEvent = await _companyEventRepository.GetCompanyEventById(id);
+        if (companyEvent == null)
+        {
+          return NotFound("Matchen hittades inte.");
+        }
+        return Ok(companyEvent);
       }
-      return Ok(companyEvent);
+      catch (Exception e)
+      {
+        return StatusCode(500);
+      }
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-      bool deleteResult = await _companyEventRepository.DeleteCompanyEventById(id);
-      if (!deleteResult)
+      try
       {
-        return StatusCode(StatusCodes.Status400BadRequest, "Matchen kunde inte tas bort.");
+        bool deleteResult = await _companyEventRepository.DeleteCompanyEventById(id);
+        if (!deleteResult)
+        {
+          return StatusCode(StatusCodes.Status400BadRequest, "Matchen kunde inte tas bort.");
+        }
+        return Ok();
       }
-      return Ok();
+      catch (Exception e)
+      {
+        return StatusCode(500);
+      }
+
     }
   }
 }

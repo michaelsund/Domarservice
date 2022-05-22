@@ -9,33 +9,39 @@ using Domarservice.BLL;
 
 namespace Domarservice.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class SetupDataController : ControllerBase
+  [ApiController]
+  [Route("[controller]")]
+  public class SetupDataController : ControllerBase
+  {
+    private readonly DomarserviceContext _context;
+
+    public SetupDataController(DomarserviceContext context)
     {
-        private readonly DomarserviceContext _context;
-
-        public SetupDataController(DomarserviceContext context)
-        {
-            _context = context;
-        }
-
-        [HttpGet]
-        public string Get()
-        {
-            for (int i = 1; i < 10; i++)
-            {
-                System.Console.WriteLine("Starting new insert round...");
-                new DoTest(_context).AddReferee("Kalle " + i, "Karlsson");
-                new DoTest(_context).AddScheduleDate(i);
-                new DoTest(_context).AddCompanyAndScheduleFirstReferee("Smygehuk " + i, i);
-                new DoTest(_context).AddEventForCompany("Smygehuk matchen " + i, i);
-                new DoTest(_context).AddRefereeForEvent("Jag dömmer gärna som huvuddomare! " + i, i);
-                new DoTest(_context).RespondYes(i);
-                new DoTest(_context).AddCounty(i);
-            }    
-
-            return "yes";            
-        }
+      _context = context;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+      try
+      {
+        for (int i = 1; i < 10; i++)
+        {
+          System.Console.WriteLine("Starting new insert round...");
+          new DoTest(_context).AddReferee("Kalle" + i, "Karlsson", i);
+          new DoTest(_context).AddScheduleDate(i);
+          new DoTest(_context).AddCompanyAndScheduleFirstReferee("Smygehuk " + i, i);
+          new DoTest(_context).AddEventForCompany("Smygehuk matchen " + i, i);
+          new DoTest(_context).AddRefereeForEvent("Jag dömmer gärna som huvuddomare! " + i, i);
+          new DoTest(_context).RespondYes(i);
+          new DoTest(_context).AddCounty(i);
+        }
+        return Ok("Data seeded!");
+      }
+      catch (System.Exception)
+      {
+          return StatusCode(500);
+      }
+    }
+  }
 }

@@ -13,12 +13,14 @@ namespace Domarservice.BLL
     {
       _context = context;
     }
-    public void AddReferee(string surname, string lastname)
+    public void AddReferee(string surname, string lastname, int i)
     {
       _context.Referees.Add(new Referee()
       {
-        Lastname = "Karlsson",
-        Surname = "Kalle",
+        Email = surname + i + "@" + lastname + ".com",
+        Password = surname + i,
+        Lastname = lastname,
+        Surname = surname,
         Sports = new List<RefereeSport>() {
           new RefereeSport() { SportType = SportType.Fotboll, RefereeType = RefereeType.Hudvuddomare },
           new RefereeSport() { SportType = SportType.Ishockey, RefereeType = RefereeType.Linjeman },
@@ -47,6 +49,12 @@ namespace Domarservice.BLL
       _context.Companies.Add(new Company()
       {
         Name = name,
+        Address = name + " gatan " + y,
+        Email = name + y + "@" + name + ".com",
+        Password = name + y,
+        City = name,
+        PhoneOne = "019123456",
+        PhoneTwo = "019654321",
         Sports = new List<CompanySport>() {
           new CompanySport() { SportType = SportType.Fotboll },
           new CompanySport() { SportType = SportType.Ishockey },

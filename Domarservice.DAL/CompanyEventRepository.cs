@@ -21,46 +21,35 @@ namespace Domarservice.DAL
 
     public async Task<CompanyEventDto> GetCompanyEventById(int id)
     {
-      try
-      {
-        CompanyEvent companyEvent = await _context.CompanyEvents
-          .Include(x => x.BookingRequestByReferees)
-          .FirstOrDefaultAsync(x => x.Id == id);
-        return _mapper.Map<CompanyEventDto>(companyEvent);
-      }
-      catch (Exception ex)
-      {
-        throw ex;
-      }
+
+      CompanyEvent companyEvent = await _context.CompanyEvents
+        .Include(x => x.BookingRequestByReferees)
+        .FirstOrDefaultAsync(x => x.Id == id);
+      return _mapper.Map<CompanyEventDto>(companyEvent);
+
     }
 
     public async Task<bool> DeleteCompanyEventById(int id)
     {
       // TODO: Also needs to unset the RequestingCompanyEventId key to 0 on BookingRequestByCompany if there is any.
-      try
-      {
-        CompanyEvent companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == id);
-        var companyEventId = companyEvent.Id;
-        if (companyEvent != null)
-        {
-          // Also set requestingCompanyEventId to 0 if any BookingRequestByCompanys has this id.
-          // So that it doesnt refer to a non existing companyevent.
-          List<BookingRequestByCompany> companyRequests = await _context.BookingRequestsByCompany.Where(x => x.RequestingCompanyEventId == companyEventId).ToListAsync(); 
-          foreach (var r in companyRequests)
-          {
-            r.RequestingCompanyEventId = 0;
-          }
 
-          _context.Remove(companyEvent);
-          await _context.SaveChangesAsync();
-          return true;
-        }
-        return false;
-      }
-      catch (Exception ex)
+      CompanyEvent companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == id);
+      var companyEventId = companyEvent.Id;
+      if (companyEvent != null)
       {
-        throw ex;
+        // Also set requestingCompanyEventId to 0 if any BookingRequestByCompanys has this id.
+        // So that it doesnt refer to a non existing companyevent.
+        List<BookingRequestByCompany> companyRequests = await _context.BookingRequestsByCompany.Where(x => x.RequestingCompanyEventId == companyEventId).ToListAsync();
+        foreach (var r in companyRequests)
+        {
+          r.RequestingCompanyEventId = 0;
+        }
+
+        _context.Remove(companyEvent);
+        await _context.SaveChangesAsync();
+        return true;
       }
+      return false;
     }
   }
 }

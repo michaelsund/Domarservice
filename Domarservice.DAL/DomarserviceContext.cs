@@ -26,6 +26,8 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Surname { get; set; }
     public string Lastname { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
     public List<Schedule> Schedules { get; set; }
     public List<RefereeSport> Sports { get; set; }
     public List<County> Countys { get; set; }
@@ -44,6 +46,13 @@ namespace Domarservice.DAL
   {
     public int Id { get; set; }
     public string Name { get; set; }
+    public string Address { get; set; }
+    public string PhoneOne { get; set; }
+    public string PhoneTwo { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string City { get; set; }
+    public CountyType County { get; set; }
     public List<CompanySport> Sports { get; set; }
     public List<CompanyEvent> CompanyEvents { get; set; }
   }
@@ -147,6 +156,5 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public CountyType CountyType { get; set; }
     public int RefereeId { get; set; }
-
   }
 }
