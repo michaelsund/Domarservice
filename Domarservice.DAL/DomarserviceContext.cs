@@ -1,14 +1,18 @@
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domarservice.DAL
 {
-  public class DomarserviceContext : DbContext
+  public class DomarserviceContext : IdentityDbContext<IdentityUser>
   {
     public DomarserviceContext(DbContextOptions<DomarserviceContext> options) : base(options) { }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+      base.OnModelCreating(builder);
+    }
     public DbSet<Referee> Referees { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
@@ -17,8 +21,13 @@ namespace Domarservice.DAL
     public DbSet<CompanyEvent> CompanyEvents { get; set; }
     public DbSet<CompanySport> CompanySports { get; set; }
     public DbSet<RefereeSport> RefereeSports { get; set; }
-
     public DbSet<County> Countys { get; set; }
+  }
+
+  public class User : IdentityUser
+  {
+    public string DisplayName { get; set; }
+    public DateTime CreatedDate { get; set; }
   }
 
   public class Referee
@@ -114,7 +123,7 @@ namespace Domarservice.DAL
     public DateTime RespondedAt { get; set; }
   }
 
-   public class BookingRequestByReferee
+  public class BookingRequestByReferee
   {
     public int Id { get; set; }
     public string Message { get; set; }

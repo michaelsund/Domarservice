@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Domarservice.DAL;
 using Domarservice.BLL;
-using Domarservice.Models;
+using Domarservice.Helpers;
 
 namespace Domarservice.Controllers
 {
@@ -21,6 +22,8 @@ namespace Domarservice.Controllers
       _scheduleRepository = scheduleRepository;
     }
 
+    // [Authorize]
+    [Authorize(Roles="User")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
