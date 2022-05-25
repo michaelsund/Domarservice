@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 
 namespace Domarservice.Controllers
 {
@@ -21,17 +22,20 @@ namespace Domarservice.Controllers
   [Route("[controller]")]
   public class AuthenticateController : ControllerBase
   {
+    private readonly ILogger _logger;
     private readonly IRefereeRepository _refereeRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
     public AuthenticateController(
+      ILogger<SetupDataController> logger,
       IRefereeRepository refereeRepository,
       UserManager<ApplicationUser> userManager,
       RoleManager<IdentityRole> roleManager,
       IConfiguration configuration
     )
     {
+      _logger = logger;
       _refereeRepository = refereeRepository;
       _userManager = userManager;
       _roleManager = roleManager;
@@ -49,17 +53,18 @@ namespace Domarservice.Controllers
 
         var authClaims = new List<Claim>
         {
-          new Claim("Name", user.UserName),
+          new Claim(ClaimTypes.Name, user.UserName),
           new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         foreach (var userRole in userRoles)
         {
-          authClaims.Add(new Claim("Role", userRole));
+          authClaims.Add(new Claim(ClaimTypes.Role, userRole));
         }
 
         var token = CreateToken(authClaims);
         var refreshToken = GenerateRefreshToken();
+        SetRefreshTokenInCookie(refreshToken);
 
         _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
 
@@ -71,7 +76,6 @@ namespace Domarservice.Controllers
         return Ok(new
         {
           Token = new JwtSecurityTokenHandler().WriteToken(token),
-          RefreshToken = refreshToken,
           Expiration = token.ValidTo
         });
       }
@@ -135,31 +139,43 @@ namespace Domarservice.Controllers
 
     [HttpPost]
     [Route("refresh-token")]
-    public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshToken request)
     {
-      if (tokenModel is null)
+      if (request.AccessToken is null)
       {
         return BadRequest("Invalid client request");
       }
 
-      string? accessToken = tokenModel.AccessToken;
-      string? refreshToken = tokenModel.RefreshToken;
+      var tokens = new TokenModel
+      {
+        AccessToken = request.AccessToken,
+        RefreshToken = Request.Cookies["refreshToken"]
+      };
 
-      var principal = GetPrincipalFromExpiredToken(accessToken);
-      if (principal == null)
+      var principal = new ClaimsPrincipal();
+      try
+      {
+        principal = GetPrincipalFromExpiredToken(tokens.AccessToken);
+        
+      }
+      catch (System.Exception)
+      {
+        _logger.LogError($"Invalid access token posted to refresh-token");
+      }
+      if (principal.Identity == null)
       {
         return BadRequest("Invalid access token or refresh token");
       }
 
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+// #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+// #pragma warning disable CS8602 // Dereference of a possibly null reference.
       string username = principal.Identity.Name;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+// #pragma warning restore CS8602 // Dereference of a possibly null reference.
+// #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
       var user = await _userManager.FindByNameAsync(username);
 
-      if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+      if (user == null || user.RefreshToken != tokens.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
       {
         return BadRequest("Invalid access token or refresh token");
       }
@@ -170,10 +186,12 @@ namespace Domarservice.Controllers
       user.RefreshToken = newRefreshToken;
       await _userManager.UpdateAsync(user);
 
-      return new ObjectResult(new
+      SetRefreshTokenInCookie(newRefreshToken);
+
+      return Ok(new
       {
-        accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-        refreshToken = newRefreshToken
+        Token = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+        Expiration = newAccessToken.ValidTo
       });
     }
 
@@ -201,6 +219,16 @@ namespace Domarservice.Controllers
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
       }
+    }
+
+    private void SetRefreshTokenInCookie(string refreshToken)
+    {
+      var cookieOptions = new CookieOptions
+      {
+        HttpOnly = true,
+        Expires = DateTime.UtcNow.AddDays(10),
+      };
+      Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
     }
 
     private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
