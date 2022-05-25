@@ -22,8 +22,8 @@ namespace Domarservice.Controllers
       _scheduleRepository = scheduleRepository;
     }
 
-    // [Authorize]
-    [Authorize(Roles="User")]
+    [Authorize]
+    // [Authorize(Roles="User")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
