@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Domarservice.DAL;
+using Domarservice.Helpers;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,7 +56,8 @@ namespace Domarservice.API
       IMapper mapper = mapperConfig.CreateMapper();
       services.AddSingleton(mapper);
 
-      services.AddIdentity<IdentityUser, IdentityRole>()
+      // We extend the IdentityUser with ApplicationUser to add more properties like refreshtoken.
+      services.AddIdentity<ApplicationUser, IdentityRole>()
         .AddEntityFrameworkStores<DomarserviceContext>()
         .AddDefaultTokenProviders();
 

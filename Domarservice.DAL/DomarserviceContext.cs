@@ -22,12 +22,25 @@ namespace Domarservice.DAL
     public DbSet<CompanySport> CompanySports { get; set; }
     public DbSet<RefereeSport> RefereeSports { get; set; }
     public DbSet<County> Countys { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
   }
 
-  public class User : IdentityUser
+  // public class User : IdentityUser
+  // {
+  //   public string DisplayName { get; set; }
+  //   public DateTime CreatedDate { get; set; }
+  // }
+
+  public class ApplicationUser : IdentityUser
   {
-    public string DisplayName { get; set; }
-    public DateTime CreatedDate { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime RefreshTokenExpiryTime { get; set; }
+  }
+
+  public class TokenModel
+  {
+    public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
   }
 
   public class Referee
