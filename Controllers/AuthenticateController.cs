@@ -51,9 +51,20 @@ namespace Domarservice.Controllers
       {
         var userRoles = await _userManager.GetRolesAsync(user);
 
+        // Since a CompanyUser och RefereeUser only can have one Id of the two connected to the user, we set it as "Id" here.
+        int? mappedId = null;
+        if (user.RefereeId != null)
+        {
+          mappedId = user.RefereeId;  
+        } else if (user.CompanyId != null)
+        {
+          mappedId = user.CompanyId;
+        }
+
         var authClaims = new List<Claim>
         {
           new Claim(ClaimTypes.Name, user.UserName),
+          new Claim("Id", mappedId.ToString()),
           new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
@@ -100,6 +111,17 @@ namespace Domarservice.Controllers
       if (!result.Succeeded)
         return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
 
+      // Set referee role
+      if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+      {
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
+      }
+      if (await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+
+      {
+        await _userManager.AddToRoleAsync(user, UserRoles.RefereeUser);
+      }
+
       return Ok(new Response { Status = "Success", Message = "User created successfully!" });
     }
 
@@ -123,17 +145,17 @@ namespace Domarservice.Controllers
 
       if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
         await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-      if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-        await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+      // if (!await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+      //   await _roleManager.CreateAsync(new IdentityRole(UserRoles.CompanyUser));
 
       if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
       {
         await _userManager.AddToRoleAsync(user, UserRoles.Admin);
       }
-      if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-      {
-        await _userManager.AddToRoleAsync(user, UserRoles.User);
-      }
+      // if (await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+      // {
+      //   await _userManager.AddToRoleAsync(user, UserRoles.CompanyUser);
+      // }
       return Ok(new Response { Status = "Success", Message = "User created successfully!" });
     }
 

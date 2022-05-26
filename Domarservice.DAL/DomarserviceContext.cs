@@ -29,6 +29,8 @@ namespace Domarservice.DAL
   {
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
+    public int? CompanyId { get; set; }
+    public int? RefereeId { get; set; }
   }
 
   public class Referee

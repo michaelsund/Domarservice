@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using Domarservice.DAL;
 using Domarservice.BLL;
 
 namespace Domarservice.Controllers
 {
+  [Authorize(Roles = "Admin")]
   [ApiController]
   [Route("[controller]")]
   public class SetupDataController : ControllerBase

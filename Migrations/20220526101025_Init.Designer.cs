@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220525214851_Init")]
+    [Migration("20220526101025_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -485,6 +485,12 @@ namespace Domarservice.Migrations
             modelBuilder.Entity("Domarservice.DAL.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RefereeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
