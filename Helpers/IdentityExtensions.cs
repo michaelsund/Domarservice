@@ -35,5 +35,13 @@ namespace Domarservice.Helpers
 
       return claim?.Value ?? string.Empty;
     }
+
+    public static bool CheckAdminRole(this IIdentity identity)
+    {
+      ClaimsIdentity claimsIdentity = identity as ClaimsIdentity;
+      Claim claim = claimsIdentity?.FindFirst(ClaimTypes.Role);
+      var isAdmin = claim?.Value == "Admin" ? true : false;
+      return isAdmin;
+    }
   }
 }

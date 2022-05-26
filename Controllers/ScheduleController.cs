@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace Domarservice.Controllers
 {
   [ApiController]
-  [Authorize(Roles="RefereeUser,Admin")]
+  [Authorize(Roles = "RefereeUser,Admin")]
   [Route("[controller]")]
   public class ScheduleController : ControllerBase
   {
@@ -39,21 +39,22 @@ namespace Domarservice.Controllers
         var schedule = await _scheduleRepository.GetScheduleById(id);
         var claimId = User.Identity.GetUserClaimId();
         var claimName = User.Identity.GetUserClaimName();
+        var isAdmin = User.Identity.CheckAdminRole();
 
         // Check if the user has the correct ID compared to the RefereeId
-        if (schedule != null && claimId == schedule.Referee.Id)
+        if ((schedule != null && claimId == schedule.Referee.Id) || (schedule != null && isAdmin))
         {
           return Ok(schedule);
         }
         else
         {
-          _logger.LogWarning($"The user with the claimName {claimName} tried to access a record not owned, ScheduleId {id} where RefereeId was {schedule.Referee.Id}, token had claimId {claimId}");
+          _logger.LogWarning($"Unauthorized access by {claimName}, ScheduleId {id} where RefereeId was {schedule.Referee.Id}, token had Id {claimId}");
           return StatusCode(500, new { message = "Kunde inte hämta schemat." });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem att hämta schemat."});
+        return StatusCode(500, new { message = "Problem att hämta schemat." });
       }
     }
 
@@ -62,16 +63,33 @@ namespace Domarservice.Controllers
     {
       try
       {
-        bool deleteResult = await _scheduleRepository.DeleteScheduleById(id);
-        if (!deleteResult)
+        var schedule = await _scheduleRepository.GetScheduleById(id);
+        var claimId = User.Identity.GetUserClaimId();
+        var claimName = User.Identity.GetUserClaimName();
+        var isAdmin = User.Identity.CheckAdminRole();
+
+        if ((schedule != null && claimId == schedule.Referee.Id) || (schedule != null && isAdmin))
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Schemaposten kunde inte tas bort.");
+          try
+          {
+            await _scheduleRepository.DeleteScheduleById(id);
+          }
+          catch (Exception)
+          {
+            return StatusCode(500, new { message = "Kunde inte ta bort schemat." });
+          }
+          _logger.LogInformation($"The schedule with id {id} was deleted by user {claimName}.");
+          return Ok(new { message = "Schemat togs bort."});
         }
-        return Ok();
+        else
+        {
+          _logger.LogWarning($"The user with the claimName {claimName} tried to delete schedule with id {id} without permission to do so.");
+          return StatusCode(500, new { message = "Kunde inte ta bort schemat." });
+        }
       }
-      catch (Exception e)
+      catch (Exception)
       {
-        return StatusCode(500);
+        return StatusCode(500, new { message = "Problem med inläsning vid borttagning av schemat." });
       }
     }
   }
