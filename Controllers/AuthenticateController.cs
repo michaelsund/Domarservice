@@ -25,12 +25,14 @@ namespace Domarservice.Controllers
   public class AuthenticateController : ControllerBase
   {
     private readonly ILogger _logger;
+    private readonly ISendMailHelper _sendMailHelper;
     private readonly IRefereeRepository _refereeRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
     public AuthenticateController(
-      ILogger<SetupDataController> logger,
+      ILogger<AuthenticateController> logger,
+      ISendMailHelper sendMailHelper,
       IRefereeRepository refereeRepository,
       UserManager<ApplicationUser> userManager,
       RoleManager<IdentityRole> roleManager,
@@ -38,6 +40,7 @@ namespace Domarservice.Controllers
     )
     {
       _logger = logger;
+      _sendMailHelper = sendMailHelper;
       _refereeRepository = refereeRepository;
       _userManager = userManager;
       _roleManager = roleManager;
@@ -51,9 +54,21 @@ namespace Domarservice.Controllers
     {
       var user = await _userManager.FindByEmailAsync(email);
       if (user == null)
+      {
         return StatusCode(500, new { message = "Could not verify email." });
+      }
+
+      if (user.EmailConfirmed)
+      {
+        return StatusCode(500, new { result = false, message = $"The email {email} is allready verified." });
+      }
+
       var result = await _userManager.ConfirmEmailAsync(user, token);
-      return Ok(new { result = result.Succeeded, message = $"The email {email} was verified" });
+      if (result.Succeeded)
+      {
+        return Ok(new { result = result.Succeeded, message = $"The email {email} was verified" });
+      }
+      return StatusCode(500, new { result = result.Succeeded, message = $"The email {email} could not be verified." });
     }
 
     [AllowAnonymous]
@@ -68,10 +83,10 @@ namespace Domarservice.Controllers
       }
 
       var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+      _sendMailHelper.Send($"This is the link to activate your account. https://{{server}}:{{port}}/authenticate/confirm-email?token={confirmationToken}&email={user.Email}");
 
       return Ok(new {
-        message = "A new verification email has been sent.",
-        confirmationToken = confirmationToken
+        message = "A new verification email has been sent."
       });
     }
 
@@ -88,9 +103,9 @@ namespace Domarservice.Controllers
 
       var passwordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+      _sendMailHelper.Send($"This is the link to your password reset. https://blabla?email={user.Email}&resetToken={passwordToken}");
       return Ok(new {
-        message = "A new password email has been sent.",
-        passwordToken = passwordToken
+        message = "A new password email has been sent."
       });
     }
 
