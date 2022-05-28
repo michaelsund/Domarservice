@@ -4,17 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Domarservice.DAL;
-using Domarservice.BLL;
 using Domarservice.Helpers;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace Domarservice.Controllers
 {
@@ -49,12 +41,12 @@ namespace Domarservice.Controllers
         else
         {
           _logger.LogWarning($"Unauthorized access by {claimName}, ScheduleId {id} where RefereeId was {schedule.Referee.Id}, token had Id {claimId}");
-          return StatusCode(500, new { message = "Kunde inte hämta schemat." });
+          return Unauthorized(new { message = "You are not authorized to view this schedule." });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem att hämta schemat." });
+        return StatusCode(500, new { message = "There was a problem fetching the schedule." });
       }
     }
 
@@ -76,7 +68,7 @@ namespace Domarservice.Controllers
           }
           catch (Exception)
           {
-            return StatusCode(500, new { message = "Kunde inte ta bort schemat." });
+            return StatusCode(500, new { message = "Could not delete schedule." });
           }
           _logger.LogInformation($"The schedule with id {id} was deleted by user {claimName}.");
           return Ok(new { message = "Schemat togs bort."});
@@ -84,7 +76,7 @@ namespace Domarservice.Controllers
         else
         {
           _logger.LogWarning($"The user with the claimName {claimName} tried to delete schedule with id {id} without permission to do so.");
-          return StatusCode(500, new { message = "Kunde inte ta bort schemat." });
+          return StatusCode(500, new { message = "Schedule could not be deleted." });
         }
       }
       catch (Exception)

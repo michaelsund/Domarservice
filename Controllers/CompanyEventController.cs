@@ -47,7 +47,7 @@ namespace Domarservice.Controllers
         bool deleteResult = await _companyEventRepository.DeleteCompanyEventById(id);
         if (!deleteResult)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Matchen kunde inte tas bort.");
+          return StatusCode(StatusCodes.Status400BadRequest, "The match could not be deleted.");
         }
         return Ok();
       }

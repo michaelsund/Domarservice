@@ -47,6 +47,7 @@ namespace Domarservice.API
       services.AddScoped<IScheduleRepository, ScheduleRepository>();
       services.AddScoped<ICompanyRepository, CompanyRepository>();
       services.AddScoped<ICompanyEventRepository, CompanyEventRepository>();
+      services.AddScoped<IDummyMailHelper, DummyMailHelper>();
       var mapperConfig = new MapperConfiguration(mc =>
         {
           mc.AddProfile(new AutoMapperProfile());
@@ -57,7 +58,13 @@ namespace Domarservice.API
       services.AddSingleton(mapper);
 
       // We extend the IdentityUser with ApplicationUser to add more properties like refreshtoken.
-      services.AddIdentity<ApplicationUser, IdentityRole>()
+      services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+      {
+        config.SignIn.RequireConfirmedAccount = false;
+        config.User.RequireUniqueEmail = true;
+        config.Tokens.AuthenticatorIssuer = "JWT";
+        config.SignIn.RequireConfirmedEmail = true;
+      })
         .AddEntityFrameworkStores<DomarserviceContext>()
         .AddDefaultTokenProviders();
 

@@ -48,7 +48,7 @@ namespace Domarservice.Controllers
         bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
         if (!deleteResult)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Domaren kunde inte tas bort.");
+          return StatusCode(StatusCodes.Status400BadRequest, "Referee could not be deleted.");
         }
         return Ok();
       }

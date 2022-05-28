@@ -47,7 +47,7 @@ namespace Domarservice.Controllers
         bool deleteResult = await _companyRepository.DeleteCompanyById(id);
         if (!deleteResult)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Föreningen kunde inte tas bort.");
+          return StatusCode(StatusCodes.Status400BadRequest, "Company could not be deleted.");
         }
         return Ok();
       }
