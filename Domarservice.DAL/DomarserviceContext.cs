@@ -38,8 +38,6 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Surname { get; set; }
     public string Lastname { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
     public List<Schedule> Schedules { get; set; }
     public List<RefereeSport> Sports { get; set; }
     public List<County> Countys { get; set; }
@@ -62,8 +60,10 @@ namespace Domarservice.DAL
     public string PhoneOne { get; set; }
     public string PhoneTwo { get; set; }
     public string Email { get; set; }
-    public string Password { get; set; }
     public string City { get; set; }
+    public bool HasValidSubscription { get; set; }
+    public DateTime SubscriptionActiveFrom { get; set; }
+    public DateTime SubscriptionEndsAt { get; set; }
     public CountyType County { get; set; }
     public List<CompanySport> Sports { get; set; }
     public List<CompanyEvent> CompanyEvents { get; set; }

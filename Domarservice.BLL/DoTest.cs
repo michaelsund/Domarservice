@@ -17,8 +17,6 @@ namespace Domarservice.BLL
     {
       _context.Referees.Add(new Referee()
       {
-        Email = surname + i + "@" + lastname + ".com",
-        Password = surname + i,
         Lastname = lastname,
         Surname = surname,
         Sports = new List<RefereeSport>() {
@@ -51,7 +49,6 @@ namespace Domarservice.BLL
         Name = name,
         Address = name + " gatan " + y,
         Email = name + y + "@" + name + ".com",
-        Password = name + y,
         City = name,
         PhoneOne = "019123456",
         PhoneTwo = "019654321",

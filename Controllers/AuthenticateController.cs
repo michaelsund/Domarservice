@@ -218,17 +218,6 @@ namespace Domarservice.Controllers
       if (!result.Succeeded)
         return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "User creation failed! Please check user details and try again." });
 
-      // Set referee role
-      if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
-      {
-        await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
-      }
-      if (await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
-
-      {
-        await _userManager.AddToRoleAsync(user, UserRoles.RefereeUser);
-      }
-
       var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
       return Ok(new {
@@ -238,7 +227,6 @@ namespace Domarservice.Controllers
       });
     }
 
-    // [Authorize(Roles = "Admin")]
     [AllowAnonymous]
     [HttpPost]
     [Route("register-admin")]

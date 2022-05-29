@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Domarservice.DAL;
+using Domarservice.BLL;
 using Domarservice.Helpers;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
@@ -48,6 +49,8 @@ namespace Domarservice.API
       services.AddScoped<ICompanyRepository, CompanyRepository>();
       services.AddScoped<ICompanyEventRepository, CompanyEventRepository>();
       services.AddScoped<ISendMailHelper, SendMailHelper>();
+      // BLL Administration
+      services.AddScoped<IAdministrationService, AdministrationService>();
       var mapperConfig = new MapperConfiguration(mc =>
         {
           mc.AddProfile(new AutoMapperProfile());
