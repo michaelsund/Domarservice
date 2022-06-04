@@ -4,21 +4,46 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Domarservice.DAL;
-using Domarservice.BLL;
-using Domarservice.Models;
+using Domarservice.Helpers;
 
 namespace Domarservice.Controllers
 {
+  [Authorize(Roles = "CompanyUser,Admin")]
   [ApiController]
   [Route("[controller]")]
   public class CompanyController : ControllerBase
   {
     private readonly ICompanyRepository _companyRepository;
-    public CompanyController(ICompanyRepository companyRepository)
+    private readonly ILogger _logger;
+
+    public CompanyController(ICompanyRepository companyRepository, ILogger<CompanyController> logger)
     {
       _companyRepository = companyRepository;
+      _logger = logger;
+    }
+
+    [HttpPost]
+    [Route("register-company")]
+    public async Task<IActionResult> RegisterCompany(RegisterCompanyModel model)
+    {
+      try
+      {
+        var result = await _companyRepository.AddNewCompany(model);
+        if (result)
+        {
+          _logger.LogInformation($"The following company was created: {model}");
+          return Ok($"Föreningen {model.Name} har skapats.");
+        }
+        return StatusCode(500, "The company could not be created, please try again.");
+      }
+      catch (Exception e)
+      {
+        _logger.LogWarning($"Something went wrong while trying to create the company {model.Name}. {e}");
+        return StatusCode(500, $"Something went wrong while trying to create the company.");
+      }
     }
 
     [HttpGet("{id:int}")]

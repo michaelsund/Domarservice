@@ -3,15 +3,40 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Domarservice.DAL;
+using Domarservice.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace Domarservice.BLL
 {
   public class DoTest
   {
     private readonly DomarserviceContext _context;
-    public DoTest(DomarserviceContext context)
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    public DoTest(
+      DomarserviceContext context,
+      UserManager<ApplicationUser> userManager,
+      RoleManager<IdentityRole> roleManager
+    )
     {
       _context = context;
+      _userManager = userManager;
+      _roleManager = roleManager;
+    }
+    public async Task SetupRoles()
+    {
+      if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+      if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
+      if (!await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.CompanyUser));
     }
     public void AddReferee(string surname, string lastname, int i)
     {
@@ -25,6 +50,23 @@ namespace Domarservice.BLL
         }
       });
       _context.SaveChanges();
+    }
+    public async Task AddAdminUser()
+    {
+      ApplicationUser user = new()
+      {
+        Email = "admin@osund.com",
+        SecurityStamp = Guid.NewGuid().ToString(),
+        UserName = "Admin"
+      };
+      await _userManager.CreateAsync(user, "!Oneverycomplexpassword123");
+
+      if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+      if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+      {
+        await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+      }
     }
     public void AddScheduleDate(int id)
     {
@@ -42,6 +84,28 @@ namespace Domarservice.BLL
       }
     }
 
+    public void AddCompany(string name, int y)
+    {
+      _context.Companies.Add(new Company()
+      {
+        Name = name,
+        Address = name + " gatan " + y,
+        Email = name + y + "@" + name + ".com",
+        City = name,
+        HasValidSubscription = true,
+        SubscriptionActiveFrom = DateTime.UtcNow,
+        // Seeddata company subscription-time valid 1 year from creation.
+        SubscriptionEndsAt = DateTime.UtcNow.AddDays(365),
+        PhoneOne = "019123456",
+        PhoneTwo = "019654321",
+        Sports = new List<CompanySport>() {
+          new CompanySport() { SportType = SportType.Fotboll },
+          new CompanySport() { SportType = SportType.Ishockey },
+        }
+      });
+      _context.SaveChanges();
+    }
+
     public void AddCompanyAndScheduleFirstReferee(string name, int y)
     {
       _context.Companies.Add(new Company()
@@ -50,6 +114,10 @@ namespace Domarservice.BLL
         Address = name + " gatan " + y,
         Email = name + y + "@" + name + ".com",
         City = name,
+        HasValidSubscription = true,
+        SubscriptionActiveFrom = DateTime.UtcNow,
+        // Seeddata company subscription-time valid 1 year from creation.
+        SubscriptionEndsAt = DateTime.UtcNow.AddDays(365),
         PhoneOne = "019123456",
         PhoneTwo = "019654321",
         Sports = new List<CompanySport>() {
@@ -101,7 +169,8 @@ namespace Domarservice.BLL
 
     public void AddRefereeForEvent(string message, int y)
     {
-      _context.BookingRequestsByReferee.Add(new BookingRequestByReferee() {
+      _context.BookingRequestsByReferee.Add(new BookingRequestByReferee()
+      {
         CompanyEventId = y,
         RefereeId = y,
         Message = message,

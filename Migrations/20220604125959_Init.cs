@@ -65,8 +65,10 @@ namespace Domarservice.Migrations
                     PhoneOne = table.Column<string>(type: "text", nullable: true),
                     PhoneTwo = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
-                    Password = table.Column<string>(type: "text", nullable: true),
                     City = table.Column<string>(type: "text", nullable: true),
+                    HasValidSubscription = table.Column<bool>(type: "boolean", nullable: false),
+                    SubscriptionActiveFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SubscriptionEndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     County = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -81,9 +83,7 @@ namespace Domarservice.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Surname = table.Column<string>(type: "text", nullable: true),
-                    Lastname = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Password = table.Column<string>(type: "text", nullable: true)
+                    Lastname = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

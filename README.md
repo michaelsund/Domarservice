@@ -20,3 +20,9 @@ The role CompanyUser, RefereeUser and Admins also are Claims that are checked at
 
 So first we check if the user has the correct role for the route.
 Then we check if the user has the correct Referee or Company Id to modify or read the current record.
+
+
+### ICU Problems with entity framework command
+use these
+DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 dotnet ef migrations add Init
+DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 dotnet ef database update

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220527084741_Init")]
+    [Migration("20220604125959_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -118,10 +118,10 @@ namespace Domarservice.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                    b.Property<bool>("HasValidSubscription")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneOne")
@@ -129,6 +129,12 @@ namespace Domarservice.Migrations
 
                     b.Property<string>("PhoneTwo")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("SubscriptionActiveFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("SubscriptionEndsAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -218,13 +224,7 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
                     b.Property<string>("Lastname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Password")
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Domarservice.Models;
+using Domarservice.Helpers;
 using AutoMapper;
 
 namespace Domarservice.DAL
@@ -35,7 +36,29 @@ namespace Domarservice.DAL
        .ThenInclude(y => y.BookingRequestByReferees)
      .FirstOrDefaultAsync(x => x.Id == id);
       return _mapper.Map<CompanyDto>(company);
+    }
 
+    public async Task<bool> AddNewCompany(RegisterCompanyModel model)
+    {
+
+      await _context.Companies.AddAsync(new Company()
+      {
+        Name = model.Name,
+        Address = model.Address,
+        County = model.County,
+        City = model.City,
+        Email = model.Email,
+        PhoneOne = model.PhoneOne,
+        PhoneTwo = model.PhoneTwo,
+        Sports = model.Sports,
+        HasValidSubscription = false,
+      });
+      var result = await _context.SaveChangesAsync();
+      if (result > 0)
+      {
+        return true;
+      }
+      return false;
     }
 
     public async Task<bool> DeleteCompanyById(int id)
@@ -49,7 +72,6 @@ namespace Domarservice.DAL
         return true;
       }
       return false;
-
     }
   }
 }
