@@ -11,7 +11,7 @@ using Domarservice.Helpers;
 
 namespace Domarservice.Controllers
 {
-  [Authorize(Roles = "CompanyUser,Admin")]
+  [Authorize]
   [ApiController]
   [Route("[controller]")]
   public class CompanyController : ControllerBase
@@ -25,6 +25,7 @@ namespace Domarservice.Controllers
       _logger = logger;
     }
 
+    [Authorize(Roles = "CompanyUser")]
     [HttpPost]
     [Route("register-company")]
     public async Task<IActionResult> RegisterCompany(RegisterCompanyModel model)
@@ -64,21 +65,31 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "CompanyUser")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
       try
       {
-        bool deleteResult = await _companyRepository.DeleteCompanyById(id);
-        if (!deleteResult)
+        var claimId = User.Identity.GetUserClaimId();
+        // Check that the users claimId (companyId) is the companyId to be deleted.
+        if (claimId == id)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Company could not be deleted.");
+          bool deleteResult = await _companyRepository.DeleteCompanyById(id);
+          if (!deleteResult)
+          {
+            return StatusCode(StatusCodes.Status400BadRequest, "Company could not be deleted.");
+          }
+          return Ok();
         }
-        return Ok();
+        else
+        {
+          return StatusCode(500, "You do not have permission to delete this company.");
+        }
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, "Error deleting company.");
       }
     }
   }

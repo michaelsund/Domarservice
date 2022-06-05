@@ -26,6 +26,7 @@ namespace Domarservice.DAL
         .Include(x => x.Referee)
         .Include(x => x.BookingRequestByCompanys)
           .ThenInclude(y => y.RequestingCompany)
+          .ThenInclude(i => i.Sports)
         .FirstOrDefaultAsync(x => x.Id == id);
       return _mapper.Map<ScheduleDto>(schedule);
     }
@@ -35,6 +36,7 @@ namespace Domarservice.DAL
       List<Schedule> schedules = await _context.Schedules
         .Include(x => x.BookingRequestByCompanys)
           .ThenInclude(y => y.RequestingCompany)
+          .ThenInclude(i => i.Sports)
         .Where(x => x.RefereeId == id)
         .ToListAsync();
       return _mapper.Map<List<SimpleScheduleDto>>(schedules);
