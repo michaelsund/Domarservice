@@ -14,6 +14,7 @@ namespace Domarservice
       CreateMap<RefereeSport, RefereeSportDto>();
       CreateMap<CompanySport, CompanySportDto>();
       CreateMap<Schedule, ScheduleDto>();
+      CreateMap<Schedule, SimpleScheduleDto>();
       CreateMap<Company, CompanyDto>();
       CreateMap<Company, SimpleCompanyDto>();
       CreateMap<CompanyEvent, CompanyEventDto>();

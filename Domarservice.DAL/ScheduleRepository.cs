@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Domarservice.Models;
+using Domarservice.Helpers;
 using AutoMapper;
 
 namespace Domarservice.DAL
@@ -27,6 +28,35 @@ namespace Domarservice.DAL
           .ThenInclude(y => y.RequestingCompany)
         .FirstOrDefaultAsync(x => x.Id == id);
       return _mapper.Map<ScheduleDto>(schedule);
+    }
+
+    public async Task<List<SimpleScheduleDto>> GetSchedulesByRefereeId(int id)
+    {
+      List<Schedule> schedules = await _context.Schedules
+        .Include(x => x.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
+        .Where(x => x.RefereeId == id)
+        .ToListAsync();
+      return _mapper.Map<List<SimpleScheduleDto>>(schedules);
+    }
+
+    public async Task<bool> CreateSchedule(int id, DateTime availableAt)
+    {
+      try
+      {
+        await _context.Schedules
+        .AddAsync(new Schedule()
+        {
+          AvailableAt = availableAt,
+          RefereeId = id,
+        });
+        await _context.SaveChangesAsync();
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
     }
 
     public async Task<bool> DeleteScheduleById(int id)

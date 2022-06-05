@@ -7,11 +7,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Domarservice.DAL;
 using Domarservice.Helpers;
+using Domarservice.Models;
 
 namespace Domarservice.Controllers
 {
   [ApiController]
-  [Authorize(Roles = "RefereeUser,Admin")]
+  [Authorize]
   [Route("[controller]")]
   public class ScheduleController : ControllerBase
   {
@@ -50,12 +51,44 @@ namespace Domarservice.Controllers
       }
     }
 
-    // [HttpPost]
-    // [Route("create-schedule")]
-    // public async Task<IActionResult> CreateSchedule([FromBody] CreateScheduleBody request)
-    // {
-    // }
+    [HttpGet("referee/{id:int}")]
+    public async Task<IActionResult> GetAllByRefereeId(int id)
+    {
+      try
+      {
+        List<SimpleScheduleDto> schedules = await _scheduleRepository.GetSchedulesByRefereeId(id);
+        return Ok(schedules);
+      }
+      catch (Exception)
+      {
+        return StatusCode(500, new { message = "There was a problem fetching all schedules for the referee." });
+      }
+    }
 
+    [Authorize(Roles = "RefereeUser,Admin")]
+    [HttpPost]
+    [Route("create")]
+    public async Task<IActionResult> Create([FromBody] CreateScheduleBody request)
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        var claimName = User.Identity.GetUserClaimName();
+        var result = await _scheduleRepository.CreateSchedule(claimId, request.AvailAbleAt);
+        if (result)
+        {
+          _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at {request.AvailAbleAt}");
+          return Ok("Schedule created.");
+        }
+        return StatusCode(500, "Problem creating schedule");
+      }
+      catch (Exception)
+      {
+        return StatusCode(500, "Invalid request creating schedule");
+      }
+    }
+
+    [Authorize(Roles = "RefereeUser,Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -77,7 +110,7 @@ namespace Domarservice.Controllers
             return StatusCode(500, new { message = "Could not delete schedule." });
           }
           _logger.LogInformation($"The schedule with id {id} was deleted by user {claimName}.");
-          return Ok(new { message = "Schemat togs bort."});
+          return Ok(new { message = "Schemat togs bort." });
         }
         else
         {
