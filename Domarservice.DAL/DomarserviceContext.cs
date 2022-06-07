@@ -21,6 +21,7 @@ namespace Domarservice.DAL
     public DbSet<CompanyEvent> CompanyEvents { get; set; }
     public DbSet<CompanySport> CompanySports { get; set; }
     public DbSet<RefereeSport> RefereeSports { get; set; }
+    public DbSet<ScheduleSport> ScheduleSports { get; set; }
     public DbSet<County> Countys { get; set; }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
   }
@@ -49,6 +50,7 @@ namespace Domarservice.DAL
     public DateTime AvailableAt { get; set; }
     public int RefereeId { get; set; }
     public Referee Referee { get; set; }
+    public ScheduleSport Sports { get; set; }
     public List<BookingRequestByCompany> BookingRequestByCompanys { get; set; }
   }
 
@@ -102,6 +104,12 @@ namespace Domarservice.DAL
     public int RefereeId { get; set; }
   }
 
+  public class ScheduleSport
+  {
+    public int Id { get; set; }
+    public int ScheduleId { get; set; }
+    public SportType Sport { get; set; }
+  }
   public class CompanySport
   {
     public int Id { get; set; }
