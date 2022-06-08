@@ -120,7 +120,7 @@ namespace Domarservice.Controllers
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem med inläsning vid borttagning av schemat." });
+        return StatusCode(500, new { message = "Problem reading the schema for delete." });
       }
     }
   }

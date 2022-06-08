@@ -38,7 +38,7 @@ namespace Domarservice.Controllers
           var result = await _bookingRequestRepository.AddBookingRequestByCompany(request);
           if (result)
           {
-            return Ok("Schedule is now booked");
+            return Ok("Schedule booking request sent");
           }
         }
         return StatusCode(500, new { message = "There was a problem booking the schedule." });
@@ -46,6 +46,32 @@ namespace Domarservice.Controllers
       catch (Exception e)
       {
         return StatusCode(500, new { message = "There was a error booking the schedule." });
+      }
+    }
+
+    [Authorize(Roles = "RefereeUser,Admin")]
+    [HttpPost]
+    [Route("referee-awnser")]
+    public async Task<IActionResult> AwnserCompanyRequest([FromBody] AwnserCompanyRequestBody request)
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        var bookingRequest = await _bookingRequestRepository.AwnserBookingRequestFromCompany(request, claimId);
+
+        if (bookingRequest)
+        {
+          return Ok($"The request was awnsered with {request.Accepting}");
+        }
+        else
+        {
+          _logger.LogWarning($"Could not accept the request from the company.. Log more!");
+          return StatusCode(500, new { message = "The request could not be awnsered." });
+        }
+      }
+      catch (Exception)
+      {
+        return StatusCode(500, new { message = "Problem awnsering the request from the company." });
       }
     }
   }

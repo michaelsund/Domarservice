@@ -9,6 +9,7 @@ using AutoMapper;
 
 namespace Domarservice.DAL
 {
+  // OBS! This repo handles both company and referee booking requests.
   public class BookingRequestRepository : IBookingRequestRepository
   {
     private readonly DomarserviceContext _context = null;
@@ -43,6 +44,33 @@ namespace Domarservice.DAL
         return false;
       }
     }
-    
+
+    public async Task<bool> AwnserBookingRequestFromCompany(AwnserCompanyRequestBody request, int refereeId)
+    {
+      try
+      {
+        var bookingRequest = await _context.BookingRequestsByCompany
+          .FirstOrDefaultAsync(x => x.Id == request.RequestId);
+
+        if (bookingRequest != null)
+        {
+          // Check if the referee id is allowed to accept this request, by looking up the refereeId from the schedule
+          var schedule = await _context.Schedules.FirstOrDefaultAsync(x => x.Id == bookingRequest.ScheduleId);
+          if (schedule.RefereeId == refereeId)
+          {
+            bookingRequest.Accepted = request.Accepting;
+            bookingRequest.RespondedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true;
+          }
+        }
+        return false;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
   }
 }

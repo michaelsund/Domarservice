@@ -10,5 +10,6 @@ namespace Domarservice.DAL
     public interface IBookingRequestRepository
     {
         Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request);
+        Task<bool> AwnserBookingRequestFromCompany(AwnserCompanyRequestBody request, int refereeId);
     }
 }
