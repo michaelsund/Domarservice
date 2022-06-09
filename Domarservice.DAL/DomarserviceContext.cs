@@ -139,11 +139,13 @@ namespace Domarservice.DAL
     public int Id { get; set; }
     public string Message { get; set; }
     public int RefereeId { get; set; }
+    public Referee Referee { get; set; }
     public RefereeType RefereeType { get; set; }
     public int CompanyEventId { get; set; }
     public CompanyEvent CompanyEvent { get; set; }
     public bool Accepted { get; set; }
     public DateTime AppliedAt { get; set; }
+    public DateTime RespondedAt { get; set; }
   }
 
   public enum CountyType

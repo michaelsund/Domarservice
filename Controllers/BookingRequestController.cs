@@ -34,8 +34,7 @@ namespace Domarservice.Controllers
         var claimId = User.Identity.GetUserClaimId();
         if (claimId > 0)
         {
-          request.CompanyId = claimId;
-          var result = await _bookingRequestRepository.AddBookingRequestByCompany(request);
+          var result = await _bookingRequestRepository.AddBookingRequestByCompany(request, claimId);
           if (result)
           {
             return Ok("Schedule booking request sent");
@@ -61,7 +60,7 @@ namespace Domarservice.Controllers
 
         if (bookingRequest)
         {
-          return Ok($"The request was awnsered with {request.Accepting}");
+          return Ok($"The request was awnsered with {request.Accepted}");
         }
         else
         {
@@ -74,5 +73,56 @@ namespace Domarservice.Controllers
         return StatusCode(500, new { message = "Problem awnsering the request from the company." });
       }
     }
+
+    [Authorize(Roles = "RefereeUser,Admin")]
+    [HttpPost]
+    [Route("request-by-referee")]
+    public async Task<IActionResult> BookingRequestByRefereeOnCompanyEvent([FromBody] BookCompanyEventByRefereeBody request)
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        if (claimId > 0)
+        {
+          var result = await _bookingRequestRepository.AddBookingRequestByReferee(request, claimId);
+          if (result)
+          {
+            return Ok("Companyevent booking request sent");
+          }
+        }
+        return StatusCode(500, new { message = "There was a problem booking the companyevent." });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new { message = "There was a error booking the companyevent." });
+      }
+    }
+
+    [Authorize(Roles = "CompanyUser,Admin")]
+    [HttpPost]
+    [Route("company-awnser")]
+    public async Task<IActionResult> AwnserRefereeRequest([FromBody] AwnserRefereeRequestBody request)
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        var bookingRequest = await _bookingRequestRepository.AwnserBookingRequestFromReferee(request, claimId);
+
+        if (bookingRequest)
+        {
+          return Ok($"The request was awnsered with {request.Accepted}");
+        }
+        else
+        {
+          _logger.LogWarning($"Could not accept the request from the referee.. Log more!");
+          return StatusCode(500, new { message = "The request could not be awnsered." });
+        }
+      }
+      catch (Exception)
+      {
+        return StatusCode(500, new { message = "Problem awnsering the request from the referee." });
+      }
+    }
+
   }
 }

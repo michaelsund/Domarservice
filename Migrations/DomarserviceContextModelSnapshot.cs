@@ -89,9 +89,14 @@ namespace Domarservice.Migrations
                     b.Property<int>("RefereeType")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyEventId");
+
+                    b.HasIndex("RefereeId");
 
                     b.ToTable("BookingRequestsByReferee");
                 });
@@ -548,7 +553,15 @@ namespace Domarservice.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domarservice.DAL.Referee", "Referee")
+                        .WithMany()
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CompanyEvent");
+
+                    b.Navigation("Referee");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>

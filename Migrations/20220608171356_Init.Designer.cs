@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220607175333_Init")]
+    [Migration("20220608171356_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,9 +91,14 @@ namespace Domarservice.Migrations
                     b.Property<int>("RefereeType")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyEventId");
+
+                    b.HasIndex("RefereeId");
 
                     b.ToTable("BookingRequestsByReferee");
                 });
@@ -550,7 +555,15 @@ namespace Domarservice.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domarservice.DAL.Referee", "Referee")
+                        .WithMany()
+                        .HasForeignKey("RefereeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CompanyEvent");
+
+                    b.Navigation("Referee");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>

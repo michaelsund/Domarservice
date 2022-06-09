@@ -312,7 +312,8 @@ namespace Domarservice.Migrations
                     RefereeType = table.Column<int>(type: "integer", nullable: false),
                     CompanyEventId = table.Column<int>(type: "integer", nullable: false),
                     Accepted = table.Column<bool>(type: "boolean", nullable: false),
-                    AppliedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    AppliedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -321,6 +322,12 @@ namespace Domarservice.Migrations
                         name: "FK_BookingRequestsByReferee_CompanyEvents_CompanyEventId",
                         column: x => x.CompanyEventId,
                         principalTable: "CompanyEvents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingRequestsByReferee_Referees_RefereeId",
+                        column: x => x.RefereeId,
+                        principalTable: "Referees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -428,6 +435,11 @@ namespace Domarservice.Migrations
                 name: "IX_BookingRequestsByReferee_CompanyEventId",
                 table: "BookingRequestsByReferee",
                 column: "CompanyEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingRequestsByReferee_RefereeId",
+                table: "BookingRequestsByReferee",
+                column: "RefereeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyEvents_CompanyId",

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Domarservice.Models;
+using Domarservice.Helpers;
 using AutoMapper;
 
 namespace Domarservice.DAL
@@ -24,9 +25,33 @@ namespace Domarservice.DAL
 
       CompanyEvent companyEvent = await _context.CompanyEvents
         .Include(x => x.BookingRequestByReferees)
+        .ThenInclude(y => y.Referee)
         .FirstOrDefaultAsync(x => x.Id == id);
       return _mapper.Map<CompanyEventDto>(companyEvent);
 
+    }
+
+    public async Task<bool> AddCompanyEvent(CreateCompanyEventBody request, int companyId)
+    {
+      try
+      {
+        await _context.CompanyEvents
+          .AddAsync(new CompanyEvent()
+          {
+            CompanyId = companyId,
+            Date = request.Date,
+            Location = request.Location,
+            Name = request.Name,
+            SportType = request.SportType,
+            RefereeTypes = request.RefereeTypes
+          });
+        await _context.SaveChangesAsync();
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
     }
 
     public async Task<bool> DeleteCompanyEventById(int id)

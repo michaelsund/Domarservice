@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Domarservice.Models;
 using Domarservice.Helpers;
 using AutoMapper;
 
@@ -21,7 +20,7 @@ namespace Domarservice.DAL
       _mapper = mapper;
     }
 
-    public async Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request)
+    public async Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request, int companyId)
     {
       try
       {
@@ -29,8 +28,9 @@ namespace Domarservice.DAL
         .AddAsync(new BookingRequestByCompany()
         {
           Accepted = false,
-          CompanyId = request.CompanyId,
-          RequestingCompanyEventId = request.CompanyEventId,
+          CompanyId = companyId,
+          // Set to 0 if there is not a companyEvent specified.
+          RequestingCompanyEventId = request.CompanyEventId | 0,
           Message = request.Message,
           RefereeType = request.RefereeType,
           SportType = request.SportType,
@@ -58,7 +58,7 @@ namespace Domarservice.DAL
           var schedule = await _context.Schedules.FirstOrDefaultAsync(x => x.Id == bookingRequest.ScheduleId);
           if (schedule.RefereeId == refereeId)
           {
-            bookingRequest.Accepted = request.Accepting;
+            bookingRequest.Accepted = request.Accepted;
             bookingRequest.RespondedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return true;
@@ -72,5 +72,56 @@ namespace Domarservice.DAL
       }
     }
 
+    public async Task<bool> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId)
+    {
+      // First check if the companyEvent exists.
+      try
+      {
+        var companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == request.CompanyEventId);
+        if (companyEvent != null)
+        {
+          await _context.BookingRequestsByReferee
+            .AddAsync(new BookingRequestByReferee()
+            {
+              Accepted = false,
+              RefereeId = refereeId,
+              Message = request.Message,
+              CompanyEventId = request.CompanyEventId,
+              AppliedAt = DateTime.UtcNow,
+              RefereeType = request.RefereeType
+            });
+          await _context.SaveChangesAsync();
+          return true;
+        }
+        return false;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
+    public async Task<bool> AwnserBookingRequestFromReferee(AwnserRefereeRequestBody request, int companyId)
+    {
+      try
+      {
+        var bookingRequest = await _context.BookingRequestsByReferee
+          .Include(x => x.CompanyEvent)
+          .FirstOrDefaultAsync(x => x.Id == request.RequestId);
+        
+        if (bookingRequest != null && bookingRequest.CompanyEvent.CompanyId == companyId)
+        {
+            bookingRequest.Accepted = request.Accepted;
+            bookingRequest.RespondedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        return false;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
   }
 }

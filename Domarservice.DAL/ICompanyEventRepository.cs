@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domarservice.Models;
+using Domarservice.Helpers;
 
 namespace Domarservice.DAL
 {
@@ -10,5 +11,6 @@ namespace Domarservice.DAL
     {
         Task<CompanyEventDto> GetCompanyEventById(int id);
         Task<bool> DeleteCompanyEventById(int id);
+        Task<bool> AddCompanyEvent(CreateCompanyEventBody request, int companyId);
     }
 }

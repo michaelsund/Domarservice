@@ -9,7 +9,12 @@ namespace Domarservice.DAL
 {
     public interface IBookingRequestRepository
     {
-        Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request);
+        // Company > Referee
+        Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request, int companyId);
         Task<bool> AwnserBookingRequestFromCompany(AwnserCompanyRequestBody request, int refereeId);
+        // Referee > Company
+        Task<bool> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId);
+        Task<bool> AwnserBookingRequestFromReferee(AwnserRefereeRequestBody request, int companyId);
+        
     }
 }
