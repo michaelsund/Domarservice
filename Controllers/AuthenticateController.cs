@@ -215,7 +215,7 @@ namespace Domarservice.Controllers
         }
 
       }
-      // _logger.LogInformation($"Failed login attempt with the username {model.Username} from IP {HttpContext.Connection.RemoteIpAddress.ToString()}");
+      _logger.LogWarning($"Failed login attempt with the username {model.Username} from IP {HttpContext.Connection.RemoteIpAddress.ToString()}");
       return Unauthorized(new ApiResponse
       {
         Success = false,

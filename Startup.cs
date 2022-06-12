@@ -19,6 +19,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Domarservice.API
 {
@@ -34,8 +35,13 @@ namespace Domarservice.API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-
-      // services.AddControllers();
+      // Proxy headers
+      // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-6.0#configure-nginx
+      services.Configure<ForwardedHeadersOptions>(options =>
+      {
+          options.ForwardedHeaders =
+              ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+      });
       services.AddControllers().AddJsonOptions(x =>
           x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
       services.AddSwaggerGen(c =>
