@@ -51,16 +51,6 @@ namespace Domarservice.Controllers
       _configuration = configuration;
     }
 
-    // if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
-    // {
-    //   await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
-    // }
-    // if (await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
-
-    // {
-    //   await _userManager.AddToRoleAsync(user, UserRoles.RefereeUser);
-    // }
-
     [HttpPost]
     [Route("assign-role")]
     public async Task<IActionResult> AssignRole([FromBody] RoleBody request)
@@ -68,9 +58,19 @@ namespace Domarservice.Controllers
       var result = await _administrationService.AssignUserToRole(request);
       if (result)
       {
-        return Ok($"The user with email {request.Email} was added to the role {request.Role}.");
+        return Ok(new ApiResponse
+        {
+          Success = true,
+          Message = $"The user with email {request.Email} was added to the role {request.Role}.",
+          Data = null,
+        });
       }
-      return StatusCode(500, $"Problem adding the user with email {request.Email} to the role {request.Role}.");
+      return StatusCode(500, new ApiResponse
+      {
+        Success = false,
+        Message = $"Problem adding the user with email {request.Email} to the role {request.Role}.",
+        Data = null,
+      });
     }
 
     [HttpPost]
@@ -89,8 +89,35 @@ namespace Domarservice.Controllers
     [Route("get-role")]
     public async Task<IActionResult> GetRole(string email)
     {
-      var result = await _administrationService.GetUserRoles(email);
-      return Ok(result);
+      try
+      {
+        var result = await _administrationService.GetUserRoles(email);
+        if (result.Count > 0)
+        {
+          return Ok(new ApiResponse
+          {
+            Success = true,
+            Message = $"The current role for the user {email}.",
+            Data = result,
+          });
+        }
+        return Ok(new ApiResponse
+        {
+          Success = true,
+          Message = $"There is no roles assigned to the user {email}.",
+          Data = null,
+        });
+      }
+      catch (Exception e)
+      {
+        _logger.LogError($"Problem getting roles for user with email {email} with the exception: {e}");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = $"There was an error trying to get the roles for {email}",
+          Data = null,
+        });
+      }
     }
   }
 }
