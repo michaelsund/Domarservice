@@ -10,6 +10,6 @@ namespace Domarservice.Helpers
     public string Location { get; set; }
     public DateTime Date { get; set; }
     public SportType SportType { get; set; }
-    public List<RefereeType> RefereeTypes { get; set; }
+    public List<RefereeTypesCompanyEvent> RefereeTypesForEvent { get; set; }
   }
 }

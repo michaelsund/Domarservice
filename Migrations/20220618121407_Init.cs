@@ -206,8 +206,7 @@ namespace Domarservice.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Location = table.Column<string>(type: "text", nullable: true),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SportType = table.Column<int>(type: "integer", nullable: false),
-                    RefereeTypes = table.Column<int[]>(type: "integer[]", nullable: true)
+                    SportType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -328,6 +327,26 @@ namespace Domarservice.Migrations
                         name: "FK_BookingRequestsByReferee_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefereeTypesCompanyEvent",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RefereeType = table.Column<int>(type: "integer", nullable: false),
+                    CompanyEventId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefereeTypesCompanyEvent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefereeTypesCompanyEvent_CompanyEvents_CompanyEventId",
+                        column: x => x.CompanyEventId,
+                        principalTable: "CompanyEvents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -462,6 +481,11 @@ namespace Domarservice.Migrations
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefereeTypesCompanyEvent_CompanyEventId",
+                table: "RefereeTypesCompanyEvent",
+                column: "CompanyEventId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ScheduleSports_ScheduleId",
                 table: "ScheduleSports",
                 column: "ScheduleId",
@@ -504,6 +528,9 @@ namespace Domarservice.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefereeSports");
+
+            migrationBuilder.DropTable(
+                name: "RefereeTypesCompanyEvent");
 
             migrationBuilder.DropTable(
                 name: "ScheduleSports");

@@ -114,7 +114,7 @@ namespace Domarservice.Controllers
         return StatusCode(200, new ApiResponse
         {
           Success = true,
-          Message = "The match was created",
+          Message = "The event was deleted",
           Data = null,
         });
       }
@@ -123,7 +123,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a error when creating the match",
+          Message = "There was a error when deleting the match",
           Data = null,
         });
       }

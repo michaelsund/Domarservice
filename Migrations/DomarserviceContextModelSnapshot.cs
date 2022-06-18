@@ -164,9 +164,6 @@ namespace Domarservice.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int[]>("RefereeTypes")
-                        .HasColumnType("integer[]");
-
                     b.Property<int>("SportType")
                         .HasColumnType("integer");
 
@@ -260,6 +257,27 @@ namespace Domarservice.Migrations
                     b.HasIndex("RefereeId");
 
                     b.ToTable("RefereeSports");
+                });
+
+            modelBuilder.Entity("Domarservice.DAL.RefereeTypesCompanyEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyEventId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RefereeType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyEventId");
+
+                    b.ToTable("RefereeTypesCompanyEvent");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
@@ -600,6 +618,15 @@ namespace Domarservice.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domarservice.DAL.RefereeTypesCompanyEvent", b =>
+                {
+                    b.HasOne("Domarservice.DAL.CompanyEvent", null)
+                        .WithMany("RefereeTypesForEvent")
+                        .HasForeignKey("CompanyEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
                     b.HasOne("Domarservice.DAL.Referee", "Referee")
@@ -681,6 +708,8 @@ namespace Domarservice.Migrations
             modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>
                 {
                     b.Navigation("BookingRequestByReferees");
+
+                    b.Navigation("RefereeTypesForEvent");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.Referee", b =>

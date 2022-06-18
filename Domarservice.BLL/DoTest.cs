@@ -202,10 +202,10 @@ namespace Domarservice.BLL
         Date = DateTime.UtcNow,
         Location = "Ölands jumpasal",
         CompanyId = y,
-        RefereeTypes = new List<RefereeType>() {
-          RefereeType.Hudvuddomare,
-          RefereeType.Linjeman,
-          RefereeType.Linjeman,
+        RefereeTypesForEvent = new List<RefereeTypesCompanyEvent>() {
+          new RefereeTypesCompanyEvent { RefereeType = RefereeType.Hudvuddomare },
+          new RefereeTypesCompanyEvent { RefereeType = RefereeType.Linjeman },
+          new RefereeTypesCompanyEvent { RefereeType = RefereeType.Linjeman },
         }
       });
       _context.SaveChanges();

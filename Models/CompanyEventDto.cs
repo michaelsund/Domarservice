@@ -11,7 +11,7 @@ namespace Domarservice.Models
     public string Location { get; set; }
     public DateTime Date { get; set; }
     public SportType SportType { get; set; }
-    public List<RefereeType> RefereeTypes { get; set; }
+    public List<RefereeTypesCompanyEventDto> RefereeTypesForEvent { get; set; }
     public List<BookingRequestByRefereeDto> BookingRequestByReferees { get; set; }
   }
 }

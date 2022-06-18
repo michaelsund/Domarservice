@@ -24,11 +24,11 @@ namespace Domarservice.DAL
     {
 
       CompanyEvent companyEvent = await _context.CompanyEvents
+        .Include(x => x.RefereeTypesForEvent)
         .Include(x => x.BookingRequestByReferees)
-        .ThenInclude(y => y.Referee)
+          .ThenInclude(y => y.Referee)
         .FirstOrDefaultAsync(x => x.Id == id);
       return _mapper.Map<CompanyEventDto>(companyEvent);
-
     }
 
     public async Task<bool> AddCompanyEvent(CreateCompanyEventBody request, int companyId)
@@ -43,7 +43,7 @@ namespace Domarservice.DAL
             Location = request.Location,
             Name = request.Name,
             SportType = request.SportType,
-            RefereeTypes = request.RefereeTypes
+            RefereeTypesForEvent = request.RefereeTypesForEvent
           });
         await _context.SaveChangesAsync();
         return true;

@@ -80,7 +80,7 @@ namespace Domarservice.DAL
     public string Location { get; set; }
     public DateTime Date { get; set; }
     public SportType SportType { get; set; }
-    public List<RefereeType> RefereeTypes { get; set; }
+    public List<RefereeTypesCompanyEvent> RefereeTypesForEvent { get; set; }
     public List<BookingRequestByReferee> BookingRequestByReferees { get; set; }
   }
 
@@ -93,8 +93,15 @@ namespace Domarservice.DAL
 
   public enum RefereeType
   {
-    Linjeman,
-    Hudvuddomare
+    Hudvuddomare,
+    Linjeman
+  }
+
+  public class RefereeTypesCompanyEvent
+  {
+    public int Id { get; set; }
+    public RefereeType RefereeType { get; set; }
+    public int CompanyEventId { get; set; }
   }
 
   public class RefereeSport
