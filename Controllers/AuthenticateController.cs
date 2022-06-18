@@ -152,8 +152,24 @@ namespace Domarservice.Controllers
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
       var user = await _userManager.FindByNameAsync(model.Username);
+
+      if (user.LockoutEnd > DateTime.UtcNow)
+      {
+        return Unauthorized(new ApiResponse
+        {
+          Success = false,
+          Message = "You're account has been locked out for X minutes.",
+          Data = null
+        });
+      }
+
       if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
       {
+        if (_userManager.SupportsUserLockout && await _userManager.GetAccessFailedCountAsync(user) > 0)
+        {
+          await _userManager.ResetAccessFailedCountAsync(user);
+        }
+
         if (user.EmailConfirmed)
         {
           var userRoles = await _userManager.GetRolesAsync(user);
@@ -192,7 +208,7 @@ namespace Domarservice.Controllers
 
           await _userManager.UpdateAsync(user);
 
-          return Ok(new ApiResponse
+          return StatusCode(200, new ApiResponse
           {
             Success = true,
             Message = "You are now logged in.",
@@ -214,6 +230,10 @@ namespace Domarservice.Controllers
           });
         }
 
+      }
+      if (_userManager.SupportsUserLockout && await _userManager.GetLockoutEnabledAsync(user))
+      {
+        await _userManager.AccessFailedAsync(user);
       }
       _logger.LogWarning($"Failed login attempt with the username {model.Username} from IP {HttpContext.Connection.RemoteIpAddress.ToString()}");
       return Unauthorized(new ApiResponse

@@ -58,7 +58,7 @@ namespace Domarservice.Controllers
       var result = await _administrationService.AssignUserToRole(request);
       if (result)
       {
-        return Ok(new ApiResponse
+        return StatusCode(200, new ApiResponse
         {
           Success = true,
           Message = $"The user with email {request.Email} was added to the role {request.Role}.",
@@ -77,12 +77,34 @@ namespace Domarservice.Controllers
     [Route("remove-role")]
     public async Task<IActionResult> RemoveRole([FromBody] RoleBody request)
     {
-      var result = await _administrationService.RemoveUserRole(request);
-      if (result)
+      try
       {
-        return Ok($"The user with email {request.Email} was removed from the role.");
+        var result = await _administrationService.RemoveUserRole(request);
+        if (result)
+        {
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = $"The user with email {request.Email} was removed from the role.",
+            Data = null,
+          });
+        }
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = $"Problem removing the user with email {request.Email}'s role.",
+          Data = null,
+        });
       }
-      return StatusCode(500, $"Problem removing the user with email {request.Email}'s role.");
+      catch (Exception)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = $"Error removing the user with email {request.Email}'s role.",
+          Data = null,
+        });
+      }
     }
 
     [HttpGet]

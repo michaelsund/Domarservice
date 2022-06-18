@@ -6,21 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Domarservice.DAL;
-using Domarservice.BLL;
-using Domarservice.Models;
+using Domarservice.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Domarservice.Controllers
 {
   [ApiController]
+  [Authorize]
   [Route("[controller]")]
   public class RefereeController : ControllerBase
   {
     private readonly IRefereeRepository _refereeRepository;
-    public RefereeController(IRefereeRepository refereeRepository)
+    private readonly ILogger _logger;
+
+    public RefereeController(IRefereeRepository refereeRepository, ILogger<RefereeController> logger)
     {
       _refereeRepository = refereeRepository;
+      _logger = logger;
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -29,32 +34,64 @@ namespace Domarservice.Controllers
         var referee = await _refereeRepository.GetRefeereById(id);
         if (referee == null)
         {
-          return NotFound("Domaren hittades inte.");
+          return StatusCode(500, new ApiResponse {
+            Success = false,
+            Message = "Could not find the referee.",
+            Data = null
+          });
         }
-        return Ok(referee);
+        return StatusCode(200, new ApiResponse {
+            Success = true,
+            Message = "Referee found.",
+            Data = referee
+          });
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was an error finding the referee",
+          Data = null,
+        });
       }
 
     }
 
+    [Authorize(Roles = "RefereeUser,Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
       try
       {
+        // TODO: Check that the refereeuser is the correct id in token
+        var referee = await _refereeRepository.GetRefeereById(id);
         bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
         if (!deleteResult)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "Referee could not be deleted.");
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "The referee could not be deleted",
+            Data = null,
+          });
         }
-        return Ok();
+        _logger.LogWarning($"The user {User.Identity.Name} deleted the referee {referee.Surname} {referee.Lastname} with id: {id}");
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "The referee was deleted",
+          Data = null,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a problem deleting the referee",
+          Data = null,
+        });
       }
     }
   }

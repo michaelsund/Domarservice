@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Domarservice.DAL;
 using Domarservice.BLL;
+using Domarservice.Helpers;
 
 namespace Domarservice.Controllers
 {
@@ -42,7 +43,8 @@ namespace Domarservice.Controllers
         // Create all roles first, Admin, CompanyUser, RefereeUser
         _logger.LogInformation("Creating roles.");
         await new DoTest(_context, _userManager, _roleManager).SetupRoles();
-        await new DoTest(_context, _userManager, _roleManager).AddAdminUser();
+        await new DoTest(_context, _userManager, _roleManager).AddFirstAdminUser();
+       
 
         for (int i = 1; i < 10; i++)
         {
@@ -56,11 +58,25 @@ namespace Domarservice.Controllers
           // new DoTest(_context, _userManager, _roleManager).RespondYes(i);
           new DoTest(_context, _userManager, _roleManager).AddCounty(i);
         }
-        return Ok("Data seeded!");
+
+        // Add testusers for company and referee
+        await new DoTest(_context, _userManager, _roleManager).AddFirstCompanyUser();
+        await new DoTest(_context, _userManager, _roleManager).AddFirstRefereeUser();
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Data seeded",
+          Data = null,
+        });
       }
-      catch (System.Exception)
+      catch (Exception e)
       {
-          return StatusCode(500);
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = $"Error seeding database",
+            Data = e,
+          });
       }
     }
   }

@@ -24,6 +24,7 @@ namespace Domarservice.Controllers
       _scheduleRepository = scheduleRepository;
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -37,31 +38,55 @@ namespace Domarservice.Controllers
         // Check if the user has the correct ID compared to the RefereeId
         if ((schedule != null && claimId == schedule.Referee.Id) || (schedule != null && isAdmin))
         {
-          return Ok(schedule);
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "Schedule found",
+            Data = schedule,
+          });
         }
         else
         {
           _logger.LogWarning($"Unauthorized access by {claimName}, ScheduleId {id} where RefereeId was {schedule.Referee.Id}, token had Id {claimId}");
-          return Unauthorized(new { message = "You are not authorized to view this schedule." });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "You are not authorized to view this schedule",
+            Data = null,
+          });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "There was a problem fetching the schedule." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a problem fetching the schedule",
+          Data = null,
+        });
       }
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("referee/{id:int}")]
     public async Task<IActionResult> GetAllByRefereeId(int id)
     {
       try
       {
         List<SimpleScheduleDto> schedules = await _scheduleRepository.GetSchedulesByRefereeId(id);
-        return Ok(schedules);
+        return StatusCode(200, new ApiResponse {
+          Success = true,
+          Message = $"Success fetching schedules for referee with id {id}",
+          Data = schedules
+        });
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "There was a problem fetching all schedules for the referee." });
+        return StatusCode(500, new ApiResponse {
+          Success = false,
+          Message = "There was a problem fetching all schedules for the referee.",
+          Data = null
+        });
       }
     }
 
@@ -78,13 +103,28 @@ namespace Domarservice.Controllers
         if (result)
         {
           _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at {request.AvailAbleAt}");
-          return Ok("Schedule created.");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "Schedule created",
+            Data = null,
+          });
         }
-        return StatusCode(500, "Problem creating schedule");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Problem creating schedule",
+          Data = null,
+        });
       }
       catch (Exception)
       {
-        return StatusCode(500, "Invalid request creating schedule");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Invalid request creating schedule",
+          Data = null,
+        });
       }
     }
 
@@ -107,20 +147,40 @@ namespace Domarservice.Controllers
           }
           catch (Exception)
           {
-            return StatusCode(500, new { message = "Could not delete schedule." });
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "Error deleting schedule",
+              Data = null,
+            });
           }
           _logger.LogInformation($"The schedule with id {id} was deleted by user {claimName}.");
-          return Ok(new { message = "Schemat togs bort." });
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "Schedule was deleted",
+            Data = null,
+          });
         }
         else
         {
           _logger.LogWarning($"The user with the claimName {claimName} tried to delete schedule with id {id} without permission to do so.");
-          return StatusCode(500, new { message = "Schedule could not be deleted." });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Schedule could not be deleted, you dont have permission.",
+            Data = null,
+          });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem reading the schema for delete." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Problem the schedule for deletion",
+          Data = null,
+        });
       }
     }
   }

@@ -36,14 +36,29 @@ namespace Domarservice.Controllers
         if (result)
         {
           _logger.LogInformation($"The following company was created: {model}");
-          return Ok($"Föreningen {model.Name} har skapats.");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = $"Föreningen {model.Name} har skapats.",
+            Data = null,
+          });
         }
-        return StatusCode(500, "The company could not be created, please try again.");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "The company could not be created, please try again.",
+          Data = null,
+        });
       }
       catch (Exception e)
       {
         _logger.LogWarning($"Something went wrong while trying to create the company {model.Name}. {e}");
-        return StatusCode(500, $"Something went wrong while trying to create the company.");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Something went wrong while trying to create the company",
+          Data = null,
+        });
       }
     }
 
@@ -55,13 +70,28 @@ namespace Domarservice.Controllers
         var company = await _companyRepository.GetSimpleCompanyById(id);
         if (company == null)
         {
-          return NotFound("Föreningen hittades inte.");
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Could not find the company",
+            Data = null,
+          });
         }
-        return Ok(company);
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "The company was found",
+          Data = company,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a error finding the company",
+          Data = null,
+        });
       }
     }
 
@@ -73,23 +103,45 @@ namespace Domarservice.Controllers
       {
         var claimId = User.Identity.GetUserClaimId();
         // Check that the users claimId (companyId) is the companyId to be deleted.
+        var company = await _companyRepository.GetCompanyById(id);
         if (claimId == id)
         {
           bool deleteResult = await _companyRepository.DeleteCompanyById(id);
           if (!deleteResult)
           {
-            return StatusCode(StatusCodes.Status400BadRequest, "Company could not be deleted.");
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "The company could not be deleted",
+              Data = null,
+            });
           }
-          return Ok();
+          _logger.LogWarning($"The user {User.Identity.Name} deleted the company {company.Name} with id: {id}");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "The company was deleted",
+            Data = null,
+          });
         }
         else
         {
-          return StatusCode(500, "You do not have permission to delete this company.");
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "You do not have permission to delete this company",
+            Data = null,
+          });
         }
       }
       catch (Exception e)
       {
-        return StatusCode(500, "Error deleting company.");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Error deleting the company",
+          Data = null,
+        });
       }
     }
   }

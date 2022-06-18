@@ -31,13 +31,28 @@ namespace Domarservice.Controllers
         var companyEvent = await _companyEventRepository.GetCompanyEventById(id);
         if (companyEvent == null)
         {
-          return NotFound("Can not find event.");
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Cannot find event",
+            Data = null,
+          });
         }
-        return Ok(companyEvent);
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Here is your event",
+          Data = companyEvent,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Error fetching company event",
+          Data = null,
+        });
       }
     }
 
@@ -54,13 +69,28 @@ namespace Domarservice.Controllers
         if (result)
         {
           _logger.LogInformation($"CompanyEvent created for company {claimId} with the name {request.Name}");
-          return Ok("CompanyEvent created.");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "CompanyEvent created",
+            Data = null,
+          });
         }
-        return StatusCode(500, "Problem creating CompanyEvent");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Problem creating CompanyEvent",
+          Data = null,
+        });
       }
       catch (Exception)
       {
-        return StatusCode(500, "Invalid request creating CompanyEvent");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Invalid request creating Companyevent",
+          Data = null,
+        });
       }
     }
 
@@ -74,13 +104,28 @@ namespace Domarservice.Controllers
         bool deleteResult = await _companyEventRepository.DeleteCompanyEventById(id);
         if (!deleteResult)
         {
-          return StatusCode(StatusCodes.Status400BadRequest, "The match could not be deleted.");
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "The match could not be deleted",
+            Data = null,
+          });
         }
-        return Ok();
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "The match was created",
+          Data = null,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500);
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a error when creating the match",
+          Data = null,
+        });
       }
     }
   }

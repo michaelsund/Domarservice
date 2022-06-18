@@ -37,14 +37,29 @@ namespace Domarservice.Controllers
           var result = await _bookingRequestRepository.AddBookingRequestByCompany(request, claimId);
           if (result)
           {
-            return Ok("Schedule booking request sent");
+            return StatusCode(200, new ApiResponse
+            {
+              Success = true,
+              Message = "Schedule booking request sent",
+              Data = null,
+            });
           }
         }
-        return StatusCode(500, new { message = "There was a problem booking the schedule." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a problem booking the schedule",
+          Data = null,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500, new { message = "There was a error booking the schedule." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a error booking the schedule",
+          Data = null,
+        });
       }
     }
 
@@ -60,17 +75,32 @@ namespace Domarservice.Controllers
 
         if (bookingRequest)
         {
-          return Ok($"The request was awnsered with {request.Accepted}");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = $"The request was awnsered with {request.Accepted}",
+            Data = null,
+          });
         }
         else
         {
           _logger.LogWarning($"Could not accept the request from the company.. Log more!");
-          return StatusCode(500, new { message = "The request could not be awnsered." });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "The request could not be awnsered",
+            Data = null,
+          });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem awnsering the request from the company." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Problem awnsering the request from the company.",
+          Data = null,
+        });
       }
     }
 
@@ -87,14 +117,29 @@ namespace Domarservice.Controllers
           var result = await _bookingRequestRepository.AddBookingRequestByReferee(request, claimId);
           if (result)
           {
-            return Ok("Companyevent booking request sent");
+            return StatusCode(200, new ApiResponse
+            {
+              Success = true,
+              Message = "Companyevent booking request sent",
+              Data = null,
+            });
           }
         }
-        return StatusCode(500, new { message = "There was a problem booking the companyevent." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a problem booking the companyevent.",
+          Data = null,
+        });
       }
       catch (Exception e)
       {
-        return StatusCode(500, new { message = "There was a error booking the companyevent." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a error booking the companyevent.",
+          Data = null,
+        });
       }
     }
 
@@ -110,17 +155,32 @@ namespace Domarservice.Controllers
 
         if (bookingRequest)
         {
-          return Ok($"The request was awnsered with {request.Accepted}");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = $"The request was awnsered with {request.Accepted}",
+            Data = null,
+          });
         }
         else
         {
           _logger.LogWarning($"Could not accept the request from the referee.. Log more!");
-          return StatusCode(500, new { message = "The request could not be awnsered." });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "The request could not be awnsered.",
+            Data = null,
+          });
         }
       }
       catch (Exception)
       {
-        return StatusCode(500, new { message = "Problem awnsering the request from the referee." });
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Problem awnsering the request from the referee.",
+          Data = null,
+        });
       }
     }
 

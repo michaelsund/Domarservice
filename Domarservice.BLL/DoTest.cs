@@ -51,7 +51,7 @@ namespace Domarservice.BLL
       });
       _context.SaveChanges();
     }
-    public async Task AddAdminUser()
+    public async Task AddFirstAdminUser()
     {
       ApplicationUser user = new()
       {
@@ -59,6 +59,7 @@ namespace Domarservice.BLL
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = "Admin"
       };
+      user.EmailConfirmed = true;
       await _userManager.CreateAsync(user, "!Oneverycomplexpassword123");
 
       if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
@@ -68,6 +69,49 @@ namespace Domarservice.BLL
         await _userManager.AddToRoleAsync(user, UserRoles.Admin);
       }
     }
+
+    public async Task AddFirstRefereeUser()
+    {
+      ApplicationUser user = new()
+      {
+        Email = "michael@osund.com",
+        SecurityStamp = Guid.NewGuid().ToString(),
+        UserName = "michael"
+      };
+      user.EmailConfirmed = true;
+      // Seed data user 1 has referee 1
+      user.RefereeId = 1;
+      await _userManager.CreateAsync(user, "!Oneverycomplexpassword123");
+
+      if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
+      if (await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+      {
+        await _userManager.AddToRoleAsync(user, UserRoles.RefereeUser);
+      }
+    }
+
+    public async Task AddFirstCompanyUser()
+    {
+      ApplicationUser user = new()
+      {
+        Email = "michael2@osund.com",
+        SecurityStamp = Guid.NewGuid().ToString(),
+        UserName = "michael2"
+      };
+      user.EmailConfirmed = true;
+      // Seed data user 1 has referee 1
+      user.CompanyId = 1;
+      await _userManager.CreateAsync(user, "!Oneverycomplexpassword123");
+
+      if (!await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+        await _roleManager.CreateAsync(new IdentityRole(UserRoles.CompanyUser));
+      if (await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+      {
+        await _userManager.AddToRoleAsync(user, UserRoles.CompanyUser);
+      }
+    }
+
     public void AddScheduleDate(int id)
     {
       Referee referee = _context.Referees.Where(x => x.Id == id).FirstOrDefault();

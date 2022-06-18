@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220608171356_Init")]
+    [Migration("20220618103343_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
