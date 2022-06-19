@@ -153,15 +153,19 @@ namespace Domarservice.Controllers
     {
       var user = await _userManager.FindByNameAsync(model.Username);
 
-      if (user.LockoutEnd > DateTime.UtcNow)
+      if (user != null && user.LockoutEnabled)
       {
-        return Unauthorized(new ApiResponse
+        if (user.LockoutEnd > DateTime.UtcNow)
         {
-          Success = false,
-          Message = "You're account has been locked out for X minutes.",
-          Data = null
-        });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "You're account has been locked out for X minutes.",
+            Data = null
+          });
+        }
       }
+      
 
       if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
       {
@@ -231,12 +235,13 @@ namespace Domarservice.Controllers
         }
 
       }
+
       if (_userManager.SupportsUserLockout && await _userManager.GetLockoutEnabledAsync(user))
       {
         await _userManager.AccessFailedAsync(user);
       }
       _logger.LogWarning($"Failed login attempt with the username {model.Username} from IP {HttpContext.Connection.RemoteIpAddress.ToString()}");
-      return Unauthorized(new ApiResponse
+      return StatusCode(500, new ApiResponse
       {
         Success = false,
         Message = "Username or password is wrong.",
@@ -249,10 +254,10 @@ namespace Domarservice.Controllers
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-      var userExists = await _userManager.FindByNameAsync(model.Username);
+      var userExists = await _userManager.FindByNameAsync(model.Email);
       if (userExists != null)
       {
-        _logger.LogInformation($"User creating failed, the username allready exists {model.Username}, tried with email: {model.Email}");
+        _logger.LogInformation($"User creating failed, the username allready exists {model.Email}");
         return StatusCode(500, new ApiResponse
         {
           Success = false,
@@ -265,7 +270,7 @@ namespace Domarservice.Controllers
       {
         Email = model.Email,
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = model.Username
+        UserName = model.Email
       };
       var result = await _userManager.CreateAsync(user, model.Password);
       if (!result.Succeeded)
@@ -293,10 +298,10 @@ namespace Domarservice.Controllers
     [Route("register-admin")]
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
     {
-      var userExists = await _userManager.FindByNameAsync(model.Username);
+      var userExists = await _userManager.FindByNameAsync(model.Email);
       if (userExists != null)
       {
-        _logger.LogInformation($"Admin user creating failed, the username allready exists {model.Username}, tried with email: {model.Email}");
+        _logger.LogInformation($"Admin user creating failed, the username allready exists {model.Email}");
         return StatusCode(500, new ApiResponse
         {
           Success = false,
@@ -309,7 +314,7 @@ namespace Domarservice.Controllers
       {
         Email = model.Email,
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = model.Username
+        UserName = model.Email
       };
       var result = await _userManager.CreateAsync(user, model.Password);
       if (!result.Succeeded)

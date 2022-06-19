@@ -34,17 +34,19 @@ namespace Domarservice.Controllers
         var referee = await _refereeRepository.GetRefeereById(id);
         if (referee == null)
         {
-          return StatusCode(500, new ApiResponse {
+          return StatusCode(500, new ApiResponse
+          {
             Success = false,
             Message = "Could not find the referee.",
             Data = null
           });
         }
-        return StatusCode(200, new ApiResponse {
-            Success = true,
-            Message = "Referee found.",
-            Data = referee
-          });
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Referee found.",
+          Data = referee
+        });
       }
       catch (Exception e)
       {
@@ -64,25 +66,38 @@ namespace Domarservice.Controllers
     {
       try
       {
-        // TODO: Check that the refereeuser is the correct id in token
         var referee = await _refereeRepository.GetRefeereById(id);
-        bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
-        if (!deleteResult)
+        var claimId = User.Identity.GetUserClaimId();
+        var claimName = User.Identity.GetUserClaimName();
+        var isAdmin = User.Identity.CheckAdminRole();
+        if ((referee != null && claimId == referee.Id) || (referee != null && isAdmin))
         {
-          return StatusCode(500, new ApiResponse
+          bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
+          if (!deleteResult)
           {
-            Success = false,
-            Message = "The referee could not be deleted",
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "The referee could not be deleted",
+              Data = null,
+            });
+          }
+          _logger.LogWarning($"The user {User.Identity.Name} deleted the referee {referee.Surname} {referee.Lastname} with id: {id}");
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "The referee was deleted",
             Data = null,
           });
         }
-        _logger.LogWarning($"The user {User.Identity.Name} deleted the referee {referee.Surname} {referee.Lastname} with id: {id}");
-        return StatusCode(200, new ApiResponse
+
+        return StatusCode(500, new ApiResponse
         {
-          Success = true,
-          Message = "The referee was deleted",
+          Success = false,
+          Message = "You dont have permission to delete the referee",
           Data = null,
         });
+
       }
       catch (Exception e)
       {

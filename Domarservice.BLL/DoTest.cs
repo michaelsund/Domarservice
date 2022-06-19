@@ -57,7 +57,7 @@ namespace Domarservice.BLL
       {
         Email = "admin@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = "Admin"
+        UserName = "admin@osund.com"
       };
       user.EmailConfirmed = true;
       await _userManager.CreateAsync(user, "!Oneverycomplexpassword123");
@@ -76,7 +76,7 @@ namespace Domarservice.BLL
       {
         Email = "michael@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = "michael"
+        UserName = "michael@osund.com"
       };
       user.EmailConfirmed = true;
       // Seed data user 1 has referee 1
@@ -97,7 +97,7 @@ namespace Domarservice.BLL
       {
         Email = "michael2@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = "michael2"
+        UserName = "michael2@osund.com"
       };
       user.EmailConfirmed = true;
       // Seed data user 1 has referee 1
