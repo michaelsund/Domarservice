@@ -151,6 +151,7 @@ namespace Domarservice.Controllers
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
+      System.Console.WriteLine($"API GOT LOGIN MODEL WITH: {model.Username} - {model.Password}");
       var user = await _userManager.FindByNameAsync(model.Username);
 
       if (user != null && user.LockoutEnabled)
@@ -165,7 +166,6 @@ namespace Domarservice.Controllers
           });
         }
       }
-      
 
       if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
       {
