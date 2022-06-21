@@ -153,6 +153,10 @@ namespace Domarservice.Controllers
     {
       System.Console.WriteLine($"API GOT LOGIN MODEL WITH: {model.Username} - {model.Password}");
       var user = await _userManager.FindByNameAsync(model.Username);
+      if (user == null)
+      {
+        System.Console.WriteLine("USER NOT FOUND!");
+      } else { System.Console.WriteLine("USER WAS FOUND!!!!!!!"); }
 
       if (user != null && user.LockoutEnabled)
       {

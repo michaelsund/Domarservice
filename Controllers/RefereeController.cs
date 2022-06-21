@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Domarservice.Controllers
 {
   [ApiController]
-  [Authorize]
+  // [Authorize]
   [Route("[controller]")]
   public class RefereeController : ControllerBase
   {
@@ -25,7 +25,7 @@ namespace Domarservice.Controllers
       _logger = logger;
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    // [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
