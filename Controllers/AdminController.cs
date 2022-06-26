@@ -73,6 +73,51 @@ namespace Domarservice.Controllers
       });
     }
 
+    [HttpDelete]
+    [Route("delete-user")]
+    public async Task<IActionResult> DeleteUser(string email)
+    {
+      var result = await _administrationService.DeleteUser(email);
+      if (result)
+      {
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = $"The user with email {email} was deleted.",
+          Data = null,
+        });
+      }
+      return StatusCode(500, new ApiResponse
+      {
+        Success = false,
+        Message = $"Problem deleting the user with email: {email}",
+        Data = null,
+      });
+    }
+
+    // The "delete me" endpoint, usable by admins to remove all info on a user that's a referee.
+    [HttpDelete]
+    [Route("delete-user-referee")]
+    public async Task<IActionResult> DeleteUserAndReferee(string email)
+    {
+      var result = await _administrationService.DeleteUserAndReferee(email);
+      if (result)
+      {
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = $"The user with email {email} was deleted both as user and referee.",
+          Data = null,
+        });
+      }
+      return StatusCode(500, new ApiResponse
+      {
+        Success = false,
+        Message = $"Problem deleting the user and referee with email: {email}",
+        Data = null,
+      });
+    }
+
     [HttpPost]
     [Route("remove-role")]
     public async Task<IActionResult> RemoveRole([FromBody] RoleBody request)

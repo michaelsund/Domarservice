@@ -39,7 +39,12 @@ namespace Domarservice.DAL
           .ThenInclude(i => i.Sports)
         .Where(x => x.RefereeId == id)
         .ToListAsync();
-      return _mapper.Map<List<SimpleScheduleDto>>(schedules);
+      var refereeSchedules = _mapper.Map<List<SimpleScheduleDto>>(schedules);
+      if (refereeSchedules.Count > 0)
+      {
+        return refereeSchedules;
+      }
+      return null;
     }
 
     public async Task<bool> CreateSchedule(int id, DateTime availableAt)

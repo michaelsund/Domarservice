@@ -7,5 +7,6 @@ namespace Domarservice.Helpers
     public int CompanyEventId { get; set; }
     public string Message { get; set; }
     public RefereeType RefereeType { get; set; }
+    public SportType SportType { get; set; }
   }
 }

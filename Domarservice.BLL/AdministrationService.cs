@@ -36,6 +36,62 @@ namespace Domarservice.BLL
       _roleManager = roleManager;
       _configuration = configuration;
     }
+
+    public async Task<bool> DeleteUser(string email)
+    {
+      var user = await _userManager.FindByEmailAsync(email);
+      if (user != null)
+      {
+        var deleteResult = await _userManager.DeleteAsync(user);
+        if (deleteResult.Succeeded)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // This is the "remove me" for a user that is a referee.
+    public async Task<bool> DeleteUserAndReferee(string email)
+    {
+      var user = await _userManager.FindByEmailAsync(email);
+      if (user != null)
+      {
+        var deleteResult = await _userManager.DeleteAsync(user);
+        if (deleteResult.Succeeded)
+        {
+          // Then remove the referee tied to the user
+          if (user.RefereeId != null)
+          {
+            var referee = await _refereeRepository.DeleteRefereeById(user.RefereeId);
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Company can have multiple users? Should we really delete a company since it's never a person with GDPR information.
+
+    // public async Task<bool> DeleteUserAndCompany(string email)
+    // {
+    //   var user = await _userManager.FindByEmailAsync(email);
+    //   if (user != null)
+    //   {
+    //     var deleteResult = await _userManager.DeleteAsync(user);
+    //     if (deleteResult.Succeeded)
+    //     {
+    //       // Then remove the company tied to the user
+    //       if (user.CompanyId != null)
+    //       {
+    //         var referee = await _refereeRepository.DeleteRefereeById(user.RefereeId);
+    //       }
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // }
+
     public async Task<bool> AssignUserToRole(RoleBody model)
     {
       try

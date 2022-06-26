@@ -74,15 +74,25 @@ namespace Domarservice.Controllers
       try
       {
         List<SimpleScheduleDto> schedules = await _scheduleRepository.GetSchedulesByRefereeId(id);
-        return StatusCode(200, new ApiResponse {
+        if (schedules != null)
+        {
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = $"Success fetching schedules for referee with id {id}",
+            Data = schedules
+          });
+        }
+        return StatusCode(500, new ApiResponse {
           Success = true,
-          Message = $"Success fetching schedules for referee with id {id}",
-          Data = schedules
+          Message = $"No schedules found for referee with id {id}",
+          Data = null
         });
       }
       catch (Exception)
       {
-        return StatusCode(500, new ApiResponse {
+        return StatusCode(500, new ApiResponse
+        {
           Success = false,
           Message = "There was a problem fetching all schedules for the referee.",
           Data = null

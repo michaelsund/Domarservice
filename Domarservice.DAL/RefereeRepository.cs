@@ -31,14 +31,17 @@ namespace Domarservice.DAL
       return _mapper.Map<RefereeDto>(referee);
     }
 
-    public async Task<bool> DeleteRefereeById(int id)
+    public async Task<bool> DeleteRefereeById(int? id)
     {
-      Referee referee = await _context.Referees.FirstOrDefaultAsync(x => x.Id == id);
-      if (referee != null)
+      if (id != null)
       {
-        _context.Remove(referee);
-        _context.SaveChanges();
-        return true;
+         Referee referee = await _context.Referees.FirstOrDefaultAsync(x => x.Id == id);
+        if (referee != null)
+        {
+          _context.Remove(referee);
+          _context.SaveChanges();
+          return true;
+        }
       }
       return false;
     }

@@ -80,18 +80,31 @@ namespace Domarservice.DAL
         var companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == request.CompanyEventId);
         if (companyEvent != null)
         {
-          await _context.BookingRequestsByReferee
-            .AddAsync(new BookingRequestByReferee()
-            {
-              Accepted = false,
-              RefereeId = refereeId,
-              Message = request.Message,
-              CompanyEventId = request.CompanyEventId,
-              AppliedAt = DateTime.UtcNow,
-              RefereeType = request.RefereeType
-            });
-          await _context.SaveChangesAsync();
-          return true;
+          // Check that the sports matches up, fetch the referee and check the sports
+          var referee = await _context.Referees
+            .Include(x => x.Sports)
+            .FirstOrDefaultAsync(x => x.Id == refereeId);
+          var sportsTypesList = new List<SportType>();
+          foreach (var sport in referee.Sports)
+          {
+            sportsTypesList.Add(sport.SportType);
+          }
+
+          if (sportsTypesList.Contains(companyEvent.SportType))
+          {
+            await _context.BookingRequestsByReferee
+              .AddAsync(new BookingRequestByReferee()
+              {
+                Accepted = false,
+                RefereeId = refereeId,
+                Message = request.Message,
+                CompanyEventId = request.CompanyEventId,
+                AppliedAt = DateTime.UtcNow,
+                RefereeType = request.RefereeType
+              });
+            await _context.SaveChangesAsync();
+            return true;
+          }
         }
         return false;
       }
@@ -108,13 +121,13 @@ namespace Domarservice.DAL
         var bookingRequest = await _context.BookingRequestsByReferee
           .Include(x => x.CompanyEvent)
           .FirstOrDefaultAsync(x => x.Id == request.RequestId);
-        
+
         if (bookingRequest != null && bookingRequest.CompanyEvent.CompanyId == companyId)
         {
-            bookingRequest.Accepted = request.Accepted;
-            bookingRequest.RespondedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return true;
+          bookingRequest.Accepted = request.Accepted;
+          bookingRequest.RespondedAt = DateTime.UtcNow;
+          await _context.SaveChangesAsync();
+          return true;
         }
         return false;
       }

@@ -128,7 +128,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem booking the companyevent.",
+          Message = "There was a problem booking the companyevent, do you have the correct sport or role?",
           Data = null,
         });
       }
