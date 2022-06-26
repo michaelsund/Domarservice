@@ -95,7 +95,9 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "CompanyUser")]
+    // This endpoint should never be called except in rare cases by admin.
+    // Even if a user connected to this company object is deleted, the company should still exist.
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

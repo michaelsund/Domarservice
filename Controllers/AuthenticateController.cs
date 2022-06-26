@@ -52,6 +52,7 @@ namespace Domarservice.Controllers
     public async Task<IActionResult> ConfirmEmail(string token, string email)
     {
       var user = await _userManager.FindByEmailAsync(email);
+      System.Console.WriteLine(user.NormalizedEmail);
       if (user == null)
       {
         return StatusCode(500, new ApiResponse
@@ -75,7 +76,7 @@ namespace Domarservice.Controllers
       var result = await _userManager.ConfirmEmailAsync(user, token);
       if (result.Succeeded)
       {
-        return Ok(new ApiResponse { Success = true, Message = $"The email {email} was verified", Data = null });
+        return StatusCode(200, new ApiResponse { Success = true, Message = $"The email {email} was verified", Data = null });
 
       }
       return StatusCode(500, new ApiResponse { Success = false, Message = $"The email {email} could not be verified.", Data = null });
@@ -151,12 +152,7 @@ namespace Domarservice.Controllers
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-      System.Console.WriteLine($"API GOT LOGIN MODEL WITH: {model.Username} - {model.Password}");
       var user = await _userManager.FindByNameAsync(model.Username);
-      if (user == null)
-      {
-        System.Console.WriteLine("USER NOT FOUND!");
-      } else { System.Console.WriteLine("USER WAS FOUND!!!!!!!"); }
 
       if (user != null && user.LockoutEnabled)
       {
@@ -297,60 +293,60 @@ namespace Domarservice.Controllers
       });
     }
 
-    [AllowAnonymous]
-    [HttpPost]
-    [Route("register-admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-    {
-      var userExists = await _userManager.FindByNameAsync(model.Email);
-      if (userExists != null)
-      {
-        _logger.LogInformation($"Admin user creating failed, the username allready exists {model.Email}");
-        return StatusCode(500, new ApiResponse
-        {
-          Success = false,
-          Message = "That name is allready taken.",
-          Data = null
-        });
-      }
+    // [AllowAnonymous]
+    // [HttpPost]
+    // [Route("register-admin")]
+    // public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
+    // {
+    //   var userExists = await _userManager.FindByNameAsync(model.Email);
+    //   if (userExists != null)
+    //   {
+    //     _logger.LogInformation($"Admin user creating failed, the username allready exists {model.Email}");
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "That name is allready taken.",
+    //       Data = null
+    //     });
+    //   }
 
-      ApplicationUser user = new()
-      {
-        Email = model.Email,
-        SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = model.Email
-      };
-      var result = await _userManager.CreateAsync(user, model.Password);
-      if (!result.Succeeded)
-      {
-        return StatusCode(500, new ApiResponse
-        {
-          Success = false,
-          Message = "Admin user creation failed! Please check user details and try again.",
-          Data = null
-        });
-      }
+    //   ApplicationUser user = new()
+    //   {
+    //     Email = model.Email,
+    //     SecurityStamp = Guid.NewGuid().ToString(),
+    //     UserName = model.Email
+    //   };
+    //   var result = await _userManager.CreateAsync(user, model.Password);
+    //   if (!result.Succeeded)
+    //   {
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "Admin user creation failed! Please check user details and try again.",
+    //       Data = null
+    //     });
+    //   }
 
-      if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-        await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-      // if (!await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
-      //   await _roleManager.CreateAsync(new IdentityRole(UserRoles.CompanyUser));
+    //   if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+    //     await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+    //   // if (!await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+    //   //   await _roleManager.CreateAsync(new IdentityRole(UserRoles.CompanyUser));
 
-      if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-      {
-        await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-      }
-      // if (await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
-      // {
-      //   await _userManager.AddToRoleAsync(user, UserRoles.CompanyUser);
-      // }
-      return Ok(new ApiResponse
-      {
-        Success = true,
-        Message = "Admin user created successfully. Please verify your email.",
-        Data = null
-      });
-    }
+    //   if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+    //   {
+    //     await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+    //   }
+    //   // if (await _roleManager.RoleExistsAsync(UserRoles.CompanyUser))
+    //   // {
+    //   //   await _userManager.AddToRoleAsync(user, UserRoles.CompanyUser);
+    //   // }
+    //   return Ok(new ApiResponse
+    //   {
+    //     Success = true,
+    //     Message = "Admin user created successfully. Please verify your email.",
+    //     Data = null
+    //   });
+    // }
 
     [AllowAnonymous]
     [HttpPost]

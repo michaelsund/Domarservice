@@ -12,6 +12,7 @@ using Domarservice.Helpers;
 namespace Domarservice.Controllers
 {
   [ApiController]
+  [Authorize]
   [Route("[controller]")]
   public class CompanyEventController : ControllerBase
   {
@@ -23,6 +24,7 @@ namespace Domarservice.Controllers
       _companyEventRepository = companyEventRepository;
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -98,6 +100,7 @@ namespace Domarservice.Controllers
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
+      System.Console.WriteLine("GOT ID " + id);
       // TODO: Check if the companyId matches
       try
       {

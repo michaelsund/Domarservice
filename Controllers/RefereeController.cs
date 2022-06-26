@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Domarservice.Controllers
 {
   [ApiController]
-  // [Authorize]
+  [Authorize]
   [Route("[controller]")]
   public class RefereeController : ControllerBase
   {
@@ -25,7 +25,7 @@ namespace Domarservice.Controllers
       _logger = logger;
     }
 
-    // [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -60,7 +60,9 @@ namespace Domarservice.Controllers
 
     }
 
-    [Authorize(Roles = "RefereeUser,Admin")]
+    // This endpoint should never be called except in rare cases by admin.
+    // Even if a user connected to this referee object is deleted, the referee should still exist.
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -70,6 +72,7 @@ namespace Domarservice.Controllers
         var claimId = User.Identity.GetUserClaimId();
         var claimName = User.Identity.GetUserClaimName();
         var isAdmin = User.Identity.CheckAdminRole();
+        
         if ((referee != null && claimId == referee.Id) || (referee != null && isAdmin))
         {
           bool deleteResult = await _refereeRepository.DeleteRefereeById(id);
