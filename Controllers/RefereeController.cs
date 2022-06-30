@@ -57,7 +57,6 @@ namespace Domarservice.Controllers
           Data = null,
         });
       }
-
     }
 
     // This endpoint should never be called except in rare cases by admin.

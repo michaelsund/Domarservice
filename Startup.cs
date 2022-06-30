@@ -39,8 +39,8 @@ namespace Domarservice.API
       // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-6.0#configure-nginx
       services.Configure<ForwardedHeadersOptions>(options =>
       {
-          options.ForwardedHeaders =
-              ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
       });
       services.AddControllers().AddJsonOptions(x =>
           x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -120,6 +120,14 @@ namespace Domarservice.API
       {
         endpoints.MapControllers();
       });
+
+      // app.UseCors(builder =>
+      // {
+      //   builder
+      //     .AllowAnyOrigin()
+      //     .AllowAnyMethod()
+      //     .AllowAnyHeader();
+      // });
     }
   }
 }
