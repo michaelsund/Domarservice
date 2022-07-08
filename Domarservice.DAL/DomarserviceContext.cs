@@ -31,6 +31,7 @@ namespace Domarservice.DAL
   {
     public string Surname { get; set; }
     public string Lastname { get; set; }
+    public string Information { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
     public int? CompanyId { get; set; }

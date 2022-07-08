@@ -32,6 +32,7 @@ namespace Domarservice.Migrations
                     Discriminator = table.Column<string>(type: "text", nullable: false),
                     Surname = table.Column<string>(type: "text", nullable: true),
                     Lastname = table.Column<string>(type: "text", nullable: true),
+                    Information = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CompanyId = table.Column<int>(type: "integer", nullable: true),

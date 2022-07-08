@@ -8,6 +8,7 @@ namespace Domarservice.Models
   {
     public int Id { get; set; }
     public string Name { get; set; }
+    public CountyType County { get; set; }
     public List<CompanySportDto> Sports { get; set; }
     public List<CompanyEventDto> CompanyEvents { get; set; }
   }

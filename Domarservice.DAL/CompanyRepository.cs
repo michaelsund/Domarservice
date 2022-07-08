@@ -28,14 +28,18 @@ namespace Domarservice.DAL
       return _mapper.Map<SimpleCompanyDto>(company);
     }
 
-    public async Task<List<SimpleUserDto>> GetCompanyUsersByCompanyId(int id)
+    public async Task<CompanyAndUsersDto> GetCompanyUsersByCompanyId(int id)
     {
       List<ApplicationUser> companyUsers = await _context.ApplicationUsers.Where(x => x.CompanyId == id)
         .ToListAsync();
-    //   Company company = await _context.Companies
-    //  .Include(x => x.Sports)
-    //  .FirstOrDefaultAsync(x => x.Id == id);
-      return _mapper.Map<List<SimpleUserDto>>(companyUsers);
+      var mappedUsers = _mapper.Map<List<SimpleUserDto>>(companyUsers);
+
+      Company company = await _context.Companies
+     .Include(x => x.Sports)
+     .FirstOrDefaultAsync(x => x.Id == id);
+      var mappedCompany = _mapper.Map<CompanyAndUsersDto>(company);
+      mappedCompany.Users = mappedUsers;
+      return mappedCompany;
     }
 
     public async Task<CompanyDto> GetCompanyById(int id)

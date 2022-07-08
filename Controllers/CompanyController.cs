@@ -74,14 +74,14 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Could not find the company",
+            Message = "Kunde inte hämta föreningen.",
             Data = null,
           });
         }
         return StatusCode(200, new ApiResponse
         {
           Success = true,
-          Message = "The company was found",
+          Message = "",
           Data = company,
         });
       }
@@ -90,23 +90,24 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a error finding the company",
+          Message = "Ett problem uppstod när föreningen hämtades.",
           Data = null,
         });
       }
     }
 
-    [HttpGet("{id:int}/users")]
+    [HttpGet("{id:int}/withusers")]
     public async Task<IActionResult> GetCompanyUsers(int id)
     {
       try
       {
-        List<SimpleUserDto> users = await _companyRepository.GetCompanyUsersByCompanyId(id);
+        // Gets a company and it's connected users.
+        CompanyAndUsersDto company = await _companyRepository.GetCompanyUsersByCompanyId(id);
         return StatusCode(200, new ApiResponse
         {
           Success = true,
-          Message = "Användare som tillhör föreningen.",
-          Data = users,
+          Message = "",
+          Data = company,
         });
       }
       catch (Exception e)

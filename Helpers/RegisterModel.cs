@@ -16,5 +16,7 @@ namespace Domarservice.DAL
 
     [Required(ErrorMessage = "Password is required")]
     public string? Password { get; set; }
+
+    public string? Information { get; set; }
   }
 }

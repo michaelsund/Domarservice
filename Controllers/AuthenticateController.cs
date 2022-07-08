@@ -273,6 +273,7 @@ namespace Domarservice.Controllers
       {
         Surname = model.Surname,
         Lastname = model.Lastname,
+        Information = model.Information,
         Email = model.Email,
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = model.Email

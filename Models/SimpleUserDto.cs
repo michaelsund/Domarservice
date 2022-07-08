@@ -9,6 +9,7 @@ namespace Domarservice.Models
     // public int Id { get; set; }
     public string Surname { get; set; }
     public string Lastname { get; set; }
+    public string Information { get; set; }
     public string Email { get; set; }
     public string PhoneOne { get; set; }
     public string PhoneTwo { get; set; }

@@ -526,6 +526,9 @@ namespace Domarservice.Migrations
                     b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Information")
+                        .HasColumnType("text");
+
                     b.Property<string>("Lastname")
                         .HasColumnType("text");
 

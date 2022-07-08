@@ -10,7 +10,7 @@ namespace Domarservice.DAL
   public interface ICompanyRepository
   {
     Task<SimpleCompanyDto> GetSimpleCompanyById(int id);
-    Task<List<SimpleUserDto>> GetCompanyUsersByCompanyId(int id);
+    Task<CompanyAndUsersDto> GetCompanyUsersByCompanyId(int id);
     Task<CompanyDto> GetCompanyById(int id);
     Task<bool> AddNewCompany(RegisterCompanyModel model); 
     Task<bool> DeleteCompanyById(int id);
