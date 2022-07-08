@@ -29,6 +29,8 @@ namespace Domarservice.DAL
 
   public class ApplicationUser : IdentityUser
   {
+    public string Surname { get; set; }
+    public string Lastname { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
     public int? CompanyId { get; set; }
@@ -38,8 +40,7 @@ namespace Domarservice.DAL
   public class Referee
   {
     public int Id { get; set; }
-    public string Surname { get; set; }
-    public string Lastname { get; set; }
+    // Dto's use Surname and Lastname. This is cherrypicked from the bound User.
     public List<Schedule> Schedules { get; set; }
     public List<RefereeSport> Sports { get; set; }
     public List<County> Countys { get; set; }

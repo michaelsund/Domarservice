@@ -23,6 +23,7 @@ namespace Domarservice
       CreateMap<BookingRequestByReferee, BookingRequestByRefereeDto>();
       CreateMap<BookingRequestByCompany, BookingRequestByCompanyDto>();
       CreateMap<RefereeTypesCompanyEvent, RefereeTypesCompanyEventDto>();
+      CreateMap<ApplicationUser, SimpleUserDto>();
         // .ForMember(t => t.Sports, options => options.MapFrom(source => source.Sports))
         // .ForMember(t => t.Schedules, options => options.MapFrom(source => source.Schedules))
         // .ForMember(t => t.Countys, options => options.MapFrom(source => source.Countys));

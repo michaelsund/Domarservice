@@ -30,6 +30,8 @@ namespace Domarservice.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Discriminator = table.Column<string>(type: "text", nullable: false),
+                    Surname = table.Column<string>(type: "text", nullable: true),
+                    Lastname = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CompanyId = table.Column<int>(type: "integer", nullable: true),
@@ -81,9 +83,7 @@ namespace Domarservice.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Surname = table.Column<string>(type: "text", nullable: true),
-                    Lastname = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 },
                 constraints: table =>
                 {

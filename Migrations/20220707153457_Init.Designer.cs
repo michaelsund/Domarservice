@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220626115315_Init")]
+    [Migration("20220707153457_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,12 +225,6 @@ namespace Domarservice.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Lastname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -534,6 +528,9 @@ namespace Domarservice.Migrations
                     b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Lastname")
+                        .HasColumnType("text");
+
                     b.Property<int?>("RefereeId")
                         .HasColumnType("integer");
 
@@ -542,6 +539,9 @@ namespace Domarservice.Migrations
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });

@@ -224,12 +224,6 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Lastname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Referees");
@@ -532,6 +526,9 @@ namespace Domarservice.Migrations
                     b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Lastname")
+                        .HasColumnType("text");
+
                     b.Property<int?>("RefereeId")
                         .HasColumnType("integer");
 
@@ -540,6 +537,9 @@ namespace Domarservice.Migrations
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });

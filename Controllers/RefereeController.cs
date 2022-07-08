@@ -34,6 +34,7 @@ namespace Domarservice.Controllers
         var referee = await _refereeRepository.GetRefeereById(id);
         if (referee == null)
         {
+          _logger.LogError($"RefereeRepo GetRefereeById returned null, could be a problem between user RefereeId: {id} mapping to Referee object, probably a mapping doesnt exist!");
           return StatusCode(500, new ApiResponse
           {
             Success = false,

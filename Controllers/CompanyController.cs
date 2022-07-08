@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Domarservice.DAL;
 using Domarservice.Helpers;
+using Domarservice.Models;
 
 namespace Domarservice.Controllers
 {
@@ -90,6 +91,30 @@ namespace Domarservice.Controllers
         {
           Success = false,
           Message = "There was a error finding the company",
+          Data = null,
+        });
+      }
+    }
+
+    [HttpGet("{id:int}/users")]
+    public async Task<IActionResult> GetCompanyUsers(int id)
+    {
+      try
+      {
+        List<SimpleUserDto> users = await _companyRepository.GetCompanyUsersByCompanyId(id);
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Användare som tillhör föreningen.",
+          Data = users,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Kunde inte hämta användare till föreningen.",
           Data = null,
         });
       }

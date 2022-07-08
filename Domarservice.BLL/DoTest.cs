@@ -42,8 +42,6 @@ namespace Domarservice.BLL
     {
       _context.Referees.Add(new Referee()
       {
-        Lastname = lastname,
-        Surname = surname,
         Sports = new List<RefereeSport>() {
           new RefereeSport() { SportType = SportType.Fotboll, RefereeType = RefereeType.Hudvuddomare },
           new RefereeSport() { SportType = SportType.Ishockey, RefereeType = RefereeType.Linjeman },
@@ -55,6 +53,8 @@ namespace Domarservice.BLL
     {
       ApplicationUser user = new()
       {
+        Surname = "Admin",
+        Lastname = "Adminsson",
         Email = "admin@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = "admin@osund.com"
@@ -74,6 +74,8 @@ namespace Domarservice.BLL
     {
       ApplicationUser user = new()
       {
+        Surname = "Michael",
+        Lastname = "Sund",
         Email = "michael@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = "michael@osund.com"
@@ -95,6 +97,8 @@ namespace Domarservice.BLL
     {
       ApplicationUser user = new()
       {
+        Surname = "Michael",
+        Lastname = "Sund",
         Email = "michael2@osund.com",
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = "michael2@osund.com"

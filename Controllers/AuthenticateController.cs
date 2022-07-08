@@ -218,6 +218,9 @@ namespace Domarservice.Controllers
             Message = "You are now logged in.",
             Data = new
             {
+              Surname = user.Surname,
+              Lastname = user.Lastname,
+              Email = user.Email,
               Token = new JwtSecurityTokenHandler().WriteToken(token),
               Expiration = token.ValidTo
             }
@@ -268,6 +271,8 @@ namespace Domarservice.Controllers
 
       ApplicationUser user = new()
       {
+        Surname = model.Surname,
+        Lastname = model.Lastname,
         Email = model.Email,
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = model.Email
