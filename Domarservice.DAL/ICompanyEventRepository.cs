@@ -10,6 +10,7 @@ namespace Domarservice.DAL
     public interface ICompanyEventRepository
     {
         Task<CompanyEventDto> GetCompanyEventById(int id);
+        Task<List<ExtendedCompanyEventDto>> GetLatestCompanyEvents(int amount);
         Task<bool> DeleteCompanyEventById(int id);
         Task<bool> AddCompanyEvent(CreateCompanyEventBody request, int companyId);
     }

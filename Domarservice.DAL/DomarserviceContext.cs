@@ -78,6 +78,7 @@ namespace Domarservice.DAL
   {
     public int Id { get; set; }
     public int CompanyId { get; set; }
+    public Company Company { get; set; }
     public string Name { get; set; }
     public string Location { get; set; }
     public DateTime Date { get; set; }

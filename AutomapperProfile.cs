@@ -19,6 +19,7 @@ namespace Domarservice
       CreateMap<Company, SimpleCompanyDto>();
       CreateMap<Company, CompanyAndUsersDto>();
       CreateMap<CompanyEvent, CompanyEventDto>();
+      CreateMap<CompanyEvent, ExtendedCompanyEventDto>();
       CreateMap<Referee, RefereeDto>();
       CreateMap<Referee, SimpleRefereeDto>();
       CreateMap<BookingRequestByReferee, BookingRequestByRefereeDto>();

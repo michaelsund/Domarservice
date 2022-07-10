@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Domarservice.DAL;
 using Domarservice.Helpers;
+using Domarservice.Models;
 
 namespace Domarservice.Controllers
 {
@@ -53,6 +54,42 @@ namespace Domarservice.Controllers
         {
           Success = false,
           Message = "Error fetching company event",
+          Data = null,
+        });
+      }
+    }
+
+    // Used for the indexpage to display upcoming matches.
+    [AllowAnonymous]
+    [HttpGet("latest/{amount:int}")]
+    public async Task<IActionResult> GetLatest(int amount)
+    {
+      // TODO: should paginate? not good if someone unauthed gets 1000000 records
+      try
+      {
+        List<ExtendedCompanyEventDto> companyEvents = await _companyEventRepository.GetLatestCompanyEvents(amount);
+        if (companyEvents.Count <= 0)
+        {
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Just nu är det inga matcher på gång.",
+            Data = null,
+          });
+        }
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "",
+          Data = companyEvents,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när matcherna skulle hämtas.",
           Data = null,
         });
       }
