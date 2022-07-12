@@ -239,7 +239,7 @@ namespace Domarservice.Controllers
 
       }
 
-      if (_userManager.SupportsUserLockout && await _userManager.GetLockoutEnabledAsync(user))
+      if (user != null && _userManager.SupportsUserLockout && await _userManager.GetLockoutEnabledAsync(user))
       {
         await _userManager.AccessFailedAsync(user);
       }
