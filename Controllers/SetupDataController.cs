@@ -53,7 +53,7 @@ namespace Domarservice.Controllers
           new DoTest(_context, _userManager, _roleManager).AddCompany("Smygehuk " + i, i);
           // new DoTest(_context, _userManager, _roleManager).AddScheduleDate(i);
           // new DoTest(_context, _userManager, _roleManager).AddCompanyAndScheduleFirstReferee("Smygehuk " + i, i);
-          // new DoTest(_context, _userManager, _roleManager).AddEventForCompany("Smygehuk matchen " + i, i);
+          new DoTest(_context, _userManager, _roleManager).AddEventForCompany("Smygehuk matchen " + i, i);
           // new DoTest(_context, _userManager, _roleManager).AddRefereeForEvent("Jag dömmer gärna som huvuddomare! " + i, i);
           // new DoTest(_context, _userManager, _roleManager).RespondYes(i);
           new DoTest(_context, _userManager, _roleManager).AddCounty(i);

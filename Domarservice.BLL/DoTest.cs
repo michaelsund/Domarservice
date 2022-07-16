@@ -200,12 +200,14 @@ namespace Domarservice.BLL
 
     public void AddEventForCompany(string name, int y)
     {
+      Random rnd = new Random();
       _context.CompanyEvents.Add(new CompanyEvent()
       {
         Name = name,
-        Date = DateTime.UtcNow,
+        Date = DateTime.UtcNow.AddDays(rnd.Next(1, 7)),
         Location = "Ölands jumpasal",
         CompanyId = y,
+        SportType = SportType.Ishockey,
         RefereeTypesForEvent = new List<RefereeTypesCompanyEvent>() {
           new RefereeTypesCompanyEvent { RefereeType = RefereeType.Hudvuddomare },
           new RefereeTypesCompanyEvent { RefereeType = RefereeType.Linjeman },
