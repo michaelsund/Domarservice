@@ -39,9 +39,8 @@ namespace Domarservice.DAL
         .Include(x => x.BookingRequestByReferees)
           .ThenInclude(y => y.Referee)
         // Omit dates that has allready passed.
-        .Where(x => x.Date > DateTime.UtcNow)
         .Take(amount)
-        .OrderBy(x => x.Date)
+        .OrderBy(x => x.Id)
         .ToListAsync();
       return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
     }

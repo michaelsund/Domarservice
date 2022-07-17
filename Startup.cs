@@ -94,6 +94,11 @@ namespace Domarservice.API
           ValidateAudience = true,
           ValidAudience = Configuration["JWT:ValidAudience"],
           ValidIssuer = Configuration["JWT:ValidIssuer"],
+          ValidateLifetime = true,
+          LifetimeValidator = (DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters) =>
+          {
+            return expires >= DateTime.UtcNow;
+          },
           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
         };
       });

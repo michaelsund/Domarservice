@@ -435,6 +435,7 @@ namespace Domarservice.Controllers
 
     private JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
+      System.Console.WriteLine("Creating json token at: " + DateTime.UtcNow);
       var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
       _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
 
@@ -461,10 +462,11 @@ namespace Domarservice.Controllers
 
     private void SetRefreshTokenInCookie(string refreshToken)
     {
+      _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
       var cookieOptions = new CookieOptions
       {
         HttpOnly = true,
-        Expires = DateTime.UtcNow.AddDays(10),
+        Expires = DateTime.UtcNow.AddDays(refreshTokenValidityInDays),
       };
       Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
     }
