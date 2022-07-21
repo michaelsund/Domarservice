@@ -64,6 +64,11 @@ namespace Domarservice.Controllers
     [HttpGet("latest/{amount:int}")]
     public async Task<IActionResult> GetLatest(int amount)
     {
+      int maxAmount = 20;
+      if (amount > maxAmount) {
+        amount = maxAmount;
+      }
+
       try
       {
         List<ExtendedCompanyEventDto> companyEvents = await _companyEventRepository.GetLatestCompanyEvents(amount);
@@ -106,7 +111,7 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Inga matcher hittades.",
+            Message = "Inga matcher hittades från dagens datum och frammåt.",
             Data = null,
           });
         }

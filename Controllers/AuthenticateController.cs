@@ -299,6 +299,101 @@ namespace Domarservice.Controllers
       });
     }
 
+    [Authorize]
+    [HttpGet]
+    [Route("profile")]
+    public async Task<IActionResult> Profile()
+    {
+      var identity = HttpContext.User.Identity as ClaimsIdentity;
+      if (identity != null)
+      {
+        var user = await _userManager.FindByNameAsync(identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value);
+        if (user != null)
+        {
+          string tokenRoleValue = "";
+          try
+          {
+            tokenRoleValue = identity.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+          }
+          catch (Exception)
+          {
+            Console.WriteLine("Cannot resolve role value from token fetching user profile, not set?");
+          }
+          if (tokenRoleValue == UserRoles.RefereeUser)
+          {
+            return Ok(new ApiResponse
+            {
+              Success = true,
+              Message = "",
+              Data = new ProfileData
+              {
+                Surname = user.Surname,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                Role = UserRoles.RefereeUser,
+                BoundRoleId = (int)user.RefereeId,
+                IsActive = true
+              }
+            });
+          }
+          else if (tokenRoleValue == UserRoles.CompanyUser)
+          {
+            return Ok(new ApiResponse
+            {
+              Success = true,
+              Message = "",
+              Data = new ProfileData
+              {
+                Surname = user.Surname,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                Role = UserRoles.CompanyUser,
+                BoundRoleId = (int)user.CompanyId,
+                IsActive = true
+              }
+            });
+          }
+          else if (tokenRoleValue == UserRoles.Admin)
+          {
+            return Ok(new ApiResponse
+            {
+              Success = true,
+              Message = "",
+              Data = new ProfileData
+              {
+                Surname = user.Surname,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                Role = UserRoles.Admin,
+                BoundRoleId = 0,
+                IsActive = true
+              }
+            });
+          }
+
+          return Ok(new ApiResponse
+          {
+            Success = true,
+            Message = "",
+            Data = new ProfileData
+            {
+              Surname = user.Surname,
+              Lastname = user.Lastname,
+              Email = user.Email,
+              Role = null,
+              IsActive = false
+            }
+          });
+        }
+      }
+      return BadRequest(new ApiResponse
+      {
+        Success = false,
+        Message = "Ett problem uppstod när profilen skulle hämtas.",
+        Data = null
+      });
+    }
+
     // [AllowAnonymous]
     // [HttpPost]
     // [Route("register-admin")]

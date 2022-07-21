@@ -63,6 +63,7 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -96,6 +97,7 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}/withusers")]
     public async Task<IActionResult> GetCompanyUsers(int id)
     {
