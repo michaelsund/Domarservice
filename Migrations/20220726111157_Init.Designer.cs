@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220708145130_Init")]
+    [Migration("20220726111157_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -589,11 +589,13 @@ namespace Domarservice.Migrations
 
             modelBuilder.Entity("Domarservice.DAL.CompanyEvent", b =>
                 {
-                    b.HasOne("Domarservice.DAL.Company", null)
+                    b.HasOne("Domarservice.DAL.Company", "Company")
                         .WithMany("CompanyEvents")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("Domarservice.DAL.CompanySport", b =>
