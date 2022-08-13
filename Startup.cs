@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domarservice.API
 {
@@ -59,10 +60,16 @@ namespace Domarservice.API
       // BLL Administration
       services.AddScoped<IAdministrationService, AdministrationService>();
       var mapperConfig = new MapperConfiguration(mc =>
-        {
-          mc.AddProfile(new AutoMapperProfile());
-        });
+      {
+        mc.AddProfile(new AutoMapperProfile());
+      });
       // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+      // Disable default validation responses, it is handled manually with ApiResponse in the data field.
+      services.Configure<ApiBehaviorOptions>(options =>
+      {
+          options.SuppressModelStateInvalidFilter = true;
+      });
 
       IMapper mapper = mapperConfig.CreateMapper();
       services.AddSingleton(mapper);

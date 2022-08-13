@@ -257,14 +257,23 @@ namespace Domarservice.Controllers
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-      var userExists = await _userManager.FindByNameAsync(model.Email);
-      if (userExists != null)
+      if (!ModelState.IsValid)
       {
-        _logger.LogInformation($"User creating failed, the username allready exists {model.Email}");
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "That name is allready taken.",
+          Message = "Information fattas eller behöver rättas till för att registrera dig.",
+          Data = ModelState.Values.SelectMany(x => x.Errors)
+        });
+      }
+      var userExists = await _userManager.FindByNameAsync(model.Email);
+      if (userExists != null)
+      {
+        _logger.LogInformation($"User creating failed, the username/email allready exists {model.Email}");
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Den angivna epost-adressen är redan registrerad.",
           Data = null
         });
       }
