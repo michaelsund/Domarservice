@@ -26,42 +26,42 @@ namespace Domarservice.Controllers
       _logger = logger;
     }
 
-    [Authorize(Roles = "CompanyUser")]
-    [HttpPost]
-    [Route("register-company")]
-    public async Task<IActionResult> RegisterCompany(RegisterCompanyModel model)
-    {
-      try
-      {
-        var result = await _companyRepository.AddNewCompany(model);
-        if (result)
-        {
-          _logger.LogInformation($"The following company was created: {model}");
-          return StatusCode(200, new ApiResponse
-          {
-            Success = true,
-            Message = $"Föreningen {model.Name} har skapats.",
-            Data = null,
-          });
-        }
-        return StatusCode(500, new ApiResponse
-        {
-          Success = false,
-          Message = "The company could not be created, please try again.",
-          Data = null,
-        });
-      }
-      catch (Exception e)
-      {
-        _logger.LogWarning($"Something went wrong while trying to create the company {model.Name}. {e}");
-        return StatusCode(500, new ApiResponse
-        {
-          Success = false,
-          Message = "Something went wrong while trying to create the company",
-          Data = null,
-        });
-      }
-    }
+    // [Authorize(Roles = "CompanyUser")]
+    // [HttpPost]
+    // [Route("register-company")]
+    // public async Task<IActionResult> RegisterCompany(RegisterCompanyModel model)
+    // {
+    //   try
+    //   {
+    //     var result = await _companyRepository.AddNewCompany(model);
+    //     if (result)
+    //     {
+    //       _logger.LogInformation($"The following company was created: {model}");
+    //       return StatusCode(200, new ApiResponse
+    //       {
+    //         Success = true,
+    //         Message = $"Föreningen {model.Name} har skapats.",
+    //         Data = null,
+    //       });
+    //     }
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "The company could not be created, please try again.",
+    //       Data = null,
+    //     });
+    //   }
+    //   catch (Exception e)
+    //   {
+    //     _logger.LogWarning($"Something went wrong while trying to create the company {model.Name}. {e}");
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "Something went wrong while trying to create the company",
+    //       Data = null,
+    //     });
+    //   }
+    // }
 
     [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
     [HttpGet("{id:int}")]

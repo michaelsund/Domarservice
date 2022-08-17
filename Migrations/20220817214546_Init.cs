@@ -462,6 +462,12 @@ namespace Domarservice.Migrations
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Companies_Name",
+                table: "Companies",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CompanyEvents_CompanyId",
                 table: "CompanyEvents",
                 column: "CompanyId");

@@ -52,27 +52,18 @@ namespace Domarservice.DAL
       return _mapper.Map<CompanyDto>(company);
     }
 
-    public async Task<bool> AddNewCompany(RegisterCompanyModel model)
+    public async Task<Company> AddNewCompany(RegisterCompanyModel model)
     {
-
-      await _context.Companies.AddAsync(new Company()
-      {
+      var company = new Company() {
         Name = model.Name,
-        Address = model.Address,
-        County = model.County,
         City = model.City,
-        Email = model.Email,
-        PhoneOne = model.PhoneOne,
-        PhoneTwo = model.PhoneTwo,
-        Sports = model.Sports,
+        County = model.County,
         HasValidSubscription = false,
-      });
-      var result = await _context.SaveChangesAsync();
-      if (result > 0)
-      {
-        return true;
-      }
-      return false;
+      };
+      await _context.Companies.AddAsync(company);
+      await _context.SaveChangesAsync();
+      
+      return company;
     }
 
     public async Task<bool> DeleteCompanyById(int id)

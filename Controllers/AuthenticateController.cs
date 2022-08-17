@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace Domarservice.Controllers
 {
@@ -26,6 +27,7 @@ namespace Domarservice.Controllers
     private readonly ILogger _logger;
     private readonly ISendMailHelper _sendMailHelper;
     private readonly IRefereeRepository _refereeRepository;
+    private readonly ICompanyRepository _companyRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
@@ -33,6 +35,7 @@ namespace Domarservice.Controllers
       ILogger<AuthenticateController> logger,
       ISendMailHelper sendMailHelper,
       IRefereeRepository refereeRepository,
+      ICompanyRepository companyRepository,
       UserManager<ApplicationUser> userManager,
       RoleManager<IdentityRole> roleManager,
       IConfiguration configuration
@@ -41,6 +44,7 @@ namespace Domarservice.Controllers
       _logger = logger;
       _sendMailHelper = sendMailHelper;
       _refereeRepository = refereeRepository;
+      _companyRepository = companyRepository;
       _userManager = userManager;
       _roleManager = roleManager;
       _configuration = configuration;
@@ -51,35 +55,45 @@ namespace Domarservice.Controllers
     [Route("confirm-email")]
     public async Task<IActionResult> ConfirmEmail(string token, string email)
     {
-      var user = await _userManager.FindByEmailAsync(email);
-      System.Console.WriteLine(user.NormalizedEmail);
-      if (user == null)
+      try
       {
-        return StatusCode(500, new ApiResponse
+        // The posted token has its +'s removed..
+        string encodedToken = token.Replace(" ", "+");
+        var user = await _userManager.FindByEmailAsync(email);
+        System.Console.WriteLine(user.NormalizedEmail);
+        if (user == null)
         {
-          Success = false,
-          Message = "Could not verify email",
-          Data = null,
-        });
-      }
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Kunde inte verifiera epost-adressen.",
+            Data = null,
+          });
+        }
 
-      if (user.EmailConfirmed)
-      {
-        return StatusCode(500, new ApiResponse
+        if (user.EmailConfirmed)
         {
-          Success = false,
-          Message = $"The email {email} is allready verified.",
-          Data = null,
-        });
-      }
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = $"{email} är redan verifierad.",
+            Data = null,
+          });
+        }
 
-      var result = await _userManager.ConfirmEmailAsync(user, token);
-      if (result.Succeeded)
+        var result = await _userManager.ConfirmEmailAsync(user, encodedToken);
+        if (result.Succeeded)
+        {
+          return StatusCode(200, new ApiResponse { Success = true, Message = $"{email} har verifierats, du kan nu logga in.", Data = null });
+
+        }
+        return StatusCode(500, new ApiResponse { Success = false, Message = $"Epost-adressen {email} kunde inte verifieras.", Data = null });
+      }
+      catch (Exception e)
       {
-        return StatusCode(200, new ApiResponse { Success = true, Message = $"The email {email} was verified", Data = null });
-
+        return StatusCode(500, new ApiResponse { Success = false, Message = $"Ett fel uppstod när adressen {email} skulle verifieras, prova igen senare.", Data = null });
       }
-      return StatusCode(500, new ApiResponse { Success = false, Message = $"The email {email} could not be verified.", Data = null });
+
     }
 
     [AllowAnonymous]
@@ -96,7 +110,7 @@ namespace Domarservice.Controllers
       var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
       _sendMailHelper.Send($"This is the link to activate your account. https://{{server}}:{{port}}/authenticate/confirm-email?token={confirmationToken}&email={user.Email}");
 
-      return Ok(new ApiResponse { Success = true, Message = $"A new verification email has been sent", Data = null });
+      return Ok(new ApiResponse { Success = true, Message = $"A new verification email has been sent", Data = confirmationToken });
     }
 
     [AllowAnonymous]
@@ -232,7 +246,7 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Please confirm your email before logging in.",
+            Message = "Du behöver verifiera din epost innan du kan logga in.",
             Data = null
           });
         }
@@ -288,6 +302,37 @@ namespace Domarservice.Controllers
         UserName = model.Email
       };
       var result = await _userManager.CreateAsync(user, model.Password);
+
+      if (result.Succeeded)
+      {
+        // Now check if there is a referee being created or a company user.
+        // If it's a company user handle that separatly.
+        if (model.RegisterAsReferee)
+        {
+          var referee = await _refereeRepository.CreateReferee();
+          if (referee.Id != null)
+          {
+            user.RefereeId = referee.Id;
+            await _userManager.UpdateAsync(user);
+          }
+        }
+        else
+        {
+          // Create new company here and set the users companyId to it.
+          // Notice that the CompanyUser role should be set by a admin once the account is active.
+          var company = await _companyRepository.AddNewCompany(new RegisterCompanyModel {
+            Name = model.CompanyName,
+            City = model.CompanyCity,
+            County = model.CompanyCounty,
+          });
+          if (company.Id != null)
+          {
+            user.CompanyId = company.Id;
+            await _userManager.UpdateAsync(user);
+          }
+        }
+      }
+
       if (!result.Succeeded)
       {
         return StatusCode(500, new ApiResponse
@@ -299,7 +344,6 @@ namespace Domarservice.Controllers
       }
 
       var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
       return Ok(new ApiResponse
       {
         Success = true,

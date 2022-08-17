@@ -22,6 +22,14 @@ namespace Domarservice.DAL
       _userManager = userManager;
     }
 
+    public async Task<Referee> CreateReferee()
+    {
+      var referee = new Referee();
+      await _context.Referees.AddAsync(referee);
+      await _context.SaveChangesAsync();
+      return referee;
+    }
+
     public async Task<RefereeDto> GetRefeereById(int id)
     {
       // Get the User for this referee Id

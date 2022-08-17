@@ -57,6 +57,7 @@ namespace Domarservice.DAL
     public List<BookingRequestByCompany> BookingRequestByCompanys { get; set; }
   }
 
+  [Index(nameof(Name), IsUnique = true)]
   public class Company
   {
     public int Id { get; set; }

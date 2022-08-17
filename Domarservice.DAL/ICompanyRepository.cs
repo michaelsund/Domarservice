@@ -12,7 +12,7 @@ namespace Domarservice.DAL
     Task<SimpleCompanyDto> GetSimpleCompanyById(int id);
     Task<CompanyAndUsersDto> GetCompanyUsersByCompanyId(int id);
     Task<CompanyDto> GetCompanyById(int id);
-    Task<bool> AddNewCompany(RegisterCompanyModel model); 
+    Task<Company> AddNewCompany(RegisterCompanyModel model); 
     Task<bool> DeleteCompanyById(int id);
   }
 }

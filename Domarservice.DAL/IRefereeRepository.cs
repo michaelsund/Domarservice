@@ -10,6 +10,7 @@ namespace Domarservice.DAL
   {
     Task<RefereeDto> GetRefeereById(int id);
     // List<Referee> GetAllReferees();
+    Task<Referee> CreateReferee();
     Task<bool> DeleteRefereeById(int? id);
   }
 }
