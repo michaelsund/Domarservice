@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation.AspNetCore;
+using System.Reflection;
 
 namespace Domarservice.API
 {
@@ -68,7 +70,7 @@ namespace Domarservice.API
       // Disable default validation responses, it is handled manually with ApiResponse in the data field.
       services.Configure<ApiBehaviorOptions>(options =>
       {
-          options.SuppressModelStateInvalidFilter = true;
+        options.SuppressModelStateInvalidFilter = true;
       });
 
       IMapper mapper = mapperConfig.CreateMapper();
@@ -109,6 +111,14 @@ namespace Domarservice.API
           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
         };
       });
+      services.AddFluentValidation(options =>
+      {
+        // Validate child properties and root collection elements
+        options.ImplicitlyValidateChildProperties = true;
+        options.ImplicitlyValidateRootCollectionElements = true;
+        // Automatic registration of validators in assembly
+        options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+      }).AddFluentValidationClientsideAdapters();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
