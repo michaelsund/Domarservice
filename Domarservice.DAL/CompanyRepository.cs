@@ -52,9 +52,27 @@ namespace Domarservice.DAL
       return _mapper.Map<CompanyDto>(company);
     }
 
+    public bool CompanyUniqueByName(string name)
+    {
+      try
+      {
+        var company = _context.Companies.FirstOrDefault(x => x.Name == name);
+        if (company != null)
+        {
+          return false;
+        }
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
     public async Task<Company> AddNewCompany(RegisterCompanyModel model)
     {
-      var company = new Company() {
+      var company = new Company()
+      {
         Name = model.Name,
         City = model.City,
         County = model.County,
@@ -62,7 +80,7 @@ namespace Domarservice.DAL
       };
       await _context.Companies.AddAsync(company);
       await _context.SaveChangesAsync();
-      
+
       return company;
     }
 

@@ -1,26 +1,38 @@
-using Domarservice.DAL;
+using System.Threading.Tasks;
 using FluentValidation;
 namespace Domarservice.DAL
 {
   public class RegisterModelValidation : AbstractValidator<RegisterModel>
   {
-    public RegisterModelValidation()
+    private readonly ICompanyRepository _companyRepository;
+    private bool BeUnique(string name)
     {
+      if (_companyRepository.CompanyUniqueByName(name))
+      {
+        return true;
+      }
+      return false;
+    }
+
+    public RegisterModelValidation(ICompanyRepository companyRepository)
+    {
+      _companyRepository = companyRepository;
+
       RuleFor(registration => registration.CompanyName)
+        .Must(BeUnique)
+        .WithMessage("Föreningens namn är redan registrerat.")
         .NotEmpty()
-        .NotEqual("")
-        .WithMessage("Föreningens namn är obligatoriskt.")
+        .WithMessage("Föreningens namn är obligatorisk.")
         .When(registration => !registration.RegisterAsReferee);
-      
+
       RuleFor(registration => registration.CompanyCity)
         .NotEmpty()
-        .NotEqual("")
-        .WithMessage("Föreningens stad är obligatoriskt.")
+        .WithMessage("Föreningens stad är obligatorisk.")
         .When(registration => !registration.RegisterAsReferee);
-      
+
       RuleFor(registration => registration.CompanyCounty)
         .NotEmpty()
-        .WithMessage("Föreningens län är obligatoriskt.")
+        .WithMessage("Föreningens län är obligatorisk.")
         .When(registration => !registration.RegisterAsReferee);
     }
   }
