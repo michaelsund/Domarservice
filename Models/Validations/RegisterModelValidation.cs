@@ -23,11 +23,19 @@ namespace Domarservice.DAL
         .WithMessage("Föreningens namn är redan registrerat.")
         .NotEmpty()
         .WithMessage("Föreningens namn är obligatorisk.")
+        .MinimumLength(2)
+        .WithMessage("Föreningens namn får som minst vara 2 tecken långt.")
+        .MaximumLength(50)
+        .WithMessage("Föreningens namn får max vara 50 tecken långt.")
         .When(registration => !registration.RegisterAsReferee);
 
       RuleFor(registration => registration.CompanyCity)
         .NotEmpty()
         .WithMessage("Föreningens stad är obligatorisk.")
+        .MinimumLength(2)
+        .WithMessage("Föreningens stad får som minst vara 2 tecken långt.")
+        .MaximumLength(40)
+        .WithMessage("Föreningens stad får max vara 50 tecken långt.")
         .When(registration => !registration.RegisterAsReferee);
 
       RuleFor(registration => registration.CompanyCounty)
