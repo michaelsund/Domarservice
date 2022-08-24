@@ -287,7 +287,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "Den angivna epost-adressen är redan registrerad.",
+          Message = "",
           Data = null
         });
       }
