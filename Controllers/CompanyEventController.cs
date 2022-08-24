@@ -133,6 +133,40 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [HttpPost("filtered")]
+    public async Task<IActionResult> GetAllPaginateFiltered(CompanyEventsFiltered model)
+    {
+      try
+      {
+        List<ExtendedCompanyEventDto> companyEvents = await _companyEventRepository.GetFilteredEventsPage(model);
+        if (companyEvents.Count <= 0)
+        {
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Inga matcher hittades från dagens datum och frammåt med den filtreringen.",
+            Data = null,
+          });
+        }
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "",
+          Data = companyEvents,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när matcherna skulle hämtas.",
+          Data = null,
+        });
+      }
+    }
+
     [Authorize(Roles = "CompanyUser,Admin")]
     [HttpPost]
     [Route("create")]

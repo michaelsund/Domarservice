@@ -63,6 +63,26 @@ namespace Domarservice.DAL
       return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
     }
 
+    public async Task<List<ExtendedCompanyEventDto>> GetFilteredEventsPage(CompanyEventsFiltered model)
+    {
+      int maxAmount = 4;
+      List<CompanyEvent> companyEvents = await _context.CompanyEvents
+        .Include(x => x.Company)
+        .Include(x => x.RefereeTypesForEvent)
+        .Include(x => x.BookingRequestByReferees)
+          .ThenInclude(y => y.Referee)
+        .Skip((model.Page - 1) * maxAmount)
+        // Omit dates that has allready passed.
+        .OrderBy(x => x.Date)
+        .Where(x => x.Date > DateTime.UtcNow)
+        .Where(x => model.SportsFilter.Contains(x.SportType))
+        .Where(x => model.CountysFilter.Contains(x.Company.County))
+        .Where(x => x.RefereeTypesForEvent.Any(referee => model.RefereesFilter.Contains(referee.RefereeType)))
+        .Take(maxAmount)
+        .ToListAsync();
+      return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
+    }
+
     public async Task<bool> AddCompanyEvent(CreateCompanyEventBody request, int companyId)
     {
       try

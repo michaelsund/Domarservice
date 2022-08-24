@@ -69,7 +69,7 @@ namespace Domarservice.DAL
 
       RuleFor(customer => customer.PasswordConfirmation)
         .NotEmpty()
-        .WithMessage("Bekräfta lösenord är obligatorisk.")
+        .WithMessage("Bekräfta lösenord är obligatorisk.");
        
       // When registering as a company
 
