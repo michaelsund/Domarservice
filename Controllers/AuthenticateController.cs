@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Threading;
 
 namespace Domarservice.Controllers
 {
@@ -294,12 +295,12 @@ namespace Domarservice.Controllers
 
       ApplicationUser user = new()
       {
-        Surname = model.Surname,
-        Lastname = model.Lastname,
+        Surname = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(model.Surname.ToLower()),
+        Lastname = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(model.Lastname.ToLower()),
         Information = model.Information,
-        Email = model.Email,
+        Email = model.Email.ToLower(),
         SecurityStamp = Guid.NewGuid().ToString(),
-        UserName = model.Email
+        UserName = model.Email.ToLower()
       };
       var result = await _userManager.CreateAsync(user, model.Password);
 

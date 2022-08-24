@@ -19,7 +19,8 @@ namespace Domarservice.DAL
 
     private bool UserEmailUnique(string email)
     {
-      var user = _userManager.FindByNameAsync(email);
+      // Run synchronously since fluent validator can't run it async.
+      var user = _userManager.FindByNameAsync(email).GetAwaiter().GetResult();
       if (user == null)
       {
         return true;
@@ -53,13 +54,22 @@ namespace Domarservice.DAL
         .WithMessage("Epost adressen är inte giltig.");
 
       RuleFor(customer => customer.Password)
-        .NotEmpty().WithMessage("Your password cannot be empty")
-        .MinimumLength(8).WithMessage("Ditt lösenord måste vara minst 8 tecken långt.")
-        .Matches(@"[A-Z]+").WithMessage("Ditt lösenord måste innehålla minst en stor bokstav.")
-        .Matches(@"[a-z]+").WithMessage("Ditt lösenord måste innehåll minst en liten bokstav.")
-        .Matches(@"[0-9]+").WithMessage("Ditt lösenord måste innehålla minst en siffra.")
+        .NotEmpty()
+        .WithMessage("Lösenord är obligatorisk.")
+        .MinimumLength(8)
+        .WithMessage("Ditt lösenord måste vara minst 8 tecken långt.")
+        .Matches(@"[A-Z]+")
+        .WithMessage("Ditt lösenord måste innehålla minst en stor bokstav.")
+        .Matches(@"[a-z]+")
+        .WithMessage("Ditt lösenord måste innehåll minst en liten bokstav.")
+        .Matches(@"[0-9]+")
+        .WithMessage("Ditt lösenord måste innehålla minst en siffra.")
         .Equal(customer => customer.PasswordConfirmation)
         .WithMessage("Lösenorden matchar inte.");
+
+      RuleFor(customer => customer.PasswordConfirmation)
+        .NotEmpty()
+        .WithMessage("Bekräfta lösenord är obligatorisk.")
        
       // When registering as a company
 
