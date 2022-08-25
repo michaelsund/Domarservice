@@ -71,15 +71,17 @@ namespace Domarservice.DAL
         .Include(x => x.RefereeTypesForEvent)
         .Include(x => x.BookingRequestByReferees)
           .ThenInclude(y => y.Referee)
-        .Skip((model.Page - 1) * maxAmount)
-        // Omit dates that has allready passed.
+        .WhereIf(model.FromDate < DateTime.UtcNow, x => x.Date > DateTime.UtcNow)
+        .WhereIf(model.FromDate > DateTime.UtcNow, x => x.Date > model.FromDate.ToUniversalTime())
+        .WhereIf(model.SportsFilter.Length > 0, x => model.SportsFilter.Contains(x.SportType))
+        .WhereIf(model.CountysFilter.Length > 0, x => model.CountysFilter.Contains(x.Company.County))
+        .WhereIf(model.RefereesFilter.Length > 0, x => x.RefereeTypesForEvent.Any(referee => model.RefereesFilter.Contains(referee.RefereeType)))
+        .WhereIf(model.CompanySearchString != "", x => x.Company.Name.ToLower().Contains(model.CompanySearchString.ToLower()))
         .OrderBy(x => x.Date)
-        .Where(x => x.Date > DateTime.UtcNow)
-        .Where(x => model.SportsFilter.Contains(x.SportType))
-        .Where(x => model.CountysFilter.Contains(x.Company.County))
-        .Where(x => x.RefereeTypesForEvent.Any(referee => model.RefereesFilter.Contains(referee.RefereeType)))
+        .Skip((model.Page - 1) * maxAmount)
         .Take(maxAmount)
         .ToListAsync();
+
       return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
     }
 
