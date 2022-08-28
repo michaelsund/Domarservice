@@ -493,15 +493,15 @@ namespace Domarservice.Migrations
                 column: "CompanyEventId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Schedules_RefereeId",
+                table: "Schedules",
+                column: "RefereeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ScheduleSports_ScheduleId",
                 table: "ScheduleSports",
                 column: "ScheduleId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Schedules_RefereeId",
-                table: "Schedules",
-                column: "RefereeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

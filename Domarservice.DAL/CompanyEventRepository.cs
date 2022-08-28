@@ -65,7 +65,7 @@ namespace Domarservice.DAL
 
     public async Task<List<ExtendedCompanyEventDto>> GetFilteredEventsPage(CompanyEventsFiltered model)
     {
-      int maxAmount = 4;
+      int maxAmount = 20;
       List<CompanyEvent> companyEvents = await _context.CompanyEvents
         .Include(x => x.Company)
         .Include(x => x.RefereeTypesForEvent)
