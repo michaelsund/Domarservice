@@ -14,11 +14,11 @@ namespace Domarservice.Controllers
   [ApiController]
   [Authorize]
   [Route("[controller]")]
-  public class ScheduleController : ControllerBase
+  public class RefereeScheduleController : ControllerBase
   {
     private readonly ILogger _logger;
-    private readonly IScheduleRepository _scheduleRepository;
-    public ScheduleController(ILogger<ScheduleController> logger, IScheduleRepository scheduleRepository)
+    private readonly IRefereeScheduleRepository _scheduleRepository;
+    public RefereeScheduleController(ILogger<RefereeScheduleController> logger, IRefereeScheduleRepository scheduleRepository)
     {
       _logger = logger;
       _scheduleRepository = scheduleRepository;
@@ -99,6 +99,41 @@ namespace Domarservice.Controllers
         });
       }
     }
+
+    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [HttpPost("filtered")]
+    public async Task<IActionResult> GetAllPaginateFiltered(RefereeSchedulesFiltered model)
+    {
+      try
+      {
+        List<RefereeScheduleDto> refereeSchedules = await _scheduleRepository.GetFilteredSchedulesPage(model);
+        if (refereeSchedules.Count <= 0)
+        {
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Inga fler scheman hittades från dagens datum och framåt med den filtreringen.",
+            Data = null,
+          });
+        }
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "",
+          Data = refereeSchedules,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när scheman skulle hämtas.",
+          Data = null,
+        });
+      }
+    }
+
 
     [Authorize(Roles = "RefereeUser,Admin")]
     [HttpPost]

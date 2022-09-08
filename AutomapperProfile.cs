@@ -13,7 +13,7 @@ namespace Domarservice
       CreateMap<County, CountyDto>();
       CreateMap<RefereeSport, RefereeSportDto>();
       CreateMap<CompanySport, CompanySportDto>();
-      CreateMap<Schedule, ScheduleDto>();
+      CreateMap<Schedule, RefereeScheduleDto>();
       CreateMap<Schedule, SimpleScheduleDto>();
       CreateMap<Company, CompanyDto>();
       CreateMap<Company, SimpleCompanyDto>();

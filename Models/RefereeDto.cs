@@ -10,7 +10,7 @@ namespace Domarservice.Models
     public string Surname { get; set; }
     public string Lastname { get; set; }
     public List<RefereeSportDto> Sports { get; set; }
-    public List<ScheduleDto> Schedules { get; set; }
+    public List<RefereeScheduleDto> Schedules { get; set; }
     public List<CountyDto> Countys { get; set; }
   }
 }

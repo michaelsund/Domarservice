@@ -4,9 +4,10 @@ using Domarservice.DAL;
 
 namespace Domarservice.Models
 {
-  public class ScheduleDto
+  public class RefereeScheduleDto
   {
     public int Id { get; set; }
+    public int RefereeId { get; set; }
     public SimpleRefereeDto Referee { get; set; }
     public string AvailableAt { get; set; }
     public List<BookingRequestByCompanyDto> BookingRequestByCompanys { get; set; }

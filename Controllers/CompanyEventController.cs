@@ -19,7 +19,7 @@ namespace Domarservice.Controllers
   {
     private readonly ILogger _logger;
     private readonly ICompanyEventRepository _companyEventRepository;
-    public CompanyEventController(ILogger<ScheduleController> logger, ICompanyEventRepository companyEventRepository)
+    public CompanyEventController(ILogger<CompanyEventController> logger, ICompanyEventRepository companyEventRepository)
     {
       _logger = logger;
       _companyEventRepository = companyEventRepository;

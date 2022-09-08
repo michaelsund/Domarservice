@@ -54,7 +54,7 @@ namespace Domarservice.API
       services.AddDbContext<DomarserviceContext>(options =>
           options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
       services.AddScoped<IRefereeRepository, RefereeRepository>();
-      services.AddScoped<IScheduleRepository, ScheduleRepository>();
+      services.AddScoped<IRefereeScheduleRepository, RefereeScheduleRepository>();
       services.AddScoped<IBookingRequestRepository, BookingRequestRepository>();
       services.AddScoped<ICompanyRepository, CompanyRepository>();
       services.AddScoped<ICompanyEventRepository, CompanyEventRepository>();

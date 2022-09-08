@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Domarservice.DAL;
 using Domarservice.Helpers;
+using Domarservice.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Domarservice.Controllers

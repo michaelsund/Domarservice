@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domarservice.Migrations
 {
     [DbContext(typeof(DomarserviceContext))]
-    [Migration("20220827083747_Init")]
+    [Migration("20220830120423_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -298,28 +298,6 @@ namespace Domarservice.Migrations
                     b.HasIndex("RefereeId");
 
                     b.ToTable("Schedules");
-                });
-
-            modelBuilder.Entity("Domarservice.DAL.ScheduleSport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Sport")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScheduleId")
-                        .IsUnique();
-
-                    b.ToTable("ScheduleSports");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -648,15 +626,6 @@ namespace Domarservice.Migrations
                     b.Navigation("Referee");
                 });
 
-            modelBuilder.Entity("Domarservice.DAL.ScheduleSport", b =>
-                {
-                    b.HasOne("Domarservice.DAL.Schedule", null)
-                        .WithOne("Sports")
-                        .HasForeignKey("Domarservice.DAL.ScheduleSport", "ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -734,8 +703,6 @@ namespace Domarservice.Migrations
             modelBuilder.Entity("Domarservice.DAL.Schedule", b =>
                 {
                     b.Navigation("BookingRequestByCompanys");
-
-                    b.Navigation("Sports");
                 });
 #pragma warning restore 612, 618
         }

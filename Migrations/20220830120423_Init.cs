@@ -384,26 +384,6 @@ namespace Domarservice.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ScheduleSports",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ScheduleId = table.Column<int>(type: "integer", nullable: false),
-                    Sport = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScheduleSports", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ScheduleSports_Schedules_ScheduleId",
-                        column: x => x.ScheduleId,
-                        principalTable: "Schedules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -496,12 +476,6 @@ namespace Domarservice.Migrations
                 name: "IX_Schedules_RefereeId",
                 table: "Schedules",
                 column: "RefereeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ScheduleSports_ScheduleId",
-                table: "ScheduleSports",
-                column: "ScheduleId",
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -540,25 +514,22 @@ namespace Domarservice.Migrations
                 name: "RefereeTypesCompanyEvent");
 
             migrationBuilder.DropTable(
-                name: "ScheduleSports");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "CompanyEvents");
-
-            migrationBuilder.DropTable(
                 name: "Schedules");
 
             migrationBuilder.DropTable(
-                name: "Companies");
+                name: "CompanyEvents");
 
             migrationBuilder.DropTable(
                 name: "Referees");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
         }
     }
 }

@@ -71,7 +71,7 @@ namespace Domarservice.DAL
         .Include(x => x.RefereeTypesForEvent)
         .Include(x => x.BookingRequestByReferees)
           .ThenInclude(y => y.Referee)
-        .WhereIf(model.FromDate < DateTime.UtcNow, x => x.Date > DateTime.UtcNow)
+        .WhereIf(model.FromDate < DateTime.UtcNow.AddDays(-1), x => x.Date > DateTime.UtcNow)
         .WhereIf(model.FromDate > DateTime.UtcNow, x => x.Date > model.FromDate.ToUniversalTime())
         .WhereIf(model.SportsFilter.Length > 0, x => model.SportsFilter.Contains(x.SportType))
         .WhereIf(model.CountysFilter.Length > 0, x => model.CountysFilter.Contains(x.Company.County))

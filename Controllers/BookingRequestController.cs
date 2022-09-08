@@ -18,7 +18,7 @@ namespace Domarservice.Controllers
   {
     private readonly ILogger _logger;
     private readonly IBookingRequestRepository _bookingRequestRepository;
-    public BookingRequestController(ILogger<ScheduleController> logger, IBookingRequestRepository bookingRequestRepository)
+    public BookingRequestController(ILogger<BookingRequestController> logger, IBookingRequestRepository bookingRequestRepository)
     {
       _logger = logger;
       _bookingRequestRepository = bookingRequestRepository;
