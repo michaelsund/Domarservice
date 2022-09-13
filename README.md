@@ -31,6 +31,6 @@ DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 dotnet ef database update
 ### Docker postgres for local development
 docker run -d	--name Domarservice-db -p 5432:5432 -e POSTGRES_PASSWORD=dev -e PGDATA=/var/lib/postgresql/data/pgdata -v /home/michael/Dockerfiles/postgres:/var/lib/postgresql/data postgres
 
-docker run -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=michael@osund.com' -e 'PGADMIN_DEFAULT_PASSWORD=test' -d dpage/pgadmin4
+docker run -p 8082:80 -e 'PGADMIN_DEFAULT_EMAIL=michael@osund.com' -e 'PGADMIN_DEFAULT_PASSWORD=test' -d dpage/pgadmin4
 
 Remember that the pgadmin container should connect to your local computers ip, not localhost.

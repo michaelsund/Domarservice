@@ -60,7 +60,8 @@ namespace Domarservice.DAL
           .ThenInclude(y => y.Countys)
         // .Include(x => x.BookingRequestByCompanys)
         // Skip passed dates
-        .WhereIf(model.AvailableFromDate < DateTime.UtcNow.AddDays(-1), x => x.AvailableAt > DateTime.UtcNow)
+        // .WhereIf(model.AvailableFromDate < DateTime.UtcNow.AddDays(-1), x => x.AvailableAt > DateTime.UtcNow)
+        .WhereIf(model.AvailableFromDate <= DateTime.UtcNow, x => x.AvailableAt > DateTime.UtcNow)
         .WhereIf(model.AvailableFromDate > DateTime.UtcNow, x => x.AvailableAt > model.AvailableFromDate.ToUniversalTime())
         .WhereIf(model.SportsFilter.Length > 0, x => x.Referee.Sports.Any(x => model.SportsFilter.Contains(x.SportType)))
         .WhereIf(model.CountysFilter.Length > 0, x => x.Referee.Countys.Any(county => model.CountysFilter.Contains(county.CountyType)))
