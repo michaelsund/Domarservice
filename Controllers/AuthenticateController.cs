@@ -17,6 +17,8 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading;
+using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Primitives;
 
 namespace Domarservice.Controllers
 {
@@ -50,6 +52,8 @@ namespace Domarservice.Controllers
       _roleManager = roleManager;
       _configuration = configuration;
     }
+
+    private const string BearerPrefix = "Bearer ";
 
     [AllowAnonymous]
     [HttpGet]
@@ -96,6 +100,34 @@ namespace Domarservice.Controllers
       }
 
     }
+
+    // Not used atm, role is passed on with /login, and enforced through controller authorization.
+    // Frontend just checks the role to display or not display elements.
+    // [AllowAnonymous]
+    // [HttpGet]
+    // [Route("get-role")]
+    // public async Task<IActionResult> GetRole()
+    // {
+    //   if (Request.Headers.TryGetValue("Authorization", out StringValues headerValue))
+    //   {
+    //     string token = headerValue;
+    //     if (!string.IsNullOrEmpty(token) && token.StartsWith(BearerPrefix))
+    //     {
+    //       token = token.Substring(BearerPrefix.Length);
+    //       try
+    //       {
+    //         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+    //         string role = jwt.Claims.First(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+    //         return Ok(new ApiResponse { Success = true, Message = $"Din roll hämtades", Data = role });
+    //       }
+    //       catch (Exception)
+    //       {
+    //         return StatusCode(500, new { message = "Något gick fel när din roll skulle hämtas." });
+    //       }
+    //     }
+    //   }
+    //   return StatusCode(500, new { message = "Kunde inte hämta din roll." });
+    // }
 
     [AllowAnonymous]
     [HttpGet]
@@ -226,7 +258,7 @@ namespace Domarservice.Controllers
           user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(refreshTokenValidityInDays);
 
           await _userManager.UpdateAsync(user);
-
+          var roles = await _userManager.GetRolesAsync(user);
           return StatusCode(200, new ApiResponse
           {
             Success = true,
@@ -237,6 +269,7 @@ namespace Domarservice.Controllers
               Lastname = user.Lastname,
               Email = user.Email,
               Token = new JwtSecurityTokenHandler().WriteToken(token),
+              Role = roles[0],
               Expiration = token.ValidTo
             }
           }
@@ -315,13 +348,22 @@ namespace Domarservice.Controllers
           {
             user.RefereeId = referee.Id;
             await _userManager.UpdateAsync(user);
+            // Set the role directly when a Referee registers, still needs to validate email token.
+            if (!await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+              await _roleManager.CreateAsync(new IdentityRole(UserRoles.RefereeUser));
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.RefereeUser))
+            {
+              await _userManager.AddToRoleAsync(user, UserRoles.RefereeUser);
+            }
           }
         }
         else
         {
           // Create new company here and set the users companyId to it.
           // Notice that the CompanyUser role should be set by a admin once the account is active.
-          var company = await _companyRepository.AddNewCompany(new RegisterCompanyModel {
+          var company = await _companyRepository.AddNewCompany(new RegisterCompanyModel
+          {
             Name = model.CompanyName,
             City = model.CompanyCity,
             County = model.CompanyCounty,
@@ -513,7 +555,7 @@ namespace Domarservice.Controllers
         return BadRequest(new ApiResponse
         {
           Success = false,
-          Message = "Invalid client request",
+          Message = "Ett fel uppstod när begäran skickades, försök igen.",
           Data = null
         });
       }
