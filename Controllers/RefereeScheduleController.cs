@@ -24,7 +24,7 @@ namespace Domarservice.Controllers
       _scheduleRepository = scheduleRepository;
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "CompanyUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -67,7 +67,7 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "CompanyUser,Admin")]
     [HttpGet("referee/{id:int}")]
     public async Task<IActionResult> GetAllByRefereeId(int id)
     {
@@ -100,7 +100,7 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "CompanyUser,Admin")]
     [HttpPost("filtered")]
     public async Task<IActionResult> GetAllPaginateFiltered(RefereeSchedulesFiltered model)
     {
