@@ -52,6 +52,26 @@ namespace Domarservice.DAL
       return null;
     }
 
+     public async Task<SimpleRefereeDto> GetSimpleRefeereById(int id)
+    {
+      ApplicationUser user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.RefereeId == id);
+      if (user != null)
+      {
+        Referee referee = await _context.Referees
+       .Include(x => x.Sports)
+       .Include(x => x.Countys)
+       .Include(x => x.Schedules)
+         .ThenInclude(y => y.BookingRequestByCompanys)
+         .ThenInclude(y => y.RequestingCompany)
+       .FirstOrDefaultAsync(x => x.Id == id);
+        var mappedReferee = _mapper.Map<SimpleRefereeDto>(referee);
+        mappedReferee.Surname = user.Surname;
+        mappedReferee.Lastname = user.Lastname;
+        return mappedReferee;
+      }
+      return null;
+    }
+
     public async Task<bool> DeleteRefereeById(int? id)
     {
       if (id != null)

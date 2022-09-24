@@ -19,6 +19,7 @@ using System.Net;
 using System.Threading;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Extensions.Primitives;
+using Domarservice.Helpers;
 
 namespace Domarservice.Controllers
 {
@@ -259,6 +260,10 @@ namespace Domarservice.Controllers
 
           await _userManager.UpdateAsync(user);
           var roles = await _userManager.GetRolesAsync(user);
+
+          // Send the id for the users CompanyId or RefereeId, 0 if not found.
+          var roleId = new CompanyOrRefereeId().Get(user);
+
           return StatusCode(200, new ApiResponse
           {
             Success = true,
@@ -270,6 +275,8 @@ namespace Domarservice.Controllers
               Email = user.Email,
               Token = new JwtSecurityTokenHandler().WriteToken(token),
               Role = roles[0],
+              // Sends the users companyId or refereeId depending on what is set. 0 for Admin
+              RoleId = roleId,
               Expiration = token.ValidTo
             }
           }
@@ -581,7 +588,7 @@ namespace Domarservice.Controllers
         return BadRequest(new ApiResponse
         {
           Success = false,
-          Message = "Invalid access token or refresh token",
+          Message = "Du har blivit utloggad, logga in igen. (Accesstoken)",
           Data = null
         });
       }

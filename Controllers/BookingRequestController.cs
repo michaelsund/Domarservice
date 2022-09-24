@@ -128,7 +128,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem booking the companyevent, do you have the correct sport or role?",
+          Message = "Ett fel uppstod när anmälan skickas, har du rätt sport och domar-roll?",
           Data = null,
         });
       }
@@ -137,11 +137,50 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a error booking the companyevent.",
+          Message = "Ett problem uppstod när anmälan skulle skickas.",
           Data = null,
         });
       }
     }
+
+    // [Authorize(Roles = "RefereeUser,Admin")]
+    // [HttpPost]
+    // [Route("revert-request-by-referee")]
+    // public async Task<IActionResult> RevertBookingRequestByRefereeOnCompanyEvent([FromBody] BookCompanyEventByRefereeBody request)
+    // {
+    //   try
+    //   {
+    //     var claimId = User.Identity.GetUserClaimId();
+    //     if (claimId > 0)
+    //     {
+    //       var result = await _bookingRequestRepository.AddBookingRequestByReferee(request, claimId);
+    //       if (result)
+    //       {
+    //         return StatusCode(200, new ApiResponse
+    //         {
+    //           Success = true,
+    //           Message = "Companyevent booking request sent",
+    //           Data = null,
+    //         });
+    //       }
+    //     }
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "Ett fel uppstod när anmälan skickas, har du rätt sport och domar-roll?",
+    //       Data = null,
+    //     });
+    //   }
+    //   catch (Exception e)
+    //   {
+    //     return StatusCode(500, new ApiResponse
+    //     {
+    //       Success = false,
+    //       Message = "Ett problem uppstod när anmälan skulle skickas.",
+    //       Data = null,
+    //     });
+    //   }
+    // }
 
     [Authorize(Roles = "CompanyUser,Admin")]
     [HttpPost]

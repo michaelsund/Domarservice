@@ -37,14 +37,14 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Cannot find event",
+            Message = "Kunde inte hitta matchen.",
             Data = null,
           });
         }
         return StatusCode(200, new ApiResponse
         {
           Success = true,
-          Message = "Here is your event",
+          Message = "Här är matchen.",
           Data = companyEvent,
         });
       }
@@ -53,7 +53,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "Error fetching company event",
+          Message = "Ett problem uppstod när matchen skulle hämtas.",
           Data = null,
         });
       }

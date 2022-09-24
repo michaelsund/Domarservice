@@ -12,23 +12,33 @@ namespace Domarservice.DAL
   public class CompanyEventRepository : ICompanyEventRepository
   {
     private readonly DomarserviceContext _context = null;
+    private readonly IRefereeRepository _refereeRepository;
     private readonly IMapper _mapper;
 
-    public CompanyEventRepository(DomarserviceContext context, IMapper mapper)
+    public CompanyEventRepository(DomarserviceContext context, IRefereeRepository refereeRepository, IMapper mapper)
     {
       _context = context;
+      _refereeRepository = refereeRepository;
       _mapper = mapper;
     }
 
     public async Task<CompanyEventDto> GetCompanyEventById(int id)
     {
-
       CompanyEvent companyEvent = await _context.CompanyEvents
         .Include(x => x.RefereeTypesForEvent)
         .Include(x => x.BookingRequestByReferees)
           .ThenInclude(y => y.Referee)
         .FirstOrDefaultAsync(x => x.Id == id);
-      return _mapper.Map<CompanyEventDto>(companyEvent);
+
+      var mappedEvent = _mapper.Map<CompanyEventDto>(companyEvent);
+
+      // Add user info to mapped referee.
+      foreach (var bookingRequest in mappedEvent.BookingRequestByReferees)
+      {
+        bookingRequest.Referee = await _refereeRepository.GetSimpleRefeereById(bookingRequest.Referee.Id);
+      }
+
+      return mappedEvent;
     }
 
     public async Task<List<ExtendedCompanyEventDto>> GetLatestCompanyEvents(int amount)
