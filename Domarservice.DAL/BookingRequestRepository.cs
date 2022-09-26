@@ -92,6 +92,18 @@ namespace Domarservice.DAL
 
           if (sportsTypesList.Contains(companyEvent.SportType))
           {
+            // Check that the referee has not allready made a request.
+            var exists = await _context.BookingRequestsByReferee.Where(x =>
+              x.CompanyEventId == request.CompanyEventId &&
+              x.RefereeId == refereeId &&
+              x.RefereeType == request.RefereeType
+            ).FirstOrDefaultAsync();
+
+            if (exists != null)
+            {
+              return false;
+            }
+
             await _context.BookingRequestsByReferee
               .AddAsync(new BookingRequestByReferee()
               {
@@ -107,6 +119,32 @@ namespace Domarservice.DAL
           }
         }
         return false;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
+
+    public async Task<bool> RemoveBookingRequestByReferee(int requestId, int refereeId)
+    {
+      try
+      {
+        var request = await _context.BookingRequestsByReferee.Where(x =>
+           x.CompanyEventId == requestId &&
+           x.RefereeId == refereeId
+         ).FirstOrDefaultAsync();
+         if (request != null)
+         {
+          _context.BookingRequestsByReferee.Remove(request);
+          var result = await _context.SaveChangesAsync();
+          if (result > 0)
+          {
+            return true;
+          }
+         }
+         return false;
       }
       catch (Exception)
       {

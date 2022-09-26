@@ -14,6 +14,7 @@ namespace Domarservice.DAL
         Task<bool> AwnserBookingRequestFromCompany(AwnserCompanyRequestBody request, int refereeId);
         // Referee > Company
         Task<bool> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId);
+        Task<bool> RemoveBookingRequestByReferee(int requestId, int refereeId);
         Task<bool> AwnserBookingRequestFromReferee(AwnserRefereeRequestBody request, int companyId);
         
     }
