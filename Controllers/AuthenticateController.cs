@@ -302,7 +302,7 @@ namespace Domarservice.Controllers
       return StatusCode(500, new ApiResponse
       {
         Success = false,
-        Message = "Username or password is wrong.",
+        Message = "Fel användarnamn eller lösenord.",
         Data = null,
       });
     }

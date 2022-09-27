@@ -77,7 +77,10 @@ namespace Domarservice.DAL
       // First check if the companyEvent exists.
       try
       {
-        var companyEvent = await _context.CompanyEvents.FirstOrDefaultAsync(x => x.Id == request.CompanyEventId);
+        var companyEvent = await _context.CompanyEvents
+          .Include(x => x.BookingRequestByReferees)
+          .Include(x => x.RefereeTypesForEvent)
+          .FirstOrDefaultAsync(x => x.Id == request.CompanyEventId);
         if (companyEvent != null)
         {
           // Check that the sports matches up, fetch the referee and check the sports
@@ -92,6 +95,15 @@ namespace Domarservice.DAL
 
           if (sportsTypesList.Contains(companyEvent.SportType))
           {
+            // Is all referee slots filled?
+            var roleAvailable = new RefereeTypeQuotaForEvent().Check(companyEvent, request);
+
+            if (!roleAvailable)
+            {
+              // This should return a better errorMessage saying that the role is allready filled.
+              return false;
+            }
+
             // Check that the referee has not allready made a request.
             var exists = await _context.BookingRequestsByReferee.Where(x =>
               x.CompanyEventId == request.CompanyEventId &&
@@ -120,7 +132,7 @@ namespace Domarservice.DAL
         }
         return false;
       }
-      catch (Exception)
+      catch (Exception e)
       {
         return false;
       }
@@ -135,16 +147,16 @@ namespace Domarservice.DAL
            x.CompanyEventId == requestId &&
            x.RefereeId == refereeId
          ).FirstOrDefaultAsync();
-         if (request != null)
-         {
+        if (request != null)
+        {
           _context.BookingRequestsByReferee.Remove(request);
           var result = await _context.SaveChangesAsync();
           if (result > 0)
           {
             return true;
           }
-         }
-         return false;
+        }
+        return false;
       }
       catch (Exception)
       {
