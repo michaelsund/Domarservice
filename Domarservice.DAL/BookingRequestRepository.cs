@@ -72,7 +72,7 @@ namespace Domarservice.DAL
       }
     }
 
-    public async Task<bool> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId)
+    public async Task<ResultWithMessage> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId)
     {
       // First check if the companyEvent exists.
       try
@@ -96,12 +96,12 @@ namespace Domarservice.DAL
           if (sportsTypesList.Contains(companyEvent.SportType))
           {
             // Is all referee slots filled?
-            var roleAvailable = new RefereeTypeQuotaForEvent().Check(companyEvent, request);
+            var resultWithMessage = new RefereeTypeQuotaForEvent().Check(companyEvent, request);
 
-            if (!roleAvailable)
+            if (!resultWithMessage.Result)
             {
               // This should return a better errorMessage saying that the role is allready filled.
-              return false;
+              return resultWithMessage;
             }
 
             // Check that the referee has not allready made a request.
@@ -113,7 +113,12 @@ namespace Domarservice.DAL
 
             if (exists != null)
             {
-              return false;
+              return new ResultWithMessage
+              {
+                Result = false,
+                Message = "Du har redan ansökt om att döma.",
+                Data = null
+              };
             }
 
             await _context.BookingRequestsByReferee
@@ -127,19 +132,34 @@ namespace Domarservice.DAL
                 RefereeType = request.RefereeType
               });
             await _context.SaveChangesAsync();
-            return true;
+            return new ResultWithMessage
+            {
+              Result = true,
+              Message = "Din ansökan är skickad.",
+              Data = null
+            };
           }
         }
-        return false;
+        return new ResultWithMessage
+        {
+          Result = false,
+          Message = "Kunde inte hitta matchen.",
+          Data = null
+        };
       }
       catch (Exception e)
       {
-        return false;
+        return new ResultWithMessage
+        {
+          Result = false,
+          Message = "Ett fel uppstod när ansökan skickades.",
+          Data = null
+        };
       }
     }
 
 
-    public async Task<bool> RemoveBookingRequestByReferee(int requestId, int refereeId)
+    public async Task<ResultWithMessage> RemoveBookingRequestByReferee(int requestId, int refereeId)
     {
       try
       {
@@ -149,18 +169,44 @@ namespace Domarservice.DAL
          ).FirstOrDefaultAsync();
         if (request != null)
         {
+          // Do not allow referees to revoke if they have been accepted.
+          if (request.Accepted)
+          {
+            return new ResultWithMessage
+            {
+              Result = false,
+              Message = "Din förfrågan kan inte tas bort när den accepterats.",
+              Data = null
+            };
+          }
+
           _context.BookingRequestsByReferee.Remove(request);
           var result = await _context.SaveChangesAsync();
           if (result > 0)
           {
-            return true;
+            return new ResultWithMessage
+            {
+              Result = true,
+              Message = "Din förfrågan är nu borttagen.",
+              Data = null
+            };
           }
         }
-        return false;
+        return new ResultWithMessage
+        {
+          Result = false,
+          Message = "Kunde inte hitta din förfrågan.",
+          Data = null
+        }; ;
       }
       catch (Exception)
       {
-        return false;
+        return new ResultWithMessage
+        {
+          Result = true,
+          Message = "Ett problem uppstod när din förfrågan skulle tas bort.",
+          Data = null
+        };
       }
     }
 

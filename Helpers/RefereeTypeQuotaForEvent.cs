@@ -5,7 +5,7 @@ namespace Domarservice.Helpers
 {
   public class RefereeTypeQuotaForEvent
   {
-    public bool Check(CompanyEvent companyEvent, BookCompanyEventByRefereeBody incomingRequest)
+    public ResultWithMessage Check(CompanyEvent companyEvent, BookCompanyEventByRefereeBody incomingRequest)
     {
       if (companyEvent.BookingRequestByReferees.Count > 0)
       {
@@ -42,19 +42,39 @@ namespace Domarservice.Helpers
         if (incomingRequest.RefereeType == RefereeType.Hudvuddomare && numRefereeMain > 0)
         {
           // Better response here why there is no room left.
-          return true;
+          return new ResultWithMessage
+          {
+            Result = true,
+            Message = "Intresseanmälan som huvuddomare.",
+            Data = null
+          };
         }
 
         if (incomingRequest.RefereeType == RefereeType.Linjeman && numRefereeLineMan > 0)
         {
           // Better response here why there is no room left.
-          return true;
+          return new ResultWithMessage
+          {
+            Result = true,
+            Message = "Intresseanmälan skickad.",
+            Data = null
+          };
         }
 
-        return false;
+        return new ResultWithMessage
+        {
+          Result = false,
+          Message = $"Platserna för rollen {incomingRequest.RefereeType.ToString().ToLower()} inte tillgänglig.",
+          Data = null
+        };
       }
 
-      return true;
+      return new ResultWithMessage
+      {
+        Result = true,
+        Message = "Intresseanmälan skickad.",
+        Data = null
+      };
     }
   }
 }

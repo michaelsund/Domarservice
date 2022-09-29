@@ -114,21 +114,15 @@ namespace Domarservice.Controllers
         var claimId = User.Identity.GetUserClaimId();
         if (claimId > 0)
         {
-          var result = await _bookingRequestRepository.AddBookingRequestByReferee(request, claimId);
-          if (result)
-          {
-            return StatusCode(200, new ApiResponse
-            {
-              Success = true,
-              Message = "Du har nu skickan en boknnigsförfrågan.",
-              Data = null,
-            });
-          }
+          ResultWithMessage result = await _bookingRequestRepository.AddBookingRequestByReferee(request, claimId);
+
+          // Sets better errormessage from repository and helper.
+          return StatusCode(result.Result ? 200 : 500, result);
         }
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "Ett fel uppstod när anmälan skickas, har du rätt sport och domar-roll eller är du redan anmäld?",
+          Message = "Ett fel uppstod när anmälan skickas.",
           Data = null,
         });
       }
@@ -153,15 +147,12 @@ namespace Domarservice.Controllers
         if (claimId > 0)
         {
           var result = await _bookingRequestRepository.RemoveBookingRequestByReferee(requestId, claimId);
-          if (result)
-          {
-            return StatusCode(200, new ApiResponse
+          return StatusCode(result.Result ? 200 : 500, new ApiResponse
             {
-              Success = true,
-              Message = "Din förfrågan är nu borttagen.",
-              Data = null,
+              Success = result.Result,
+              Message = result.Message,
+              Data = result.Data,
             });
-          }
         }
         return StatusCode(500, new ApiResponse
         {
