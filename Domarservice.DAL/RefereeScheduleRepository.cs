@@ -34,6 +34,27 @@ namespace Domarservice.DAL
       return _mapper.Map<RefereeScheduleDto>(schedule);
     }
 
+    public async Task<List<RefereeScheduleDto>> ScheduleRequestsForReferee(int refereeId)
+    {
+      // Only return the schedules that has requests from companies.
+      List<Schedule> schedules = await _context.Schedules
+        .Include(x => x.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
+          .ThenInclude(i => i.Sports)
+          // Omit dates that has allready passed.
+        .Where(x => x.AvailableAt > DateTime.UtcNow)
+        .Where(x => x.RefereeId == refereeId)
+        // Omit dates that has allready passed.
+        .Where(x => x.BookingRequestByCompanys.Count > 0)
+        .ToListAsync();
+      var refereeSchedules = _mapper.Map<List<RefereeScheduleDto>>(schedules);
+      if (refereeSchedules.Count > 0)
+      {
+        return refereeSchedules;
+      }
+      return new List<RefereeScheduleDto>();
+    }
+
     public async Task<List<SimpleScheduleDto>> GetSchedulesByRefereeId(int id)
     {
       List<Schedule> schedules = await _context.Schedules
@@ -80,7 +101,7 @@ namespace Domarservice.DAL
       {
         try
         {
-          schedule.Referee = await GetInfoFromUserByRefereeId(schedule.RefereeId, schedule.Referee.Sports, schedule.Referee.Countys); 
+          schedule.Referee = await GetInfoFromUserByRefereeId(schedule.RefereeId, schedule.Referee.Sports, schedule.Referee.Countys);
         }
         catch (Exception)
         {

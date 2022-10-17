@@ -13,5 +13,6 @@ namespace Domarservice.Models
     public SportType SportType { get; set; }
     public SimpleCompanyDto Company { get; set; }
     public List<RefereeTypesCompanyEventDto> RefereeTypesForEvent { get; set; }
+    public List<BookingRequestByRefereeDto> BookingRequestByReferees { get; set; }
   }
 }

@@ -56,6 +56,25 @@ namespace Domarservice.DAL
       return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
     }
 
+    public async Task<List<ExtendedCompanyEventDto>> EventsForReferee(int refereeId)
+    {
+      List<CompanyEvent> companyEvents = await _context.CompanyEvents
+        .Include(x => x.Company)
+        .Include(x => x.RefereeTypesForEvent)
+        .Include(x => x.BookingRequestByReferees)
+          .ThenInclude(y => y.Referee)
+        // Omit dates that has allready passed.
+        .Where(x => x.Date > DateTime.UtcNow)
+        .Where(x => x.BookingRequestByReferees
+          .Any(y => y.RefereeId == refereeId)
+        )
+        .OrderBy(x => x.Id)
+        .ToListAsync();
+      return _mapper.Map<List<ExtendedCompanyEventDto>>(companyEvents);
+    }
+
+    
+
     public async Task<List<ExtendedCompanyEventDto>> GetAllEventsPage(int page)
     {
       int maxAmount = 4;

@@ -83,7 +83,8 @@ namespace Domarservice.Controllers
             Data = schedules
           });
         }
-        return StatusCode(500, new ApiResponse {
+        return StatusCode(500, new ApiResponse
+        {
           Success = true,
           Message = $"No schedules found for referee with id {id}",
           Data = null
@@ -134,6 +135,49 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "RefereeUser,Admin")]
+    [HttpGet("from-companies")]
+    public async Task<IActionResult> GetAllRequestedSchedulesForRefree()
+    {
+      // Gets the requested schedules that companies has applied for, with their status.
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        List<RefereeScheduleDto> scheduleRequests = await _scheduleRepository.ScheduleRequestsForReferee(claimId);
+        if (scheduleRequests.Count > 0)
+        {
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "",
+            Data = scheduleRequests,
+          });
+        }
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Kunde inte hitta några ansökningar till ditt schema.",
+          Data = null,
+        });
+
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när domarens schemabokningar skulle hämtas.",
+          Data = null,
+        });
+
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när scheman skulle hämtas.",
+          Data = null,
+        });
+      }
+    }
 
     [Authorize(Roles = "RefereeUser,Admin")]
     [HttpPost]

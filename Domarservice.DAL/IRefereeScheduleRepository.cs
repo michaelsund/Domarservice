@@ -11,6 +11,7 @@ namespace Domarservice.DAL
     {
         Task<List<SimpleScheduleDto>> GetSchedulesByRefereeId(int id);
         Task<RefereeScheduleDto> GetScheduleById(int id);
+        Task<List<RefereeScheduleDto>> ScheduleRequestsForReferee(int refereeId);
         Task<List<RefereeScheduleDto>> GetFilteredSchedulesPage(RefereeSchedulesFiltered model);
         Task<bool> DeleteScheduleById(int id);
         Task<bool> CreateSchedule(int id, DateTime availableAt);

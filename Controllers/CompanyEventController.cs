@@ -65,7 +65,8 @@ namespace Domarservice.Controllers
     public async Task<IActionResult> GetLatest(int amount)
     {
       int maxAmount = 20;
-      if (amount > maxAmount) {
+      if (amount > maxAmount)
+      {
         amount = maxAmount;
       }
 
@@ -128,6 +129,50 @@ namespace Domarservice.Controllers
         {
           Success = false,
           Message = "Ett problem uppstod när matcherna skulle hämtas.",
+          Data = null,
+        });
+      }
+    }
+
+    [Authorize(Roles = "RefereeUser,Admin")]
+    [HttpGet("for-referee")]
+    public async Task<IActionResult> GetAllRequestedEventsForRefree()
+    {
+      // Gets the events that the referee has applied for, with their status.
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        List<ExtendedCompanyEventDto> requests = await _companyEventRepository.EventsForReferee(claimId);
+        if (requests.Count > 0)
+        {
+          return StatusCode(200, new ApiResponse
+          {
+            Success = true,
+            Message = "",
+            Data = requests,
+          });
+        }
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Kunde inte hitta några ansökningar till matcher.",
+          Data = null,
+        });
+
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när domarens bokningar skulle hämtas.",
+          Data = null,
+        });
+
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när ansökningarna skulle hämtas.",
           Data = null,
         });
       }
