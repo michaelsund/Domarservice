@@ -12,6 +12,7 @@ namespace Domarservice.DAL
         Task<CompanyEventDto> GetCompanyEventById(int id);
         Task<List<ExtendedCompanyEventDto>> GetLatestCompanyEvents(int amount);
         Task<List<ExtendedCompanyEventDto>> EventsForReferee(int refereeId);
+        Task<List<CompanyEventDto>> GetMyEvents(int companyId);
         Task<List<ExtendedCompanyEventDto>> GetAllEventsPage(int page);
         Task<List<ExtendedCompanyEventDto>> GetFilteredEventsPage(CompanyEventsFiltered model);
         Task<bool> DeleteCompanyEventById(int id);

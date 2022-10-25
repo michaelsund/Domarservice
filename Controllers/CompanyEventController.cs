@@ -25,7 +25,44 @@ namespace Domarservice.Controllers
       _companyEventRepository = companyEventRepository;
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    // Used for a company to get it's events dating forward in time.
+    [Authorize(Roles = "CompanyUser,Admin")]
+    [HttpGet("my-events")]
+    public async Task<IActionResult> Get()
+    {
+      try
+      {
+        // Get the companyId
+        var claimId = User.Identity.GetUserClaimId();
+        var companyEvents = await _companyEventRepository.GetMyEvents(claimId);
+        if (companyEvents.Count <= 0)
+        {
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Kunde inte hitta några matcher till din förening.",
+            Data = null,
+          });
+        }
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Här är matcherna.",
+          Data = companyEvents,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när matcherna till din förening skulle hämtas.",
+          Data = null,
+        });
+      }
+    }
+
+    [Authorize(Roles = "RefereeUser,Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -100,7 +137,7 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "RefereeUser,Admin")]
     [HttpGet("all/{page:int}")]
     public async Task<IActionResult> GetAllPaginate(int page)
     {
@@ -178,7 +215,7 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "RefereeUser,CompanyUser,Admin")]
+    [Authorize(Roles = "RefereeUser,Admin")]
     [HttpPost("filtered")]
     public async Task<IActionResult> GetAllPaginateFiltered(CompanyEventsFiltered model)
     {
