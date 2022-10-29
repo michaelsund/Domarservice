@@ -81,7 +81,7 @@ namespace Domarservice.DAL
         .Include(x => x.BookingRequestByReferees)
           .ThenInclude(y => y.Referee)
         // Omit dates that has allready passed.
-        .Where(x => x.Date > DateTime.UtcNow)
+        .Where(x => x.Date >= DateTime.UtcNow)
         .Where(x => x.CompanyId == companyId)
         .ToListAsync();
 
@@ -146,7 +146,7 @@ namespace Domarservice.DAL
           .AddAsync(new CompanyEvent()
           {
             CompanyId = companyId,
-            Date = request.Date,
+            Date = request.Date.ToUniversalTime(),
             Location = request.Location,
             Name = request.Name,
             SportType = request.SportType,

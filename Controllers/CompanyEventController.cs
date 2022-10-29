@@ -256,6 +256,17 @@ namespace Domarservice.Controllers
     {
       try
       {
+        var now = DateTime.UtcNow;
+        // Refuse to create events not bigger than today. (only compare dates, not time)
+        if (request.Date.Date < now.Date)
+        {
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Datumet för matchen måste vara från idag och framåt.",
+            Data = null,
+          });
+        }
         // In this case the claim will be companyId for the company user.
         var claimId = User.Identity.GetUserClaimId();
         var result = await _companyEventRepository.AddCompanyEvent(request, claimId);
@@ -265,14 +276,14 @@ namespace Domarservice.Controllers
           return StatusCode(200, new ApiResponse
           {
             Success = true,
-            Message = "CompanyEvent created",
+            Message = "Matchen skapades.",
             Data = null,
           });
         }
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "Problem creating CompanyEvent",
+          Message = "Kunde inte skapa matchen.",
           Data = null,
         });
       }
