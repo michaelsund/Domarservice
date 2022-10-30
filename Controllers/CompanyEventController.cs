@@ -215,7 +215,7 @@ namespace Domarservice.Controllers
       }
     }
 
-    [Authorize(Roles = "RefereeUser,Admin")]
+    [Authorize(Roles = "CompanyUser,RefereeUser,Admin")]
     [HttpPost("filtered")]
     public async Task<IActionResult> GetAllPaginateFiltered(CompanyEventsFiltered model)
     {
