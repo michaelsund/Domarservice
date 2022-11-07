@@ -41,7 +41,7 @@ namespace Domarservice.Controllers
           return StatusCode(200, new ApiResponse
           {
             Success = true,
-            Message = "Schedule found",
+            Message = "Schedule for ",
             Data = schedule,
           });
         }
@@ -55,6 +55,36 @@ namespace Domarservice.Controllers
             Data = null,
           });
         }
+      }
+      catch (Exception)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "There was a problem fetching the schedule",
+          Data = null,
+        });
+      }
+    }
+
+    [Authorize(Roles = "CompanyUser,RefereeUser,Admin")]
+    [HttpPost("month")]
+    public async Task<IActionResult> GetMonthSchedule(RefereeMonthScheduleBody model)
+    {
+      try
+      {
+        if (model.Month <= 0 || model.Month > 12)
+        {
+          throw new Exception("Month is out of bounds.");
+        }
+
+        var monthSchedule = await _scheduleRepository.GetScheduleByIdAndMonth(model.RefereeId, model.Year, model.Month);
+        return StatusCode(200, new ApiResponse
+        {
+          Success = true,
+          Message = "Här är schemat för månaden.",
+          Data = monthSchedule,
+        });
       }
       catch (Exception)
       {

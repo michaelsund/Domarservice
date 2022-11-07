@@ -7,6 +7,7 @@ using Domarservice.Models;
 using Domarservice.Helpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
 
 namespace Domarservice.DAL
 {
@@ -34,6 +35,46 @@ namespace Domarservice.DAL
       return _mapper.Map<RefereeScheduleDto>(schedule);
     }
 
+    public async Task<List<RefereeMonthScheduleDto>> GetScheduleByIdAndMonth(int id, int year, int month)
+    {
+      List<Schedule> schedule = await _context.Schedules
+        .Include(x => x.BookingRequestByCompanys)
+          .ThenInclude(y => y.RequestingCompany)
+          .ThenInclude(i => i.Sports)
+        .Where(x => x.RefereeId == id)
+        .Where(x => x.AvailableAt.Year == year)
+        .Where(x => x.AvailableAt.Month == month)
+        .ToListAsync();
+      var availableDays = _mapper.Map<List<RefereeScheduleDto>>(schedule);
+
+      // Generate list with days for the month, and tack on the availableDays objects.
+      // Need a new model with date, date number, and day name in swedish.
+      CultureInfo myCI = new CultureInfo("sv-SE", false);
+      var monthSchedule = new List<RefereeMonthScheduleDto>();
+
+      foreach (var date in DateHelper.AllDaysInMonth(year, month))
+      {
+        bool hasMarkedAsAvailable = availableDays.Any(x => DateTime.Parse(x.AvailableAt).Day == date.Date.Day);
+        var day = new RefereeMonthScheduleDto
+        {
+          Day = date.Day,
+          DayName = myCI.DateTimeFormat.GetDayName(date.DayOfWeek),
+          Week = System.Globalization.ISOWeek.GetWeekOfYear(date)
+        };
+
+        if (hasMarkedAsAvailable)
+        {
+          var availableDay = availableDays.Where(x => DateTime.Parse(x.AvailableAt).Day == date.Date.Day).FirstOrDefault();
+          day.AvailableAt = availableDay.AvailableAt;
+          day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
+        }
+
+        monthSchedule.Add(day);
+      }
+
+      return monthSchedule;
+    }
+
     public async Task<List<RefereeScheduleDto>> ScheduleRequestsForReferee(int refereeId)
     {
       // Only return the schedules that has requests from companies.
@@ -41,7 +82,7 @@ namespace Domarservice.DAL
         .Include(x => x.BookingRequestByCompanys)
           .ThenInclude(y => y.RequestingCompany)
           .ThenInclude(i => i.Sports)
-          // Omit dates that has allready passed.
+        // Omit dates that has allready passed.
         .Where(x => x.AvailableAt > DateTime.UtcNow)
         .Where(x => x.RefereeId == refereeId)
         // Omit dates that has allready passed.
