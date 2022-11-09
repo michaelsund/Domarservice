@@ -68,6 +68,11 @@ namespace Domarservice.DAL
           day.AvailableAt = availableDay.AvailableAt;
           day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
         }
+        else
+        {
+          // Create empty list so we can check the length even if no requests have been made.
+          day.BookingRequestByCompanys = new List<BookingRequestByCompanyDto>();
+        }
 
         monthSchedule.Add(day);
       }
