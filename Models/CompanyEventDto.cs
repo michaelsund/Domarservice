@@ -10,6 +10,8 @@ namespace Domarservice.Models
     public string Name { get; set; }
     public string Location { get; set; }
     public DateTime Date { get; set; }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
     public SportType SportType { get; set; }
     public List<RefereeTypesCompanyEventDto> RefereeTypesForEvent { get; set; }
     public List<BookingRequestByRefereeDto> BookingRequestByReferees { get; set; }

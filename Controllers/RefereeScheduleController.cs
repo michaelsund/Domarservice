@@ -214,37 +214,46 @@ namespace Domarservice.Controllers
     [Route("create")]
     public async Task<IActionResult> Create([FromBody] CreateScheduleBody request)
     {
-      try
+      if (request != null && request.AvailAbleAt > DateTime.Now)
       {
-        var claimId = User.Identity.GetUserClaimId();
-        var claimName = User.Identity.GetUserClaimName();
-        var result = await _scheduleRepository.CreateSchedule(claimId, request.AvailAbleAt);
-        if (result)
+        try
         {
-          _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at {request.AvailAbleAt}");
-          return StatusCode(200, new ApiResponse
+          var claimId = User.Identity.GetUserClaimId();
+          var claimName = User.Identity.GetUserClaimName();
+          var result = await _scheduleRepository.CreateSchedule(claimId, request.AvailAbleAt);
+          if (result)
           {
-            Success = true,
-            Message = "Schedule created",
+            _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at {request.AvailAbleAt}");
+            return StatusCode(200, new ApiResponse
+            {
+              Success = true,
+              Message = "Schemat har uppdaterats.",
+              Data = null,
+            });
+          }
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Ett problem uppstod när schemat uppdaterades.",
             Data = null,
           });
         }
-        return StatusCode(500, new ApiResponse
+        catch (Exception)
         {
-          Success = false,
-          Message = "Problem creating schedule",
-          Data = null,
-        });
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Anropet misslyckades.",
+            Data = null,
+          });
+        }
       }
-      catch (Exception)
+      return StatusCode(500, new ApiResponse
       {
-        return StatusCode(500, new ApiResponse
-        {
-          Success = false,
-          Message = "Invalid request creating schedule",
-          Data = null,
-        });
-      }
+        Success = false,
+        Message = "Datumet måst vara imorgon eller längre fram i tiden.",
+        Data = null,
+      });
     }
 
     [Authorize(Roles = "RefereeUser,Admin")]
@@ -269,7 +278,7 @@ namespace Domarservice.Controllers
             return StatusCode(500, new ApiResponse
             {
               Success = false,
-              Message = "Error deleting schedule",
+              Message = "Ett problem uppstod när dagen i ditt schema skulla tas bort.",
               Data = null,
             });
           }
@@ -277,7 +286,7 @@ namespace Domarservice.Controllers
           return StatusCode(200, new ApiResponse
           {
             Success = true,
-            Message = "Schedule was deleted",
+            Message = "Dagen i ditt schemat har tagits bort.",
             Data = null,
           });
         }
@@ -287,7 +296,7 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Schedule could not be deleted, you dont have permission.",
+            Message = "Ett problem uppstod när dagen i ditt schema skulla tas bort, du är inte behörig att ta bort dagen.",
             Data = null,
           });
         }

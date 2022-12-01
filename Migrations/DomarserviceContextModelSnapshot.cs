@@ -161,6 +161,9 @@ namespace Domarservice.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("EndTime")
+                        .HasColumnType("text");
+
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
@@ -169,6 +172,9 @@ namespace Domarservice.Migrations
 
                     b.Property<int>("SportType")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StartTime")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -288,8 +294,14 @@ namespace Domarservice.Migrations
                     b.Property<DateTime>("AvailableAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("EndTime")
+                        .HasColumnType("text");
+
                     b.Property<int>("RefereeId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StartTime")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

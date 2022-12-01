@@ -54,7 +54,7 @@ namespace Domarservice.DAL
 
       foreach (var date in DateHelper.AllDaysInMonth(year, month))
       {
-        bool hasMarkedAsAvailable = availableDays.Any(x => DateTime.Parse(x.AvailableAt).Day == date.Date.Day);
+        bool hasMarkedAsAvailable = availableDays.Any(x => x.AvailableAt.Day == date.Date.Day);
         var day = new RefereeMonthScheduleDto
         {
           Day = date.Day,
@@ -64,7 +64,8 @@ namespace Domarservice.DAL
 
         if (hasMarkedAsAvailable)
         {
-          var availableDay = availableDays.Where(x => DateTime.Parse(x.AvailableAt).Day == date.Date.Day).FirstOrDefault();
+          var availableDay = availableDays.Where(x => x.AvailableAt.Day == date.Date.Day).FirstOrDefault();
+          day.Id = availableDay.Id;
           day.AvailableAt = availableDay.AvailableAt;
           day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
         }
@@ -163,12 +164,14 @@ namespace Domarservice.DAL
 
     public async Task<bool> CreateSchedule(int id, DateTime availableAt)
     {
+      // We need to save as UTC since postgres only handles that format.
       try
       {
+        availableAt = DateTime.SpecifyKind(availableAt, DateTimeKind.Utc);
         await _context.Schedules
         .AddAsync(new Schedule()
         {
-          AvailableAt = availableAt,
+          AvailableAt = availableAt.ToUniversalTime(),
           RefereeId = id,
         });
         await _context.SaveChangesAsync();

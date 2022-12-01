@@ -50,6 +50,8 @@ namespace Domarservice.DAL
   {
     public int Id { get; set; }
     public DateTime AvailableAt { get; set; }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
     public int RefereeId { get; set; }
     public Referee Referee { get; set; }
     public List<BookingRequestByCompany> BookingRequestByCompanys { get; set; }
@@ -81,6 +83,8 @@ namespace Domarservice.DAL
     public string Name { get; set; }
     public string Location { get; set; }
     public DateTime Date { get; set; }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
     public SportType SportType { get; set; }
     public List<RefereeTypesCompanyEvent> RefereeTypesForEvent { get; set; }
     public List<BookingRequestByReferee> BookingRequestByReferees { get; set; }

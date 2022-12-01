@@ -644,7 +644,7 @@ namespace Domarservice.Controllers
           claims: authClaims,
           signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
           );
-
+      System.Console.WriteLine("Token valid to: " + DateTime.UtcNow.AddMinutes(tokenValidityInMinutes));
       return token;
     }
 

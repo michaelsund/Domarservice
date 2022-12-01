@@ -207,6 +207,8 @@ namespace Domarservice.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Location = table.Column<string>(type: "text", nullable: true),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartTime = table.Column<string>(type: "text", nullable: true),
+                    EndTime = table.Column<string>(type: "text", nullable: true),
                     SportType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -288,6 +290,8 @@ namespace Domarservice.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AvailableAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartTime = table.Column<string>(type: "text", nullable: true),
+                    EndTime = table.Column<string>(type: "text", nullable: true),
                     RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
