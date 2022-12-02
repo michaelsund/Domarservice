@@ -167,15 +167,27 @@ namespace Domarservice.DAL
       // We need to save as UTC since postgres only handles that format.
       try
       {
-        availableAt = DateTime.SpecifyKind(availableAt, DateTimeKind.Utc);
-        await _context.Schedules
-        .AddAsync(new Schedule()
+        // Check if there allready is a schedule set for the current date.
+        // TODO
+
+        // TODO: Should only check day for now, like 2022-11-21, take start and endtime into account later.
+        var scheduleExists = await _context.Schedules.Where(x => x.RefereeId == id && x.AvailableAt == DateTime.SpecifyKind(availableAt, DateTimeKind.Utc)).FirstOrDefaultAsync();
+        if (scheduleExists != null)
         {
-          AvailableAt = availableAt.ToUniversalTime(),
-          RefereeId = id,
-        });
-        await _context.SaveChangesAsync();
-        return true;
+          return false;
+        }
+        else
+        {
+          availableAt = DateTime.SpecifyKind(availableAt, DateTimeKind.Utc);
+          await _context.Schedules
+          .AddAsync(new Schedule()
+          {
+            AvailableAt = availableAt.ToUniversalTime(),
+            RefereeId = id,
+          });
+          await _context.SaveChangesAsync();
+          return true;
+        }
       }
       catch (Exception)
       {
