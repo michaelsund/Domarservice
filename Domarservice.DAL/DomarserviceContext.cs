@@ -9,6 +9,10 @@ namespace Domarservice.DAL
 {
   public class DomarserviceContext : IdentityDbContext<IdentityUser>
   {
+    static DomarserviceContext()
+    {
+      AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    }
     public DomarserviceContext(DbContextOptions<DomarserviceContext> options) : base(options) { }
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -49,9 +53,8 @@ namespace Domarservice.DAL
   public class Schedule
   {
     public int Id { get; set; }
-    public DateTime AvailableAt { get; set; }
-    public string StartTime { get; set; }
-    public string EndTime { get; set; }
+    public DateTime From { get; set; }
+    public DateTime To { get; set; }
     public int RefereeId { get; set; }
     public Referee Referee { get; set; }
     public List<BookingRequestByCompany> BookingRequestByCompanys { get; set; }
