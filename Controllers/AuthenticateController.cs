@@ -224,6 +224,7 @@ namespace Domarservice.Controllers
 
         if (user.EmailConfirmed)
         {
+          // Return better error message if the user doesnt have a role yet.
           var userRoles = await _userManager.GetRolesAsync(user);
 
           // Since a CompanyUser och RefereeUser only can have one Id of the two connected to the user, we set it as "Id" here.

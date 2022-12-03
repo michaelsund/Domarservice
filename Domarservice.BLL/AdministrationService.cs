@@ -104,35 +104,36 @@ namespace Domarservice.BLL
         }
 
         // Check that a existing Id doesnt exist yet for Company or Referee on the User object
-        if (user.CompanyId == null && user.RefereeId == null)
+        // if (user.CompanyId == null && user.RefereeId == null)
+        // {
+
+        // Then bind to correct id
+        if (model.Role == UserRoles.RefereeUser)
         {
-          // Then bind to correct id
-          if (model.Role == UserRoles.RefereeUser)
-          {
-            user.RefereeId = model.BindToModelId;
-            user.CompanyId = null;
-          }
-          else if (model.Role == UserRoles.CompanyUser)
-          {
-            user.CompanyId = model.BindToModelId;
-            user.RefereeId = null;
-          }
-          else if (model.Role == UserRoles.Admin)
-          {
-            // Admin doesnt use these fields
-            user.CompanyId = null;
-            user.RefereeId = null;
-          }
-          
-          await _userManager.UpdateAsync(user);
-          var result = await _userManager.AddToRoleAsync(user, model.Role);
-          if (result.Succeeded)
-          {
-            _logger.LogInformation($"{model.Email} was added to the role {model.Role} with Company/Referee ID {model.BindToModelId}");
-            return true;
-          }
+          user.RefereeId = model.BindToModelId;
+          user.CompanyId = null;
         }
-        _logger.LogWarning($"{model.Email} Allready has a CompanyId or RefereeId, cannot set new Role with Company/Referee binding with role {model.Role} to ID {model.BindToModelId}.");
+        else if (model.Role == UserRoles.CompanyUser)
+        {
+          user.CompanyId = model.BindToModelId;
+          user.RefereeId = null;
+        }
+        else if (model.Role == UserRoles.Admin)
+        {
+          // Admin doesnt use these fields
+          user.CompanyId = null;
+          user.RefereeId = null;
+        }
+
+        await _userManager.UpdateAsync(user);
+        var result = await _userManager.AddToRoleAsync(user, model.Role);
+        if (result.Succeeded)
+        {
+          _logger.LogInformation($"{model.Email} was added to the role {model.Role} with Company/Referee ID {model.BindToModelId}");
+          return true;
+        }
+        // }
+        // _logger.LogWarning($"{model.Email} Allready has a CompanyId or RefereeId, cannot set new Role with Company/Referee binding with role {model.Role} to ID {model.BindToModelId}.");
         return false;
       }
       catch (Exception)
