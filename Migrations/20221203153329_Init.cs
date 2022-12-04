@@ -289,9 +289,8 @@ namespace Domarservice.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AvailableAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartTime = table.Column<string>(type: "text", nullable: true),
-                    EndTime = table.Column<string>(type: "text", nullable: true),
+                    From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    To = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

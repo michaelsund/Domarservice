@@ -51,7 +51,7 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "You are not authorized to view this schedule",
+            Message = "Du är inte behörig att visa detta schema.",
             Data = null,
           });
         }
@@ -61,7 +61,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem fetching the schedule",
+          Message = "Ett fell uppstod när schemat skulle hämtas.",
           Data = null,
         });
       }
@@ -71,6 +71,7 @@ namespace Domarservice.Controllers
     [HttpPost("month")]
     public async Task<IActionResult> GetMonthSchedule(RefereeMonthScheduleBody model)
     {
+      // Note that this route returns a modified RefereeSchedule called RefereeMonthScheduleDto that has an array of From,To called AvailableTimes
       try
       {
         if (model.Month <= 0 || model.Month > 12)
@@ -91,7 +92,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem fetching the schedule",
+          Message = "Ett fel uppstod när schemat skulle hämtas.",
           Data = null,
         });
       }
@@ -125,7 +126,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem fetching all schedules for the referee.",
+          Message = "Ett fel uppstod när schemat för denna domare skulla hämtas.",
           Data = null
         });
       }
@@ -214,29 +215,41 @@ namespace Domarservice.Controllers
     [Route("create")]
     public async Task<IActionResult> Create([FromBody] CreateScheduleBody request)
     {
-      if (request != null && request.AvailAbleAt > DateTime.Now)
+      if (request != null && request.From > DateTime.Now)
       {
         try
         {
-          var claimId = User.Identity.GetUserClaimId();
-          var claimName = User.Identity.GetUserClaimName();
-          var result = await _scheduleRepository.CreateSchedule(claimId, request.AvailAbleAt);
-          if (result)
+          if (new ValidFromAndTo().Check(request.From, request.To))
           {
-            _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at {request.AvailAbleAt}");
-            return StatusCode(200, new ApiResponse
+            var claimId = User.Identity.GetUserClaimId();
+            var claimName = User.Identity.GetUserClaimName();
+            var result = await _scheduleRepository.CreateSchedule(claimId, request);
+            if (result)
             {
-              Success = true,
-              Message = "Schemat har uppdaterats.",
+              _logger.LogInformation($"Schedule created for {claimName} with refereeId {claimId} at From: {request.From}");
+              return StatusCode(200, new ApiResponse
+              {
+                Success = true,
+                Message = "Schemat har uppdaterats.",
+                Data = null,
+              });
+            }
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "Det finns redan en reserverad tid inom spannet.",
               Data = null,
             });
           }
-          return StatusCode(500, new ApiResponse
+          else
           {
-            Success = false,
-            Message = "Ett problem uppstod när schemat uppdaterades.",
-            Data = null,
-          });
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "Starttiden måste vara tidigare än sluttidet.",
+              Data = null,
+            });
+          }
         }
         catch (Exception)
         {

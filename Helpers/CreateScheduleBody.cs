@@ -4,6 +4,7 @@ namespace Domarservice.Helpers
 {
   public class CreateScheduleBody
   {
-    public DateTime AvailAbleAt { get; set; }
+    public DateTime From { get; set; }
+    public DateTime To { get; set; }
   }
 }

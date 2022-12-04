@@ -291,17 +291,14 @@ namespace Domarservice.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AvailableAt")
+                    b.Property<DateTime>("From")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EndTime")
-                        .HasColumnType("text");
 
                     b.Property<int>("RefereeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("StartTime")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("To")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

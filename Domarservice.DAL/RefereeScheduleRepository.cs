@@ -42,8 +42,8 @@ namespace Domarservice.DAL
           .ThenInclude(y => y.RequestingCompany)
           .ThenInclude(i => i.Sports)
         .Where(x => x.RefereeId == id)
-        .Where(x => x.AvailableAt.Year == year)
-        .Where(x => x.AvailableAt.Month == month)
+        .Where(x => x.From.Year == year)
+        .Where(x => x.From.Month == month)
         .ToListAsync();
       var availableDays = _mapper.Map<List<RefereeScheduleDto>>(schedule);
 
@@ -54,27 +54,28 @@ namespace Domarservice.DAL
 
       foreach (var date in DateHelper.AllDaysInMonth(year, month))
       {
-        bool hasMarkedAsAvailable = availableDays.Any(x => x.AvailableAt.Day == date.Date.Day);
+        bool hasMarkedAsAvailable = availableDays.Any(x => x.From.Day == date.Date.Day);
         var day = new RefereeMonthScheduleDto
         {
           Day = date.Day,
           DayName = myCI.DateTimeFormat.GetDayName(date.DayOfWeek),
-          Week = System.Globalization.ISOWeek.GetWeekOfYear(date)
+          Week = System.Globalization.ISOWeek.GetWeekOfYear(date),
+          AvailableTimes = new List<Available>(),
+          BookingRequestByCompanys = new List<BookingRequestByCompanyDto>()
         };
 
         if (hasMarkedAsAvailable)
         {
-          var availableDay = availableDays.Where(x => x.AvailableAt.Day == date.Date.Day).FirstOrDefault();
-          day.Id = availableDay.Id;
-          day.AvailableAt = availableDay.AvailableAt;
+          // The day can have multiple bookings, so we need to loop through these to get the days schedulwise.
+          // The bookings are this specific entry, but there can be many entries.
+          var availableDay = availableDays.Where(x => x.From.Day == date.Date.Day).FirstOrDefault();
           day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
+          var allSchedulesOnDay = availableDays.Where(x => x.From.Day == date.Day).ToList();
+          foreach (var schedulOnDay in allSchedulesOnDay)
+          {
+            day.AvailableTimes.Add(new Available() { Id = schedulOnDay.Id, From = schedulOnDay.From, To = schedulOnDay.To });
+          }
         }
-        else
-        {
-          // Create empty list so we can check the length even if no requests have been made.
-          day.BookingRequestByCompanys = new List<BookingRequestByCompanyDto>();
-        }
-
         monthSchedule.Add(day);
       }
 
@@ -89,7 +90,7 @@ namespace Domarservice.DAL
           .ThenInclude(y => y.RequestingCompany)
           .ThenInclude(i => i.Sports)
         // Omit dates that has allready passed.
-        .Where(x => x.AvailableAt > DateTime.UtcNow)
+        .Where(x => x.From > DateTime.UtcNow)
         .Where(x => x.RefereeId == refereeId)
         // Omit dates that has allready passed.
         .Where(x => x.BookingRequestByCompanys.Count > 0)
@@ -129,14 +130,14 @@ namespace Domarservice.DAL
         // .Include(x => x.BookingRequestByCompanys)
         // Skip passed dates
         // .WhereIf(model.AvailableFromDate < DateTime.UtcNow.AddDays(-1), x => x.AvailableAt > DateTime.UtcNow)
-        .WhereIf(model.AvailableFromDate <= DateTime.UtcNow, x => x.AvailableAt > DateTime.UtcNow)
-        .WhereIf(model.AvailableFromDate > DateTime.UtcNow, x => x.AvailableAt > model.AvailableFromDate.ToUniversalTime())
+        .WhereIf(model.AvailableFromDate <= DateTime.Now.Date, x => x.From > DateTime.Now.Date)
+        .WhereIf(model.AvailableFromDate > DateTime.Now.Date, x => x.From > model.AvailableFromDate.ToUniversalTime())
         .WhereIf(model.SportsFilter.Length > 0, x => x.Referee.Sports.Any(x => model.SportsFilter.Contains(x.SportType)))
         .WhereIf(model.CountysFilter.Length > 0, x => x.Referee.Countys.Any(county => model.CountysFilter.Contains(county.CountyType)))
 
         // Surname / Lastname search
         // .WhereIf(model.CompanySearchString != "", x => x.Company.Name.ToLower().Contains(model.CompanySearchString.ToLower()))
-        .OrderBy(x => x.AvailableAt)
+        .OrderBy(x => x.From)
         .Skip((model.Page - 1) * maxAmount)
         .Take(maxAmount)
         .ToListAsync();
@@ -162,27 +163,23 @@ namespace Domarservice.DAL
       return schedules;
     }
 
-    public async Task<bool> CreateSchedule(int id, DateTime availableAt)
+    public async Task<bool> CreateSchedule(int id, CreateScheduleBody scheduleBody)
     {
-      // We need to save as UTC since postgres only handles that format.
       try
       {
-        // Check if there allready is a schedule set for the current date.
-        // TODO
-
-        // TODO: Should only check day for now, like 2022-11-21, take start and endtime into account later.
-        var scheduleExists = await _context.Schedules.Where(x => x.RefereeId == id && x.AvailableAt == DateTime.SpecifyKind(availableAt, DateTimeKind.Utc)).FirstOrDefaultAsync();
+        // This needs to be looked at, in conjunction with From and To
+        var scheduleExists = await _context.Schedules.Where(x => x.RefereeId == id && x.From == scheduleBody.From).FirstOrDefaultAsync();
         if (scheduleExists != null)
         {
           return false;
         }
         else
         {
-          availableAt = DateTime.SpecifyKind(availableAt, DateTimeKind.Utc);
           await _context.Schedules
           .AddAsync(new Schedule()
           {
-            AvailableAt = availableAt.ToUniversalTime(),
+            From = scheduleBody.From,
+            To = scheduleBody.To,
             RefereeId = id,
           });
           await _context.SaveChangesAsync();

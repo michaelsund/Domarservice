@@ -125,7 +125,7 @@ namespace Domarservice.BLL
         {
           RefereeId = referee.Id,
           Referee = referee,
-          AvailableAt = DateTime.UtcNow,
+          From = DateTime.UtcNow,
         };
         _context.Schedules.Add(s);
         _context.SaveChanges();
