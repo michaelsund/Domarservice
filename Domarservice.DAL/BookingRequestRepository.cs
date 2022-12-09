@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Domarservice.Helpers;
 using AutoMapper;
+using Domarservice.Models;
 
 namespace Domarservice.DAL
 {
@@ -13,17 +14,55 @@ namespace Domarservice.DAL
   {
     private readonly DomarserviceContext _context = null;
     private readonly IMapper _mapper;
+    private readonly IRefereeRepository _refereeRepository;
 
-    public BookingRequestRepository(DomarserviceContext context, IMapper mapper)
+    public BookingRequestRepository(DomarserviceContext context, IMapper mapper, IRefereeRepository refereeRepository)
     {
       _context = context;
       _mapper = mapper;
+      _refereeRepository = refereeRepository;
+    }
+
+    public async Task<List<BookingRequestByCompanyDto>> GetCompanysRequestOnRefereeSchedule(int companyId)
+    {
+      try
+      {
+        List<BookingRequestByCompany> requests = await _context.BookingRequestsByCompany
+          .Include(x => x.Schedule)
+            .ThenInclude(y => y.Referee)
+          .Where(x => x.Schedule.From >= DateTime.Now.Date)
+          .Where(x => x.RequestingCompany.Id == companyId)
+          .ToListAsync();
+        var mappedBookingRequests = _mapper.Map<List<BookingRequestByCompanyDto>>(requests);
+        foreach (var item in mappedBookingRequests)
+        {
+          var simpleReferee = await _refereeRepository.GetSimpleRefeereById(item.Schedule.RefereeId);
+          item.Schedule.Referee = _mapper.Map<SimpleRefereeDto>(simpleReferee);
+        }
+        return mappedBookingRequests;
+      }
+      catch (Exception)
+      {
+        return new List<BookingRequestByCompanyDto>();
+      }
     }
 
     public async Task<bool> AddBookingRequestByCompany(BookScheduleByCompanyBody request, int companyId)
     {
       try
       {
+        // First check if the company allready has a bookingrequest on this schedule id.
+
+        var requests = await _context.BookingRequestsByCompany
+          .Where(x => x.ScheduleId == request.ScheduleId)
+          .ToListAsync();
+
+        if (requests.Any(x => x.CompanyId == companyId))
+        {
+          // This company allready has a request on this scheduleId
+          return false;
+        }
+
         await _context.BookingRequestsByCompany
         .AddAsync(new BookingRequestByCompany()
         {
@@ -158,6 +197,55 @@ namespace Domarservice.DAL
       }
     }
 
+    public async Task<ResultWithMessage> RemoveBookingRequestOnRefereeSchedule(int requestId, int companyId)
+    {
+      try
+      {
+        var request = await _context.BookingRequestsByCompany.Where(
+          x => x.Id == requestId && x.CompanyId == companyId
+        ).FirstOrDefaultAsync();
+        if (request != null)
+        {
+          // Do not allow companies to revoke if the referee have accepted.
+          if (request.Accepted)
+          {
+            return new ResultWithMessage
+            {
+              Result = false,
+              Message = "Din schemabokning kan inte tas bort när den accepterats.",
+              Data = null
+            };
+          }
+
+          _context.BookingRequestsByCompany.Remove(request);
+          var result = await _context.SaveChangesAsync();
+          if (result > 0)
+          {
+            return new ResultWithMessage
+            {
+              Result = true,
+              Message = "Din schemabokning är nu borttagen.",
+              Data = null
+            };
+          }
+        }
+        return new ResultWithMessage
+        {
+          Result = false,
+          Message = "Kunde inte hitta schemabokningen.",
+          Data = null
+        }; ;
+      }
+      catch (Exception)
+      {
+        return new ResultWithMessage
+        {
+          Result = true,
+          Message = "Ett problem uppstod när schemabokningen skulle tas bort.",
+          Data = null
+        };
+      }
+    }
 
     public async Task<ResultWithMessage> RemoveBookingRequestByReferee(int requestId, int refereeId)
     {

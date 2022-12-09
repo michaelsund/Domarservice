@@ -52,7 +52,7 @@ namespace Domarservice.DAL
       return null;
     }
 
-     public async Task<SimpleRefereeDto> GetSimpleRefeereById(int id)
+    public async Task<SimpleRefereeDto> GetSimpleRefeereById(int id)
     {
       ApplicationUser user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.RefereeId == id);
       if (user != null)

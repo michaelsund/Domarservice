@@ -284,6 +284,18 @@ namespace Domarservice.Controllers
         {
           try
           {
+            // Check if the schedule has a request that has been accepted, cannot remove in that case.
+            var isAccepted = await _scheduleRepository.IsRequestAccepted(id);
+            if (isAccepted)
+            {
+              return StatusCode(500, new ApiResponse
+              {
+                Success = false,
+                Message = "Du kan inte ta bort en dag som har bokats och accepterats.",
+                Data = null,
+              });
+            }
+            // Then delete the schedule
             await _scheduleRepository.DeleteScheduleById(id);
           }
           catch (Exception)

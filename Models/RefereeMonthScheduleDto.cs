@@ -6,6 +6,7 @@ namespace Domarservice.Models
 {
   public class RefereeMonthScheduleDto
   {
+    public int Id { get; set; }
     public int Day { get; set; }
     public string DayName { get; set; }
     public int Week { get; set; }

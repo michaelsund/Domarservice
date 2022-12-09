@@ -10,6 +10,7 @@ namespace Domarservice.Models
     public SimpleCompanyDto RequestingCompany { get; set; }
     public SportType SportType { get; set; }
     public RefereeType RefereeType { get; set; }
+    public RefereeScheduleDto Schedule { get; set; }
     // No relation, is set when a company books a referee and have a match via CompanyEvent.
     public int RequestingCompanyEventId { get; set; }
     public bool Accepted { get; set; }

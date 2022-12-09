@@ -40,7 +40,16 @@ namespace Domarservice.Controllers
             return StatusCode(200, new ApiResponse
             {
               Success = true,
-              Message = "Schedule booking request sent",
+              Message = "Bokningsförfrågan på schema är skickad.",
+              Data = null,
+            });
+          }
+          else
+          {
+            return StatusCode(500, new ApiResponse
+            {
+              Success = false,
+              Message = "Du har redan skickat en bokning.",
               Data = null,
             });
           }
@@ -48,7 +57,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a problem booking the schedule",
+          Message = "Ett problem uppstod när bokningen på schemat skulle skickas.",
           Data = null,
         });
       }
@@ -57,7 +66,7 @@ namespace Domarservice.Controllers
         return StatusCode(500, new ApiResponse
         {
           Success = false,
-          Message = "There was a error booking the schedule",
+          Message = "Ett fel uppstod när bokningen på schemat skulle skickas.",
           Data = null,
         });
       }
@@ -148,11 +157,46 @@ namespace Domarservice.Controllers
         {
           var result = await _bookingRequestRepository.RemoveBookingRequestByReferee(requestId, claimId);
           return StatusCode(result.Result ? 200 : 500, new ApiResponse
-            {
-              Success = result.Result,
-              Message = result.Message,
-              Data = result.Data,
-            });
+          {
+            Success = result.Result,
+            Message = result.Message,
+            Data = result.Data,
+          });
+        }
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett fel uppstod när avbokningen skickas.",
+          Data = null,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när avbokningen skulle skickas.",
+          Data = null,
+        });
+      }
+    }
+
+    [Authorize(Roles = "CompanyUser,Admin")]
+    [HttpGet("revoke-request-by-company/{requestId:int}")]
+    public async Task<IActionResult> RevokeBookingRequestByCompanyOnRefereeSchedule(int requestId)
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        if (claimId > 0)
+        {
+          var result = await _bookingRequestRepository.RemoveBookingRequestOnRefereeSchedule(requestId, claimId);
+          return StatusCode(result.Result ? 200 : 500, new ApiResponse
+          {
+            Success = result.Result,
+            Message = result.Message,
+            Data = result.Data,
+          });
         }
         return StatusCode(500, new ApiResponse
         {
@@ -213,5 +257,49 @@ namespace Domarservice.Controllers
       }
     }
 
+    [Authorize(Roles = "CompanyUser,Admin")]
+    [HttpGet]
+    [Route("schedule-requests")]
+    public async Task<IActionResult> CompanysRequestOnRefereeSchedules()
+    {
+      try
+      {
+        var claimId = User.Identity.GetUserClaimId();
+        if (claimId > 0)
+        {
+          var requestList = await _bookingRequestRepository.GetCompanysRequestOnRefereeSchedule(claimId);
+          if (requestList.Count > 0)
+          {
+            return StatusCode(200, new ApiResponse
+            {
+              Success = true,
+              Message = "Schematförfrågningar hämtades",
+              Data = requestList,
+            });
+          }
+          return StatusCode(500, new ApiResponse
+          {
+            Success = false,
+            Message = "Inga schemaförfrågningar kunde hittas",
+            Data = null,
+          });
+        }
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett problem uppstod när schemaförfrågningar skulle hämtas",
+          Data = null,
+        });
+      }
+      catch (Exception e)
+      {
+        return StatusCode(500, new ApiResponse
+        {
+          Success = false,
+          Message = "Ett fel uppstad när schemaförfrågningar skulle hämtas",
+          Data = null,
+        });
+      }
+    }
   }
 }

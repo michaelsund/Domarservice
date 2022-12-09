@@ -35,6 +35,19 @@ namespace Domarservice.DAL
       return _mapper.Map<RefereeScheduleDto>(schedule);
     }
 
+     public async Task<bool> IsRequestAccepted(int id)
+    {
+      Schedule schedule = await _context.Schedules
+        .Include(x => x.BookingRequestByCompanys)
+        .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (schedule != null && schedule.BookingRequestByCompanys.Any(x => x.Accepted))
+      {
+        return true;
+      }
+      return false;
+    }
+
     public async Task<List<RefereeMonthScheduleDto>> GetScheduleByIdAndMonth(int id, int year, int month)
     {
       List<Schedule> schedule = await _context.Schedules
@@ -69,6 +82,7 @@ namespace Domarservice.DAL
           // The day can have multiple bookings, so we need to loop through these to get the days schedulwise.
           // The bookings are this specific entry, but there can be many entries.
           var availableDay = availableDays.Where(x => x.From.Day == date.Date.Day).FirstOrDefault();
+          day.Id = availableDay.Id;
           day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
           var allSchedulesOnDay = availableDays.Where(x => x.From.Day == date.Day).ToList();
           foreach (var schedulOnDay in allSchedulesOnDay)
@@ -90,7 +104,7 @@ namespace Domarservice.DAL
           .ThenInclude(y => y.RequestingCompany)
           .ThenInclude(i => i.Sports)
         // Omit dates that has allready passed.
-        .Where(x => x.From > DateTime.UtcNow)
+        .Where(x => x.From >= DateTime.Now.Date)
         .Where(x => x.RefereeId == refereeId)
         // Omit dates that has allready passed.
         .Where(x => x.BookingRequestByCompanys.Count > 0)
