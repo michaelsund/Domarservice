@@ -81,13 +81,16 @@ namespace Domarservice.DAL
         {
           // The day can have multiple bookings, so we need to loop through these to get the days schedulwise.
           // The bookings are this specific entry, but there can be many entries.
-          var availableDay = availableDays.Where(x => x.From.Day == date.Date.Day).FirstOrDefault();
-          day.Id = availableDay.Id;
-          day.BookingRequestByCompanys = availableDay.BookingRequestByCompanys;
-          var allSchedulesOnDay = availableDays.Where(x => x.From.Day == date.Day).ToList();
-          foreach (var schedulOnDay in allSchedulesOnDay)
+          var timeslotsForDay = availableDays.Where(x => x.From.Day == date.Date.Day).ToList();          
+
+          foreach (var timeslot in timeslotsForDay)
           {
-            day.AvailableTimes.Add(new Available() { Id = schedulOnDay.Id, From = schedulOnDay.From, To = schedulOnDay.To });
+            day.Id = timeslot.Id;
+            day.AvailableTimes.Add(new Available() { Id = timeslot.Id, From = timeslot.From, To = timeslot.To });
+            foreach (var bookingRequest in timeslot.BookingRequestByCompanys)
+            {
+              day.BookingRequestByCompanys.Add(bookingRequest); 
+            }
           }
         }
         monthSchedule.Add(day);
