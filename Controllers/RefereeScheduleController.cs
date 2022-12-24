@@ -295,6 +295,16 @@ namespace Domarservice.Controllers
                 Data = null,
               });
             }
+            // Has the date passed?
+            if (schedule.From  < DateTime.UtcNow)
+            {
+              return StatusCode(500, new ApiResponse
+              {
+                Success = false,
+                Message = "Du kan inte ta bort en dag som passerat.",
+                Data = null,
+              });
+            }
             // Then delete the schedule
             await _scheduleRepository.DeleteScheduleById(id);
           }
