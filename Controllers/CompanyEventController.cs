@@ -227,7 +227,7 @@ namespace Domarservice.Controllers
           return StatusCode(500, new ApiResponse
           {
             Success = false,
-            Message = "Inga fler matcher hittades från dagens datum och framåt med den filtreringen.",
+            Message = "Inga matcher hittades från dagens datum och framåt med den filtreringen.",
             Data = null,
           });
         }

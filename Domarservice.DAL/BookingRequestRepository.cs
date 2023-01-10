@@ -111,6 +111,41 @@ namespace Domarservice.DAL
       }
     }
 
+    public async Task<bool> GetBookingRequestByDateForReferee(DateTime scheduleFrom, DateTime scheduleTo, int refereeId)
+    {
+      try
+      {
+        List<BookingRequestByReferee> bookings = await _context.BookingRequestsByReferee
+          .Include(x => x.CompanyEvent)
+          .Where(x => x.RefereeId == refereeId)
+          .ToListAsync();
+        if (bookings.Count > 0)
+        {
+          foreach (var booking in bookings)
+          {
+            var start = booking.CompanyEvent.Date;
+            var end = booking.CompanyEvent.Date.AddHours(booking.CompanyEvent.DurationHours).AddMinutes(booking.CompanyEvent.DurationMinutes);
+
+            // Detect collission otherwise return no bookings collide with the new schedule
+            if (scheduleFrom <= start && scheduleTo >= end)
+            {              
+              return true;
+            }
+            else if (scheduleFrom >= start && scheduleTo <= end)
+            {
+              return true;
+            }
+          }
+          return false;
+        }
+        return false;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
     public async Task<ResultWithMessage> AddBookingRequestByReferee(BookCompanyEventByRefereeBody request, int refereeId)
     {
       // First check if the companyEvent exists.

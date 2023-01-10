@@ -207,6 +207,8 @@ namespace Domarservice.BLL
         Date = DateTime.UtcNow.AddDays(rnd.Next(1, 7)),
         Location = "Ölands jumpasal",
         CompanyId = y,
+        DurationHours = 2,
+        DurationMinutes = 30,
         SportType = SportType.Ishockey,
         RefereeTypesForEvent = new List<RefereeTypesCompanyEvent>() {
           new RefereeTypesCompanyEvent { RefereeType = RefereeType.Hudvuddomare },

@@ -86,8 +86,12 @@ namespace Domarservice.DAL
     public string Name { get; set; }
     public string Location { get; set; }
     public DateTime Date { get; set; }
-    public string StartTime { get; set; }
-    public string EndTime { get; set; }
+    public int DurationHours { get; set; }
+    public int DurationMinutes { get; set; }
+    
+    // Using duration instead
+    // public string StartTime { get; set; }
+    // public string EndTime { get; set; }
     public SportType SportType { get; set; }
     public List<RefereeTypesCompanyEvent> RefereeTypesForEvent { get; set; }
     public List<BookingRequestByReferee> BookingRequestByReferees { get; set; }

@@ -18,6 +18,6 @@ namespace Domarservice.DAL
         Task<ResultWithMessage> RemoveBookingRequestByReferee(int requestId, int refereeId);
         Task<ResultWithMessage> RemoveBookingRequestOnRefereeSchedule(int requestId, int companyId);
         Task<bool> AwnserBookingRequestFromReferee(AwnserRefereeRequestBody request, int companyId);
-        
+        Task<bool> GetBookingRequestByDateForReferee(DateTime scheduleFrom, DateTime scheduleTo, int refereeId);
     }
 }

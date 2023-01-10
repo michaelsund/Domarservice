@@ -99,6 +99,57 @@ namespace Domarservice.DAL
       return monthSchedule;
     }
 
+    // public async Task<List<RefereeMonthScheduleDto>> GetScheduleByIdAndMonthWithEvents(int id, int year, int month)
+    // {
+    //   List<Schedule> schedule = await _context.Schedules
+    //     .Include(x => x.BookingRequestByCompanys)
+    //       .ThenInclude(y => y.RequestingCompany)
+    //       .ThenInclude(i => i.Sports)
+    //     .Where(x => x.RefereeId == id)
+    //     .Where(x => x.From.Year == year)
+    //     .Where(x => x.From.Month == month)
+    //     .ToListAsync();
+    //   var availableDays = _mapper.Map<List<RefereeScheduleDto>>(schedule);
+
+    //   // Generate list with days for the month, and tack on the availableDays objects.
+    //   // Need a new model with date, date number, and day name in swedish.
+    //   CultureInfo myCI = new CultureInfo("sv-SE", false);
+    //   var monthSchedule = new List<RefereeMonthScheduleDto>();
+
+    //   foreach (var date in DateHelper.AllDaysInMonth(year, month))
+    //   {
+    //     bool hasMarkedAsAvailable = availableDays.Any(x => x.From.Day == date.Date.Day);
+    //     var day = new RefereeMonthScheduleDto
+    //     {
+    //       Day = date.Day,
+    //       DayName = myCI.DateTimeFormat.GetDayName(date.DayOfWeek),
+    //       Week = System.Globalization.ISOWeek.GetWeekOfYear(date),
+    //       AvailableTimes = new List<Available>(),
+    //       BookingRequestByCompanys = new List<BookingRequestByCompanyDto>()
+    //     };
+
+    //     if (hasMarkedAsAvailable)
+    //     {
+    //       // The day can have multiple bookings, so we need to loop through these to get the days schedulwise.
+    //       // The bookings are this specific entry, but there can be many entries.
+    //       var timeslotsForDay = availableDays.Where(x => x.From.Day == date.Date.Day).ToList();          
+
+    //       foreach (var timeslot in timeslotsForDay)
+    //       {
+    //         day.Id = timeslot.Id;
+    //         day.AvailableTimes.Add(new Available() { Id = timeslot.Id, From = timeslot.From, To = timeslot.To });
+    //         foreach (var bookingRequest in timeslot.BookingRequestByCompanys)
+    //         {
+    //           day.BookingRequestByCompanys.Add(bookingRequest); 
+    //         }
+    //       }
+    //     }
+    //     monthSchedule.Add(day);
+    //   }
+
+    //   return monthSchedule;
+    // }
+
     public async Task<List<RefereeScheduleDto>> ScheduleRequestsForReferee(int refereeId)
     {
       // Only return the schedules that has requests from companies.

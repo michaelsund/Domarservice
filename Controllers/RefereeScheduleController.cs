@@ -18,10 +18,13 @@ namespace Domarservice.Controllers
   {
     private readonly ILogger _logger;
     private readonly IRefereeScheduleRepository _scheduleRepository;
-    public RefereeScheduleController(ILogger<RefereeScheduleController> logger, IRefereeScheduleRepository scheduleRepository)
+    private readonly IBookingRequestRepository _bookingRequestRepository;
+
+    public RefereeScheduleController(ILogger<RefereeScheduleController> logger, IRefereeScheduleRepository scheduleRepository, IBookingRequestRepository bookingRequestRepository)
     {
       _logger = logger;
       _scheduleRepository = scheduleRepository;
+      _bookingRequestRepository = bookingRequestRepository;
     }
 
     [Authorize(Roles = "CompanyUser,Admin")]
@@ -223,6 +226,20 @@ namespace Domarservice.Controllers
           {
             var claimId = User.Identity.GetUserClaimId();
             var claimName = User.Identity.GetUserClaimName();
+
+            // First check if the referee has any event requests that collide with the new schedule timeslot.
+            var existingCompanyEventRequest = await _bookingRequestRepository.GetBookingRequestByDateForReferee(request.From, request.To, claimId);
+
+            if (existingCompanyEventRequest)
+            {
+              return StatusCode(500, new ApiResponse
+              {
+                Success = false,
+                Message = "Schematiden krockar med en ansökan du gjort till en match.",
+                Data = null,
+              });
+            }
+
             var result = await _scheduleRepository.CreateSchedule(claimId, request);
             if (result)
             {
@@ -296,7 +313,7 @@ namespace Domarservice.Controllers
               });
             }
             // Has the date passed?
-            if (schedule.From  < DateTime.UtcNow)
+            if (schedule.From < DateTime.UtcNow)
             {
               return StatusCode(500, new ApiResponse
               {

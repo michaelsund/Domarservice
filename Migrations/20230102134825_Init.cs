@@ -34,7 +34,7 @@ namespace Domarservice.Migrations
                     Lastname = table.Column<string>(type: "text", nullable: true),
                     Information = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CompanyId = table.Column<int>(type: "integer", nullable: true),
                     RefereeId = table.Column<int>(type: "integer", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -70,8 +70,8 @@ namespace Domarservice.Migrations
                     Email = table.Column<string>(type: "text", nullable: true),
                     City = table.Column<string>(type: "text", nullable: true),
                     HasValidSubscription = table.Column<bool>(type: "boolean", nullable: false),
-                    SubscriptionActiveFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SubscriptionEndsAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SubscriptionActiveFrom = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    SubscriptionEndsAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     County = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -206,9 +206,9 @@ namespace Domarservice.Migrations
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Location = table.Column<string>(type: "text", nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartTime = table.Column<string>(type: "text", nullable: true),
-                    EndTime = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DurationHours = table.Column<int>(type: "integer", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "integer", nullable: false),
                     SportType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -289,8 +289,8 @@ namespace Domarservice.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    To = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    From = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    To = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     RefereeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -315,8 +315,8 @@ namespace Domarservice.Migrations
                     RefereeType = table.Column<int>(type: "integer", nullable: false),
                     CompanyEventId = table.Column<int>(type: "integer", nullable: false),
                     Accepted = table.Column<bool>(type: "boolean", nullable: false),
-                    AppliedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RespondedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    AppliedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,7 +368,7 @@ namespace Domarservice.Migrations
                     ScheduleId = table.Column<int>(type: "integer", nullable: false),
                     RequestingCompanyEventId = table.Column<int>(type: "integer", nullable: false),
                     Accepted = table.Column<bool>(type: "boolean", nullable: false),
-                    RespondedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    RespondedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {

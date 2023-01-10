@@ -46,7 +46,7 @@ namespace Domarservice.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("RespondedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ScheduleId")
                         .HasColumnType("integer");
@@ -75,7 +75,7 @@ namespace Domarservice.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("AppliedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("CompanyEventId")
                         .HasColumnType("integer");
@@ -90,7 +90,7 @@ namespace Domarservice.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("RespondedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -134,10 +134,10 @@ namespace Domarservice.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("SubscriptionActiveFrom")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("SubscriptionEndsAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -159,10 +159,13 @@ namespace Domarservice.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("EndTime")
-                        .HasColumnType("text");
+                    b.Property<int>("DurationHours")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Location")
                         .HasColumnType("text");
@@ -172,9 +175,6 @@ namespace Domarservice.Migrations
 
                     b.Property<int>("SportType")
                         .HasColumnType("integer");
-
-                    b.Property<string>("StartTime")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -292,13 +292,13 @@ namespace Domarservice.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("From")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("RefereeId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("To")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -529,7 +529,7 @@ namespace Domarservice.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Surname")
                         .HasColumnType("text");

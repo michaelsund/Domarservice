@@ -147,8 +147,8 @@ namespace Domarservice.DAL
           {
             CompanyId = companyId,
             Date = request.Date.ToUniversalTime(),
-            StartTime = request.StartTime,
-            EndTime = request.EndTime,
+            DurationHours = request.DurationHours,
+            DurationMinutes = request.DurationMinutes,
             Location = request.Location,
             Name = request.Name,
             SportType = request.SportType,
